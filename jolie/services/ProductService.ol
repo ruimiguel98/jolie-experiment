@@ -30,8 +30,20 @@ init
     scope (createTable) {
         install (SQLException => println@Console("Product table already there")());
         update@Database(
-            "create table Product(id integer generated always as identity, " +
-            "text varchar(255) not null, primary key(id))"
+            "CREATE TABLE `e-commerce-app-db`.`product` ( 
+                `id` INT(16) NOT NULL , 
+                `name` VARCHAR(100) NOT NULL , 
+                `description` VARCHAR(500) NOT NULL , 
+                `type` INT(16) NOT NULL , 
+                `price` FLOAT(16) NOT NULL , 
+                PRIMARY KEY (`id`)
+            ) ENGINE = InnoDB;
+                        
+            CREATE TABLE IF NOT EXISTS `e-commerce-app-db`.`cart_procuct` ( 
+                `id` INT(16) NOT NULL , 
+                `product_id` INT(16) NOT NULL , 
+                `cart_id` INT(16) NOT NULL ) 
+                ENGINE = InnoDB;"
         )(ret)
     }
 }

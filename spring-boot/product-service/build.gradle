@@ -19,6 +19,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-devtools:2.6.6'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.6'
 	compileOnly 'org.projectlombok:lombok:1.18.22'
+
+	// for microservices metrics
+	implementation 'io.dropwizard.metrics:metrics-core:4.2.9'
+
 }
 
 tasks.named('test') {
