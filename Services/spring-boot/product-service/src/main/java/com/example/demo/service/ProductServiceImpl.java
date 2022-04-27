@@ -17,57 +17,54 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    // Save operation
     @Override
     public Product saveProduct(Product department) {
         return productRepository.save(department);
     }
 
-    // Read operation
     @Override
     public List<Product> fetchProductList() {
-        return (List<Product>)
-                productRepository.findAll();
+        return (List<Product>) productRepository.findAll();
     }
 
-    // Update operation
+    @Override
+    public Product fetchProductById(Long productId) {
+        return productRepository.findById(productId).get();
+    }
+
     @Override
     public Product
-    updateProduct(Product department,
-                  Long departmentId) {
-        Product depDB
-                = productRepository.findById(departmentId)
-                .get();
+    updateProduct(Product product, Long productId) {
+        Product productDB = productRepository.findById(productId).get();
 
-        if (Objects.nonNull(department.getDepartmentName())
-                && !"".equalsIgnoreCase(
-                department.getDepartmentName())) {
-            depDB.setDepartmentName(
-                    department.getDepartmentName());
-        }
+//        if (Objects.nonNull(product.getName())
+//                && !"".equalsIgnoreCase(
+//                product.getName())) {
+//            productDB.setName(
+//                    product.getName());
+//        }
+//
+//        if (Objects.nonNull(
+//                product.getDescription())
+//                && !"".equalsIgnoreCase(
+//                product.getDescription())) {
+//            productDB.setDescription(
+//                    product.getDescription());
+//        }
+//
+//        if (Objects.nonNull(product.getPrice())
+//                && !"".equalsIgnoreCase(
+//                product.getPrice())) {
+//            productDB.setPrice(
+//                    product.getPrice());
+//        }
 
-        if (Objects.nonNull(
-                department.getDepartmentAddress())
-                && !"".equalsIgnoreCase(
-                department.getDepartmentAddress())) {
-            depDB.setDepartmentAddress(
-                    department.getDepartmentAddress());
-        }
-
-        if (Objects.nonNull(department.getDepartmentCode())
-                && !"".equalsIgnoreCase(
-                department.getDepartmentCode())) {
-            depDB.setDepartmentCode(
-                    department.getDepartmentCode());
-        }
-
-        return productRepository.save(depDB);
+        return productRepository.save(productDB);
     }
 
-    // Delete operation
     @Override
-    public void deleteProductById(Long departmentId) {
-        productRepository.deleteById(departmentId);
+    public void deleteProductById(Long productId) {
+        productRepository.deleteById(productId);
     }
 }
 

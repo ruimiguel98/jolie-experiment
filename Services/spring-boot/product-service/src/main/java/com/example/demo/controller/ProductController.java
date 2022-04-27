@@ -20,33 +20,31 @@ public class ProductController {
 
     // Save operation
     @PostMapping("/products")
-    public Product saveProduct(@RequestBody Product product)
-    {
+    public Product saveProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
 
     // Read operation
-    @GetMapping("/products")
-    public List<Product> fetchDepartmentList()
-    {
+    @GetMapping("/getProducts")
+    public List<Product> fetchProductList() {
         return productService.fetchProductList();
+    }
+
+    // Read operation
+    @GetMapping("/getProduct")
+    public Product fetchProduct(@RequestParam(name="id", required = true) Long productId) {
+        return productService.fetchProductById(productId);
     }
 
     // Update operation
     @PutMapping("/products/{id}")
-    public Product
-    updateDepartment(@RequestBody Product department,
-                     @PathVariable("id") Long departmentId)
-    {
-        return productService.updateProduct(
-                department, departmentId);
+    public Product updateProduct(@RequestBody Product product, @PathVariable("id") Long productId) {
+        return productService.updateProduct(product, productId);
     }
 
     // Delete operation
     @DeleteMapping("/products/{id}")
-    public String deleteDepartmentById(@PathVariable("id")
-                                               Long productId)
-    {
+    public String deleteDepartmentById(@PathVariable("id") Long productId) {
         productService.deleteProductById(productId);
         return "Product deleted successfully";
     }
