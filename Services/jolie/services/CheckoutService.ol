@@ -4,6 +4,7 @@ include "string_utils.iol"
 include "../interfaces/CheckoutInterface.iol"
 include "../interfaces/PaymentInterface.iol"
 include "../interfaces/CartInterface.iol"
+include "../interfaces/ShippingInterface.iol"
 
 execution { concurrent }
 
@@ -26,19 +27,29 @@ outputPort CartPort {
     Interfaces: CartInterface
 }
 
+outputPort ShippingPort {
+    Location: "socket://localhost:8005/"
+    Protocol: http { .format = "json" }
+    Interfaces: ShippingInterface
+}
+
 // behaviour info
 main
 {
     [ 
         checkoutPay( request )( response ) {
-            cartRetrieve@CartPort( request )( response );
 
-            print@Console( "Retrieving cart with ID " + response.cart.id )(  )
+            println@Console( "Request for checkout has ID: " + request.cart.id )(  )
 
-            response.cartId = response;
+            cartRetrieve@CartPort( request.cart )( response )
+            println@Console( "Retrieved cart with ID " + response.cart.id )(  )
 
-            // processPayment@PaymentPort( "mytest" )()
-            response.values = "This is just a test" 
+            // response.cartId = response;
+
+            // // processPayment@PaymentPort( "mytest" )()
+            // response.values = "This is just a test" 
+
+            // sendShipment@ShippingPort( request )( response )
         } 
     ]
 }

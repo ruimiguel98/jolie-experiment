@@ -1,0 +1,246 @@
+{
+	"info": {
+		"_postman_id": "97d896af-e6c5-400e-93ec-909654956702",
+		"name": "JOLIE-CASE-STUDY",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "http://localhost:8000/retrieveAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/retrieveAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"retrieveAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8000/retrieve?id=1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/retrieve?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"retrieve"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8000/create?id=1&name=Shoes&price=20&availability=1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/create?id=2&name=Shirt&price=30&availability=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"create"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "2"
+								},
+								{
+									"key": "name",
+									"value": "Shirt"
+								},
+								{
+									"key": "price",
+									"value": "30"
+								},
+								{
+									"key": "availability",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "cartRetrieve",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8001/cartRetrieve?id=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"cartRetrieve"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cartAdd",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8001/cartAdd?id&name&product&total=",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"cartAdd"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null
+								},
+								{
+									"key": "name",
+									"value": null
+								},
+								{
+									"key": "product",
+									"value": null
+								},
+								{
+									"key": "total",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cartDelete",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8001/cartDelete?id=",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"cartDelete"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checkout",
+			"item": [
+				{
+					"name": "checkoutPay",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cart\": {\r\n        \"id\": 1\r\n    },\r\n    \"shipment\": {\r\n        \"id\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8002/checkoutPay",
+							"host": [
+								"localhost"
+							],
+							"port": "8002",
+							"path": [
+								"checkoutPay"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Email",
+			"item": [
+				{
+					"name": "sendEmail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8004/sendEmail",
+							"host": [
+								"localhost"
+							],
+							"port": "8004",
+							"path": [
+								"sendEmail"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
