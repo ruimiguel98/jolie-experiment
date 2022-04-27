@@ -1,11 +1,11 @@
 include "console.iol"
 include "database.iol"
 include "string_utils.iol"
-include "smtp.iol"
+// include "smtp.iol"
 
 include "../interfaces/EmailInterface.iol"
 
-// execution { concurrent }
+execution { concurrent }
 
 // deployment info
 inputPort EmailPort {
@@ -60,13 +60,13 @@ init
         .host = "myhost";
         .from = "eCommerce";
         .to = "utreyheor"
-    };
-
-    scope (smtpConfiguration) {
-        sendMail@SMTP( smtpInfo )();
-        println@Console("Successfull connection to the SMTP server")();
-        install ( SMTPFault => println@Console("Something went wrong while configuring the SMTP")())
     }
+
+    // scope (smtpConfiguration) {
+    //     sendMail@SendMailRequest( smtpInfo )();
+    //     println@Console("Successfull connection to the SMTP server")();
+    //     install ( SMTPFault => println@Console("Something went wrong while configuring the SMTP")())
+    // }
 
 }
 
