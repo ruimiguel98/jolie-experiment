@@ -1,4 +1,4 @@
-interface Product {
+interface ProductInterface {
     RequestResponse:
         retrieveAll(void)(undefined),
         create(undefined)(undefined),

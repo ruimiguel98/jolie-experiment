@@ -10,7 +10,7 @@ execution { concurrent }
 inputPort Server {
     Location: "socket://localhost:8001/"
     Protocol: http { .format = "json" }
-    Interfaces: Cart
+    Interfaces: CartInterface
 }
 
 // prepare database connection (creates table if does not exist)

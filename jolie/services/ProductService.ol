@@ -8,9 +8,9 @@ execution { concurrent }
 
 // deployment info
 inputPort Server {
-    Location: "socket://localhost:8000/product/"
+    Location: "socket://localhost:8000"
     Protocol: http { .format = "json" }
-    Interfaces: Product
+    Interfaces: ProductInterface
 }
 
 // prepare database connection (creates table if does not exist)
@@ -37,9 +37,11 @@ init
                 `type` INT(16) NOT NULL , 
                 `price` FLOAT(16) NOT NULL , 
                 PRIMARY KEY (`id`)
-            ) ENGINE = InnoDB;
-                        
-            CREATE TABLE IF NOT EXISTS `e-commerce-app-db`.`cart_procuct` ( 
+            ) ENGINE = InnoDB;"
+        )(ret)
+
+        update@Database(
+            "CREATE TABLE IF NOT EXISTS `e-commerce-app-db`.`cart_procuct` ( 
                 `id` INT(16) NOT NULL , 
                 `product_id` INT(16) NOT NULL , 
                 `cart_id` INT(16) NOT NULL ) 
@@ -59,11 +61,12 @@ main
     } ]
     [ create(request)(response) {
         update@Database(
-            "insert into product(id, name, price, availability) values (:id, :name, :price, :availability)" {
+            "insert into product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
                 .id = request.id,
                 .name = request.name,
+                .description = request.description,
+                .type = request.type,
                 .price = request.price,
-                .availability = request.availability,
             }
         )(response.status)
     } ]
