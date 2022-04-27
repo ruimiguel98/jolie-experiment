@@ -19,7 +19,7 @@ public class ProductController {
     private ProductService productService;
 
     // Save operation
-    @PostMapping("/products")
+    @PostMapping("/createProduct")
     public Product saveProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
@@ -37,14 +37,14 @@ public class ProductController {
     }
 
     // Update operation
-    @PutMapping("/products/{id}")
-    public Product updateProduct(@RequestBody Product product, @PathVariable("id") Long productId) {
+    @PutMapping("/updateProduct")
+    public Product updateProduct(@RequestBody Product product, @RequestParam("id") Long productId) {
         return productService.updateProduct(product, productId);
     }
 
     // Delete operation
-    @DeleteMapping("/products/{id}")
-    public String deleteDepartmentById(@PathVariable("id") Long productId) {
+    @DeleteMapping("/deleteProduct")
+    public String deleteDepartmentById(@RequestParam("id") Long productId) {
         productService.deleteProductById(productId);
         return "Product deleted successfully";
     }

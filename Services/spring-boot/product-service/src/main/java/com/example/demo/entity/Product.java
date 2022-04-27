@@ -52,6 +52,14 @@ public class Product {
         this.description = description;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     public Integer getPrice() {
         return price;
     }
