@@ -1,8 +1,8 @@
 interface ProductInterface {
     RequestResponse:
-        retrieveAll(void)(undefined),
-        create(undefined)(undefined),
-        retrieve(undefined)(undefined),
-        update(undefined)(undefined),
-        delete(undefined)(undefined)
+        getProducts(void)(undefined),
+        getProduct(undefined)(undefined),
+        createProduct(undefined)(undefined),
+        updateProduct(undefined)(undefined),
+        deleteProduct(undefined)(undefined)
 }

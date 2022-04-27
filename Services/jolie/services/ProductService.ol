@@ -53,46 +53,60 @@ init
 // behaviour info
 main
 {
-    [ retrieveAll()(response) {
-        query@Database(
-            "select * from product"
-        )(sqlResponse);
-        response.values -> sqlResponse.row
-    } ]
-    [ create(request)(response) {
-        update@Database(
-            "insert into product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
-                .id = request.id,
-                .name = request.name,
-                .description = request.description,
-                .type = request.type,
-                .price = request.price,
+    [ 
+        getProducts()(response) {
+            query@Database(
+                "select * from product"
+            )(sqlResponse);
+            response.values -> sqlResponse.row
+        } 
+    ]
+
+    [ 
+        getProduct(request)(response) {
+            query@Database(
+                "select * from product where id=:id" {
+                    .id = request.id
+                }
+            )(sqlResponse);
+            if (#sqlResponse.row == 1) {
+                response -> sqlResponse.row[0]
             }
-        )(response.status)
-    } ]
-    [ retrieve(request)(response) {
-        query@Database(
-            "select * from product where id=:id" {
-                .id = request.id
-            }
-        )(sqlResponse);
-        if (#sqlResponse.row == 1) {
-            response -> sqlResponse.row[0]
-        }
-    } ]    
-    [ update(request)(response) {
-        update@Database(
-            "update product set name=:name where id=:id" {
-                .name = request.name,
-                .id = request.id
-            }
-        )(response.status)
-    } ]
-    [ delete(request)(response) {
-        update@Database(
-            "delete from product where id=:id" {
-                .id = request.id
-            }
-        )(response.status)
-    } ]
+        } 
+    ]  
+
+    [ 
+        createProduct(request)(response) {
+            update@Database(
+                "insert into product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
+                    .id = request.id,
+                    .name = request.name,
+                    .description = request.description,
+                    .type = request.type,
+                    .price = request.price,
+                }
+            )(response.status)
+        } 
+    ]  
+
+    [ 
+        updateProduct(request)(response) {
+            update@Database(
+                "update product set name=:name where id=:id" {
+                    .name = request.name,
+                    .id = request.id
+                }
+            )(response.status)
+        } 
+    ]
+    
+    [ 
+        deleteProduct(request)(response) {
+            update@Database(
+                "delete from product where id=:id" {
+                    .id = request.id
+                }
+            )(response.status)
+        } 
+    ]
 }
