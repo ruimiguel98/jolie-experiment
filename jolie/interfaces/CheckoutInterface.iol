@@ -1,4 +1,4 @@
 interface CheckoutInterface {
 RequestResponse:
-    checkoutPay(undefined)(undefined),
+    checkoutPay(undefined)(undefined)
 }

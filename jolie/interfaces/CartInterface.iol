@@ -1,6 +1,6 @@
 interface CartInterface {
 RequestResponse:
-    cartRetrieve(void)(undefined),
+    cartRetrieve(undefined)(undefined),
     cartAdd(undefined)(undefined),
     cartDelete(undefined)(undefined)
 }

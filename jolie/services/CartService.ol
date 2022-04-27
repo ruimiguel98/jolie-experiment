@@ -52,27 +52,39 @@ init
 // behaviour info
 main
 {
-    [ cartRetrieve()(response) {
-        query@Database(
-            "select * from cart"
-        )(sqlResponse);
-        response.values -> sqlResponse.row
-    } ]
-    [ cartAdd(request)(response) {
-        update@Database(
-            "insert into cart(id, name, price, availability) values (:id, :name, :price, :availability)" {
-                .id = request.id,
-                .name = request.name,
-                .price = request.price,
-                .availability = request.availability,
-            }
-        )(response.status)
-    } ]
-    [ cartDelete(request)(response) {
-        update@Database(
-            "delete from cart where id=:id" {
-                .id = request.id
-            }
-        )(response.status)
-    } ]
+    [ 
+        cartRetrieve(request)(response) {
+            println@Console( "The request on cart service is " + request.id )(  )
+
+            query@Database(
+                "select * from cart where id=:id" {
+                    .id = request.id
+                }
+            )(sqlResponse);
+            response.cart -> sqlResponse.row
+        }
+    ]
+
+    [ 
+        cartAdd(request)(response) {
+            update@Database(
+                "insert into cart(id, name, price, availability) values (:id, :name, :price, :availability)" {
+                    .id = request.id,
+                    .name = request.name,
+                    .price = request.price,
+                    .availability = request.availability,
+                }
+            )(response.status)
+        } 
+    ]
+
+    [ 
+        cartDelete(request)(response) {
+            update@Database(
+                "delete from cart where id=:id" {
+                    .id = request.id
+                }
+            )(response.status)
+        } 
+    ]
 }
