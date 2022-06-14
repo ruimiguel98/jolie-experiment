@@ -1,10 +1,10 @@
 include "console.iol"
 include "string_utils.iol"
 
-include "../interfaces/CheckoutInterface.iol"
-include "../interfaces/PaymentInterface.iol"
-include "../interfaces/CartInterface.iol"
-include "../interfaces/ShippingInterface.iol"
+include "./CheckoutInterface.iol"
+include "./PaymentInterface.iol"
+include "./CartInterface.iol"
+include "./ShippingInterface.iol"
 
 execution { concurrent }
 

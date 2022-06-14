@@ -2,13 +2,13 @@ include "console.iol"
 include "database.iol"
 include "string_utils.iol"
 
-include "../interfaces/CartInterface.iol"
+include "./CartInterface.iol"
 
 execution { concurrent }
 
 // deployment info
-inputPort Server {
-    Location: "socket://localhost:8001/"
+inputPort CartPort {
+    Location: LOCATION_SERVICE_CART
     Protocol: http { .format = "json" }
     Interfaces: CartInterface
 }
@@ -17,35 +17,20 @@ inputPort Server {
 init
 {
     with (connectionInfo) {
-        .username = "jolie";
-        .password = "Ia@bNf-9NAd!t(@z";
-        .host = "localhost";
-        .database = "e-commerce-app-db"; // "." for memory-only
-        .driver = "mysql"
+        .username = SQL_USERNAME;
+        .password = SQL_PASSWORD;
+        .host = SQL_HOST;
+        .database = SQL_DATABASE; // "." for memory-only
+        .driver = SQL_DRIVER
     };
 
     connect@Database(connectionInfo)();
-    println@Console("Successfull connection to the MySQL database")();
+    println@Console("Successfull connection to the PostgreSQL database")();
 
     // create cart table if it does not exist
     scope (createTable) {
         install (SQLException => println@Console("Cart table already exists")());
-        update@Database(
-            "CREATE TABLE `e-commerce-app-db`.`cart` ( 
-                `id` INT(16) NOT NULL , 
-                `name` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL , 
-                `product` INT(16) NOT NULL , 
-                `total` INT(10) NOT NULL ) 
-                ENGINE = InnoDB;"
-        )(ret);
-
-        update@Database(
-            "CREATE TABLE IF NOT EXISTS `e-commerce-app-db`.`cart_procuct` ( 
-                `id` INT(16) NOT NULL , 
-                `product_id` INT(16) NOT NULL , 
-                `cart_id` INT(16) NOT NULL ) 
-                ENGINE = InnoDB;"
-        )(ret)
+        update@Database(SQL_CREATE_TABLE_CART)(ret)
     }
 }
 
@@ -61,6 +46,7 @@ main
                     .id = request.id
                 }
             )(sqlResponse);
+
             response.cart -> sqlResponse.row
         }
     ]
@@ -68,18 +54,33 @@ main
     [ 
         cartAdd(request)(response) {
             update@Database(
-                "insert into cart(id, name, price, availability) values (:id, :name, :price, :availability)" {
+                "insert into cart(id, products) values (:id, ARRAY[:product])" {
                     .id = request.id,
-                    .name = request.name,
-                    .price = request.price,
-                    .availability = request.availability,
+                    .product = request.product
                 }
             )(response.status)
         } 
     ]
 
+    [
+        cartAppend(request)(response) {
+
+            println@Console("Appending product " + request.product + " to cart " + request.id)()
+
+            update@Database(
+                "UPDATE cart SET products = ARRAY_APPEND(products, :product) WHERE id = :id;" {
+                    .id = request.id,
+                    .product = request.product
+                }
+            )(response.status)
+        }
+    ]
+
     [ 
         cartDelete(request)(response) {
+
+            println@Console("Deleting cart " + request.id)()
+
             update@Database(
                 "delete from cart where id=:id" {
                     .id = request.id

@@ -2,13 +2,15 @@ include "console.iol"
 include "database.iol"
 include "string_utils.iol"
 
-include "../interfaces/ProductInterface.iol"
+include "./ProductInterface.iol"
+// include "../locations.iol"
+// include "../../sql/sql_scripts.iol" // import constant SQL scripts to be used instead of hardcoded text
 
 execution { concurrent }
 
 // deployment info
-inputPort Server {
-    Location: "socket://localhost:8000"
+inputPort ProductPort {
+    Location: LOCATION_SERVICE_PRODUCT
     Protocol: http { .format = "json" }
     Interfaces: ProductInterface
 }
@@ -17,36 +19,19 @@ inputPort Server {
 init
 {
     with (connectionInfo) {
-        .username = "jolie";
-        .password = "Ia@bNf-9NAd!t(@z";
-        .host = "localhost";
-        .database = "e-commerce-app-db"; // "." for memory-only
-        .driver = "mysql"
+        .username = SQL_USERNAME;
+        .password = SQL_PASSWORD;
+        .host = SQL_HOST;
+        .database = SQL_DATABASE; // "." for memory-only
+        .driver = SQL_DRIVER
     };
     connect@Database(connectionInfo)();
-    println@Console("Successfull connection to the MySQL database")();
+    println@Console("Successfull connection to the PostgreSQL database")();
 
     // create table if it does not exist
     scope (createTable) {
         install (SQLException => println@Console("Product table already there")());
-        update@Database(
-            "CREATE TABLE `e-commerce-app-db`.`product` ( 
-                `id` INT(16) NOT NULL , 
-                `name` VARCHAR(100) NOT NULL , 
-                `description` VARCHAR(500) NOT NULL , 
-                `type` INT(16) NOT NULL , 
-                `price` FLOAT(16) NOT NULL , 
-                PRIMARY KEY (`id`)
-            ) ENGINE = InnoDB;"
-        )(ret)
-
-        update@Database(
-            "CREATE TABLE IF NOT EXISTS `e-commerce-app-db`.`cart_procuct` ( 
-                `id` INT(16) NOT NULL , 
-                `product_id` INT(16) NOT NULL , 
-                `cart_id` INT(16) NOT NULL ) 
-                ENGINE = InnoDB;"
-        )(ret)
+        update@Database(SQL_CREATE_TABLE_PRODUCT)(ret)
     }
 }
 
@@ -78,7 +63,7 @@ main
     [ 
         createProduct(request)(response) {
             update@Database(
-                "insert into product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
+                "insert into public.product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
                     .id = request.id,
                     .name = request.name,
                     .description = request.description,

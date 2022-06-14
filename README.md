@@ -10,6 +10,7 @@ This project consists in a case study using the programming language Jolie. Also
 - [Functional Requirements](#functional-requirements)
 - [Non-functional Requirements](#non-functional-requirements)
 - [Database](#database)
+- [Docker](#docker)
 
 &nbsp;
 
@@ -99,3 +100,15 @@ Table 7 – Non-functional requirements of the application
 # Database
 
 Database password: Ia@bNf-9NAd!t(@z
+
+# Docker
+
+To run a Jolie service via a Docker container to the following:
+
+```shell
+docker build -t product-service .
+```
+
+```shell
+docker run --name product-service -d -p9001:9001 product-service
+```
