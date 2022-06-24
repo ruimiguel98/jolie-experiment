@@ -1,4 +1,4 @@
-type CartAppendRequest {
+type CartChangeRequest {
     .id:int
     .product:int
 }
@@ -6,8 +6,9 @@ type CartAppendRequest {
 interface CartInterface {
     RequestResponse:
         cartRetrieve(undefined)(undefined),
-        cartAdd(undefined)(undefined),
-        cartAppend(CartAppendRequest)(undefined),
+        cartCreate(undefined)(undefined),
+        cartAppendProduct(CartChangeRequest)(undefined),
+        cartRemoveProduct(CartChangeRequest)(undefined),
         cartDelete(undefined)(undefined)
 }
 

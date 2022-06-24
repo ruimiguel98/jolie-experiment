@@ -39,10 +39,10 @@ main
 {
     [ 
         cartRetrieve(request)(response) {
-            println@Console( "The request on cart service is " + request.id )(  )
+            println@Console( "Fetching cart with id " + request.id )(  )
 
             query@Database(
-                "select * from cart where id=:id" {
+                "SELECT * FROM cart WHERE id=:id::numeric" {
                     .id = request.id
                 }
             )(sqlResponse);
@@ -52,18 +52,21 @@ main
     ]
 
     [ 
-        cartAdd(request)(response) {
+        cartCreate(request)(response) {
+
+            println@Console("Creating cart " + request.id + " for user " + request.user)()
+
             update@Database(
-                "insert into cart(id, products) values (:id, ARRAY[:product])" {
+                "INSERT INTO cart(id, products, user_owner) VALUES (:id, array[]::integer[], :user)" {
                     .id = request.id,
-                    .product = request.product
+                    .user = request.user
                 }
             )(response.status)
         } 
     ]
 
     [
-        cartAppend(request)(response) {
+        cartAppendProduct(request)(response) {
 
             println@Console("Appending product " + request.product + " to cart " + request.id)()
 
@@ -77,12 +80,26 @@ main
     ]
 
     [ 
+        cartRemoveProduct(request)(response) {
+
+            println@Console("Deleting product " + request.product + " from cart " + request.id)()
+
+            update@Database(
+                "UPDATE cart SET products = ARRAY_REMOVE(products, :product) WHERE id = :id;" {
+                    .id = request.id,
+                    .product = request.product
+                }
+            )(response.status)
+        } 
+    ]
+
+    [ 
         cartDelete(request)(response) {
 
             println@Console("Deleting cart " + request.id)()
 
             update@Database(
-                "delete from cart where id=:id" {
+                "DELETE FROM cart WHERE id=:id" {
                     .id = request.id
                 }
             )(response.status)
