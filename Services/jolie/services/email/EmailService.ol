@@ -3,13 +3,13 @@ include "database.iol"
 include "string_utils.iol"
 // include "smtp.iol"
 
-include "../interfaces/EmailInterface.iol"
+include "./EmailInterface.iol"
 
 execution { concurrent }
 
 // deployment info
 inputPort EmailPort {
-    Location: "socket://localhost:8004/"
+    Location: "socket://localhost:9004/"
     Protocol: http { .format = "json" }
     Interfaces: EmailInterface
 }
