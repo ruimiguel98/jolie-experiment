@@ -12,7 +12,8 @@ constants {
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
-    SQL_HOST = "172.30.0.1",
+    SQL_HOST = "localhost",
+    // SQL_HOST = "172.30.0.1",
     SQL_DATABASE = "app-db",
     SQL_DRIVER = "postgresql",
 

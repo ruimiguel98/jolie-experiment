@@ -75,9 +75,6 @@ main
 
     [ 
         checkoutPay( request )( response ) {
-
-            println@Console( "Inserting checkout with ID: " + request.cart.id )(  )
-
             update@Database(
                 "INSERT INTO checkout(id, card, address) 
                   VALUES (:id::numeric, :card::numeric, :address::numeric);" {

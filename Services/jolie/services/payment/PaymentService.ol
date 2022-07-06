@@ -67,21 +67,29 @@ main
                     .id = request.id,
                 }
             )(response.status)
+            
         }
     ]
 
     [ 
-        processPayment()(response) {
-            response.values = "This is just a test"
+        getSavedPaymentInfoList(request)(response) {
 
-            update@Database(
-                "insert into cart(id, name, product, total) values (1, 'test', 123, 123)" {
-                    .id = 1,
-                    .name = 'test',
-                    .price = 123,
-                    .availability = 123
+            USER_DOES_NOT_EXIST_MESSAGE = "The provided user id " + request.user_owner + " is not in the system"
+
+            println@Console( "Fetching list of saved payments information for user " + request.user_owner )(  )
+
+            query@Database(
+                "SELECT * FROM payment WHERE user_owner=:user_owner::int4" {
+                    .user_owner = request.user_owner
                 }
-            )(response.status)
+            )(sqlResponse)
+
+            if (#sqlResponse.row >= 1) {
+                response -> sqlResponse
+            }
+            else {
+                response.message -> USER_DOES_NOT_EXIST_MESSAGE
+            }
         } 
     ]
 }

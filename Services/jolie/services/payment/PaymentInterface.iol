@@ -12,12 +12,16 @@ type PaymentDeleteRequest {
     .id: int
 }
 
+type PaymentListRequest {
+    .user_owner: int
+}
+
 
 interface PaymentInterface {
     RequestResponse:
         addPaymentInfo(PaymentAddRequest)(undefined),
         deletePaymentInfo(PaymentDeleteRequest)(undefined),
-        processPayment(undefined)(undefined)
+        getSavedPaymentInfoList(PaymentListRequest)(undefined),
 }
 
 constants {
