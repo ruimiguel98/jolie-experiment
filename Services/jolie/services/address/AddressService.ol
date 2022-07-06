@@ -8,7 +8,7 @@ execution { concurrent }
 
 // deployment info
 inputPort AddressPort {
-    Location: LOCATION_SERVICE_PAYMENT
+    Location: LOCATION_SERVICE_ADDRESS
     Protocol: http { .format = "json" }
     Interfaces: AddressInterface
 }
@@ -30,7 +30,7 @@ init
     // create check table if it does not exist
     scope (createTable) {
         install (SQLException => println@Console("Address table already exists")());
-        update@Database(SQL_CREATE_PAYMENT_INFO)(ret)
+        update@Database(SQL_CREATE_ADDRESS_INFO)(ret)
     }
 }
 

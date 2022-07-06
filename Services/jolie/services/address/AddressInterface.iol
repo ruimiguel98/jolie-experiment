@@ -23,7 +23,7 @@ interface AddressInterface {
 }
 
 constants {
-    LOCATION_SERVICE_PAYMENT = "socket://localhost:9004",
+    LOCATION_SERVICE_ADDRESS = "socket://localhost:9004",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
@@ -33,7 +33,7 @@ constants {
     SQL_DRIVER = "postgresql",
 
 
-    SQL_CREATE_PAYMENT_INFO = "CREATE TABLE public.address (
+    SQL_CREATE_ADDRESS_INFO = "CREATE TABLE public.address (
                                     id numeric NOT NULL,
                                     user_owner numeric NULL,
                                     address text NOT NULL,
