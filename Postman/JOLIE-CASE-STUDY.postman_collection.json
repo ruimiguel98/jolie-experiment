@@ -1,241 +1,1169 @@
 {
 	"info": {
 		"_postman_id": "97d896af-e6c5-400e-93ec-909654956702",
-		"name": "JOLIE-CASE-STUDY",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"name": "🎓 JOLIE-CASE-STUDY",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7740632"
 	},
 	"item": [
 		{
-			"name": "Product",
+			"name": "Jolie Microservices",
 			"item": [
 				{
-					"name": "http://localhost:8000/retrieveAll",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8000/retrieveAll",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"retrieveAll"
-							]
+					"name": "Email",
+					"item": [
+						{
+							"name": "sendEmail",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:8004/sendEmail",
+									"host": [
+										"localhost"
+									],
+									"port": "8004",
+									"path": [
+										"sendEmail"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "http://localhost:8000/retrieve?id=1",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8000/retrieve?id=1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"retrieve"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:8000/create?id=1&name=Shoes&price=20&availability=1",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8000/create?id=2&name=Shirt&price=30&availability=1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"create"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "2"
+					"name": "Checkout",
+					"item": [
+						{
+							"name": "checkoutPay_OLD",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cart\": {\r\n        \"id\": 1\r\n    },\r\n    \"shipment\": {\r\n        \"id\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
-								{
-									"key": "name",
-									"value": "Shirt"
-								},
-								{
-									"key": "price",
-									"value": "30"
-								},
-								{
-									"key": "availability",
-									"value": "1"
+								"url": {
+									"raw": "localhost:8002/checkoutPay",
+									"host": [
+										"localhost"
+									],
+									"port": "8002",
+									"path": [
+										"checkoutPay"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
 								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Cart",
-			"item": [
-				{
-					"name": "cartRetrieve",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8001/cartRetrieve?id=1",
-							"host": [
-								"localhost"
-							],
-							"port": "8001",
-							"path": [
-								"cartRetrieve"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "cartAdd",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "localhost:8001/cartAdd?id&name&product&total=",
-							"host": [
-								"localhost"
-							],
-							"port": "8001",
-							"path": [
-								"cartAdd"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": null
-								},
-								{
-									"key": "name",
-									"value": null
-								},
-								{
-									"key": "product",
-									"value": null
-								},
-								{
-									"key": "total",
-									"value": ""
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "cartDelete",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "localhost:8001/cartDelete?id=",
-							"host": [
-								"localhost"
-							],
-							"port": "8001",
-							"path": [
-								"cartDelete"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": ""
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Checkout",
-			"item": [
-				{
-					"name": "checkoutPay",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"cart\": {\r\n        \"id\": 1\r\n    },\r\n    \"shipment\": {\r\n        \"id\": 1\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "localhost:8002/checkoutPay",
-							"host": [
-								"localhost"
-							],
-							"port": "8002",
-							"path": [
-								"checkoutPay"
-							],
-							"query": [
+						{
+							"name": "checkoutPay",
+							"event": [
 								{
-									"key": "",
-									"value": "",
-									"disabled": true
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
-							]
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cart\": {\r\n\t\t\"id\": {{random_number}}\r\n\t},\r\n\r\n    \"shipment\": {\r\n\t\t\"address\": 1\r\n\t},\r\n\r\n    \"payment\": {\r\n\t\t\"card\": 1\r\n\t}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9005/checkoutPay",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"checkoutPay"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
+				},
+				{
+					"name": "Cart",
+					"item": [
+						{
+							"name": "cartRetrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:9002/cartRetrieve?id=1",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartRetrieve"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartCreate",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"user\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9002/cartCreate",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartCreate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartDelete",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:8001/cartDelete?id=",
+									"host": [
+										"localhost"
+									],
+									"port": "8001",
+									"path": [
+										"cartDelete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartAppendProduct",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9002/cartAppendProduct",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartAppendProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartRemoveProduct",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9002/cartRemoveProduct",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartRemoveProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartDelete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9002/cartDelete?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartDelete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Product",
+					"item": [
+						{
+							"name": "getProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/getProducts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"getProducts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getProduct",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/getProduct?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"getProduct"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createProduct",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/createProduct",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"createProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProduct",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"My new product edited\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9001/updateProduct?id=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"updateProduct"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProduct",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9001/deleteProduct?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9001",
+									"path": [
+										"deleteProduct"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Payment",
+					"item": [
+						{
+							"name": "getSavedPaymentInfoList",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9003/getSavedPaymentInfoList?user_owner=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9003",
+									"path": [
+										"getSavedPaymentInfoList"
+									],
+									"query": [
+										{
+											"key": "user_owner",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addPaymentInfo",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"type_payment\": \"VISA\",\r\n    \"user_owner\": \"1\",\r\n    \"card_number\": \"4000 4098 4234 1234 1245\",\r\n    \"cart_expire_date\": \"08/24\",\r\n    \"name_on_card\": \"Rui Assis\",\r\n    \"card_security_code\": 493\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9003/addPaymentInfo",
+									"host": [
+										"localhost"
+									],
+									"port": "9003",
+									"path": [
+										"addPaymentInfo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePaymentInfo",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9003/deletePaymentInfo",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9003",
+									"path": [
+										"deletePaymentInfo"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Address",
+					"item": [
+						{
+							"name": "getSavedAddressInfoList",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9004/getSavedAddressInfoList?user_owner=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9004",
+									"path": [
+										"getSavedAddressInfoList"
+									],
+									"query": [
+										{
+											"key": "user_owner",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addAddressInfo",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"user_owner\": \"1\",\r\n    \"address\": \"Some random street, number 123\",\r\n    \"postal_code\": \"1234-123\",\r\n    \"city\": \"Porto\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9004/addAddressInfo",
+									"host": [
+										"localhost"
+									],
+									"port": "9004",
+									"path": [
+										"addAddressInfo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteAddressInfo",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9004/deleteAddressInfo",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9004",
+									"path": [
+										"deleteAddressInfo"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Order",
+					"item": [
+						{
+							"name": "placeOrder",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"cart_id\": 877956339,\r\n    \"user_id\": 1,\r\n    \"address_to_ship\": 330716271,\r\n    \"payment_used\": 603987931\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9005/placeOrder",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"placeOrder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "processOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 174983831\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9005/processOrder",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"processOrder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "shipOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 174983831\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9005/shipOrder",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"shipOrder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "finishOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 174983831\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9005/finishOrder",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"finishOrder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrderStatus",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:9005/getOrderStatus?id=174983831",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"getOrderStatus"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "174983831"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getMyOrders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:9005/getMyOrders?user_id=1",
+									"host": [
+										"localhost"
+									],
+									"port": "9005",
+									"path": [
+										"getMyOrders"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
 		{
-			"name": "Email",
+			"name": "Spring Boot Microservices",
 			"item": [
 				{
-					"name": "sendEmail",
+					"name": "Product",
+					"item": [
+						{
+							"name": "getProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8082/getProducts",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"getProducts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getProduct",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8082/getProduct?id=1",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"getProduct"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createProduct",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8082/createProduct",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"createProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProduct",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 2,\r\n    \"name\": \"My new product edited\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8082/updateProduct?id=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"updateProduct"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProduct",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8082/deleteProduct?id=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"deleteProduct"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Checkout",
+					"item": []
+				},
+				{
+					"name": "Cart",
+					"item": [
+						{
+							"name": "cartRetrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8083/cartRetrieve?id=1",
+									"host": [
+										"localhost"
+									],
+									"port": "8083",
+									"path": [
+										"cartRetrieve"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartCreate",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"user\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9002/cartCreate",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartCreate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartDelete",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:8001/cartDelete?id=",
+									"host": [
+										"localhost"
+									],
+									"port": "8001",
+									"path": [
+										"cartDelete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartAppendProduct",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9002/cartAppendProduct",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartAppendProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartRemoveProduct",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:9002/cartRemoveProduct",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartRemoveProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cartDelete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9002/cartDelete?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9002",
+									"path": [
+										"cartDelete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Email",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "API Gateway",
+			"item": [
+				{
+					"name": "New Request",
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8004/sendEmail",
+							"raw": "localhost:8000",
 							"host": [
 								"localhost"
 							],
-							"port": "8004",
-							"path": [
-								"sendEmail"
-							]
+							"port": "8000"
 						}
 					},
 					"response": []
