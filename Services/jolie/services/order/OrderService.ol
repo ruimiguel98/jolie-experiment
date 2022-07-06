@@ -34,10 +34,11 @@ init
     }
 }
 
+
+
 // behaviour info
 main
 {
-
     [   
         placeOrder(request)(response) {
 
@@ -111,12 +112,32 @@ main
                 }
             )(sqlResponse)
 
+            //reponse data structure building
+            serviceResponse.id = sqlResponse.row.id
+            serviceResponse.status = sqlResponse.row.status
+
             if (#sqlResponse.row >= 1) {
-                response -> sqlResponse.row
+                response -> serviceResponse
             }
             else {
                 response.message -> ORDER_DOES_NOT_EXIST_MESSAGE
             }
+
+            // --------------------------------------------------------------------------------------
+            // --------------------------------------------------------------------------------------
+            // --------------------------------------------------------------------------------------
+            // -------------EXAMPLE HANDLING EXCEPTION OF TYPE WRONG IN REQUEST----------------------
+            // --------------------------------------------------------------------------------------
+            // --------------------------------------------------------------------------------------
+            // --------------------------------------------------------------------------------------
+            // install( TypeMismatch =>
+            //     /* this fault handler will be executed first, then the fault will be re-thrown */
+            //     println@Console( "Wrong!" )();
+                
+            //     /* the fault will be re-thrown here */
+            //     throw( TypeMismatch )
+            // )
+
         }
     ]
 
@@ -142,47 +163,4 @@ main
         }
     ]
 
-    // [ 
-    //     sendOrder(request)(response) {
-    //         response.values = "This is just a test"
-
-    //         // update@Database(
-    //         //     "insert into shipment(id, cart_id, name, address, status) 
-    //         //      values (:id, :cart_id, :name, :address, :status)" {
-    //         //         .id = request.id,
-    //         //         .cart_id = request.cart_id,
-    //         //         .name = request.name,
-    //         //         .address = request.address,
-    //         //         .status = request.status
-    //         //     }
-    //         // )(response.status)
-            
-    //         update@Database(
-    //             "insert into shipment(id, cart_id, name, address, status) 
-    //              values (:id, :cart_id, :name, :address, :status)" {
-    //                 .id = 1,
-    //                 .cart_id = 123,
-    //                 .name = "Order for HVG",
-    //                 .address = "One Microsoft Way, Redmond, WA 98052, USA",
-    //                 .status = 1
-    //             }
-    //         )(response.status)
-    //     }
-    // ]
-
-    // [   
-    //     getOrderStatus(request)(response) {
-    //         query@Database(
-    //             "select * from shipment where id=:id" {
-    //                 .id = request.id
-    //             }
-    //         )(sqlResponse);
-
-    //         response.status = "sqlResponse.row[0].status"
-
-    //         // if (#sqlResponse.row == 1) {
-    //         //     response -> sqlResponse.row[0]
-    //         // }
-    //     }
-    // ]
 }
