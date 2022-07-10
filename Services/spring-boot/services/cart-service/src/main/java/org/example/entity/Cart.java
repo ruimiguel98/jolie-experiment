@@ -4,27 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
-// Annotations
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 
-// Class
-public class Product {
-
+public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
-    private String description;
-    private Integer type;
-    private Integer price;
+
+    private Integer[] products;
+
+    private Long user_owner;
 }

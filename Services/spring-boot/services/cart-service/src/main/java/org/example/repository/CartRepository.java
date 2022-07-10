@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.entity.Product;
+import org.example.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 // Interface
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface CartRepository extends JpaRepository<Cart, Long> {
 }
 
