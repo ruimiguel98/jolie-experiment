@@ -1,0 +1,319 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ruimiguel98/jolie-case-study/1.0.0
+info:
+  description: This is an API to interact with an E-Commerce system built using Jolie programming language.
+  version: "1.0.0"
+  title: Jolie Case Study - E-Commerce API
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: moderators
+    description: Secured Moderator-only calls
+  - name: customers
+    description: Operations available to regular customers
+paths:
+  /getProducts:
+    get:
+      tags:
+        - customers
+      summary: get the collection of products
+      operationId: getProducts
+      description: |
+        By passing in the appropriate params, you can search for
+        products in the system
+      parameters:
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up inventory
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: bad input parameter
+  /getProduct:
+    get:
+      tags:
+        - customers
+      summary: get a specific product information
+      operationId: getProduct
+      description: |
+        By passing in the appropriate params, you can search for a specific
+        product in the system
+      parameters:
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up inventory
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Product'
+        '500':
+          description: bad input parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Error'
+  /inventory:
+    get:
+      tags:
+        - customers
+      summary: searches inventory
+      operationId: searchInventory
+      description: |
+        By passing in the appropriate options, you can search for
+        available inventory in the system
+      parameters:
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up inventory
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - moderators
+      summary: adds an inventory item
+      operationId: addInventory
+      description: Adds an item to the system
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+        description: Inventory item to add
+components:
+  schemas:
+    InventoryItem:
+      type: object
+      required:
+        - id
+        - name
+        - manufacturer
+        - releaseDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Widget Adapter
+        releaseDate:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        manufacturer:
+          $ref: '#/components/schemas/Manufacturer'
+    Manufacturer:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: ACME Corporation
+        homePage:
+          type: string
+          format: url
+          example: 'https://www.acme-corp.com'
+        phone:
+          type: string
+          example: 408-867-5309
+      type: object
+    Product:
+      required:
+        - name
+        - price
+        - description
+        - id
+        - type
+      properties:
+        name:
+          type: string
+          example: Smart TV LG OLED 4K
+        price:
+          type: integer
+          example: 1099
+        description:
+          type: string
+          example: A super high quality image TV with a smart embedded operating system
+        id:
+          type: integer
+          example: 123456789
+        type:
+          type: string
+          example: Electronics
+      type: object
+    Order:
+      required:
+        - id
+        - cart_id
+        - user_id
+        - address_to_ship
+        - payment_used
+        - status
+      properties:
+        id:
+          type: integer
+          example: 123456789
+        cart_id:
+          type: integer
+          example: 123456789
+        user_id:
+          type: integer
+          example: 123456789
+        address_to_ship:
+          type: string
+          example: 1 Microsoft Way, Redmond, WA 98052. (425) 882-8080
+        payment_used:
+          type: string
+          example: 123456789
+        status:
+          type: integer
+          example: 1
+      type: object
+    Cart:
+      required:
+        - id
+        - user_owner
+        - products
+      properties:
+        id:
+          type: integer
+          example: 123456789
+        user_owner:
+          type: integer
+          example: 123456789
+        products:
+          type: array
+          items:
+            type: integer
+          example: '[1, 2, 3]'
+      type: object
+    Payment:
+      required:
+        - id
+        - card_security_code
+        - user_owner
+        - card_number
+        - type_payment
+        - cart_expire_date
+        - name_on_card
+      properties:
+        id:
+          type: integer
+          example: 123456789
+        card_security_code:
+          type: integer
+          example: 493
+        user_owner:
+          type: integer
+          example: 123456789
+        card_number:
+          type: string
+          example: '4000 4098 4234 1234 1245'
+        type_payment:
+          type: string
+          example: 'VISA'
+        cart_expire_date:
+          type: string
+          example: '08/24'
+        name_on_card:
+          type: string
+          example: 'Rui Assis'
+      type: object
+    Address:
+      required:
+        - id
+        - address
+        - user_owner
+        - city
+        - postal_code
+      properties:
+        id:
+          type: integer
+          example: 123456789
+        address:
+          type: string
+          example: 1 Microsoft Way, Redmond, WA 98052. (425) 882-8080493
+        user_owner:
+          type: integer
+          example: 123456789
+        city:
+          type: string
+          example: Redmond, Washington
+        postal_code:
+          type: string
+          example: 882-8080493
+      type: object
+    Error:
+      required:
+        - message
+        - code
+        - data
+      properties:
+        message:
+          type: string
+          example: TypeMismatch
+        code:
+          type: integer
+          example: -32000
+        data:
+          type: integer
+          example: 'Unexpected child node: #Message.test'
+      type: object
