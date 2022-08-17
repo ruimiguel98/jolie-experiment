@@ -7,6 +7,7 @@ This project consists in a case study using the programming language Jolie. Also
   - [Run the Jolie services](#run-the-jolie-services)
   - [Run the Spring Boot services](#run-the-spring-boot-services)
 - [Description](#description)
+- [Architecture](#architecture)
 - [Functional Requirements](#functional-requirements)
 - [Non-functional Requirements](#non-functional-requirements)
 - [Database](#database)
@@ -70,6 +71,10 @@ There we be built two different solutions for the application implementation:
 
 &nbsp;
 
+# Architecture
+
+&nbsp;
+
 # Functional Requirements
 The below table shows the **functional requirements** for the project developed. The requirements have the goal to provide users with all the functionalities to support the entire process of online product buying from product browsing, buying, and shipping. 
 
@@ -100,6 +105,8 @@ Table 7 – Non-functional requirements of the application
 # Database
 
 Database password: Ia@bNf-9NAd!t(@z
+
+&nbsp;
 
 # Docker
 
