@@ -3,34 +3,39 @@ include "database.iol"
 include "string_utils.iol"
 
 include "./CheckoutInterface.iol"
+include "../order/OrderInterface.iol"
+include "../payment/PaymentInterface.iol"
+include "../email/EmailInterface.iol"
 
 execution { concurrent }
+
+
+outputPort OrderService {
+    Location: LOCATION_SERVICE_ORDER
+    Protocol: http { .format = "json" }
+    Interfaces: OrderInterface
+}
+outputPort PaymentService {
+    Location: LOCATION_SERVICE_PAYMENT
+    Protocol: http { .format = "json" }
+    Interfaces: PaymentInterface
+}
+outputPort EmailService {
+    Location: LOCATION_SERVICE_EMAIL
+    Protocol: http { .format = "json" }
+    Interfaces: EmailInterface
+}
 
 // deployment info
 inputPort CheckoutPort {
     Location: LOCATION_SERVICE_CHECKOUT
     Protocol: http { .format = "json" }
     Interfaces: CheckoutInterface
+    Redirects: 
+        Order => OrderService,
+        Payment => PaymentService,
+        Email => EmailService
 }
-
-// outputPort PaymentPort {
-//     Location: "socket://localhost:8003/"
-//     Protocol: http { .format = "json" }
-//     Interfaces: PaymentInterface
-// }
-
-// outputPort CartPort {
-//     Location: "socket://localhost:8001/"
-//     Protocol: http { .format = "json" }
-//     Interfaces: CartInterface
-// }
-
-// outputPort ShippingPort {
-//     Location: "socket://localhost:8005/"
-//     Protocol: http { .format = "json" }
-//     Interfaces: ShippingInterface
-// }
-
 
 // prepare database connection (creates table if does not exist)
 init
@@ -74,16 +79,48 @@ main
     // ]
 
     [ 
-        checkoutPay( request )( response ) {
-            update@Database(
-                "INSERT INTO checkout(id, card, address) 
-                  VALUES (:id::numeric, :card::numeric, :address::numeric);" {
-                    .id = request.cart.id,
-                    .card = request.payment.card,
-                    .address = request.shipment.address
-                }
-            )(response.status)
+        checkoutPay( request)( response ) {
+
+            println@Console( "This is the checkout service trying to call a order service ")();
+
+            create@OrderService( request.userId )( reponse )
+
+            // order 
+            if ( response ) {
+                
+            }
+            else {
+                
+            }
+
+
+
+
+
+
+            // update@Database(
+            //     "INSERT INTO checkout(id, card, address) 
+            //       VALUES (:id::numeric, :card::numeric, :address::numeric);" {
+            //         .id = request.cart.id,
+            //         .card = request.payment.card,
+            //         .address = request.shipment.address
+            //     }
+            // )(response.status)
 
         } 
     ]
+
+    // [ 
+    //     checkoutPay( request )( response ) {
+    //         update@Database(
+    //             "INSERT INTO checkout(id, card, address) 
+    //               VALUES (:id::numeric, :card::numeric, :address::numeric);" {
+    //                 .id = request.cart.id,
+    //                 .card = request.payment.card,
+    //                 .address = request.shipment.address
+    //             }
+    //         )(response.status)
+
+    //     } 
+    // ]
 }

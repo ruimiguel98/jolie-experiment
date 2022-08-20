@@ -26,11 +26,11 @@ type CheckoutRequest:void {
 
 interface CheckoutInterface {
 	RequestResponse:
-		checkoutPay(CheckoutRequest)(undefined)
+		checkoutPay(undefined)(undefined)
 }
 
 constants {
-    LOCATION_SERVICE_CHECKOUT = "socket://localhost:9005",
+    LOCATION_SERVICE_CHECKOUT = "socket://localhost:9054",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",

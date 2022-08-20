@@ -4,7 +4,7 @@ interface EmailInterface {
 }
 
 constants {
-    LOCATION_SERVICE_EMAIL = "socket://localhost:9004",
+    LOCATION_SERVICE_EMAIL = "socket://localhost:9055",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",

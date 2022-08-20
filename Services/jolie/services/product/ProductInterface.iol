@@ -1,14 +1,27 @@
+type CreateRequest {
+    .id: int
+    .name: string
+    .description: string
+    .type: int
+    .price: int
+}
+
+type CreateResponse {
+    .message: string
+}
+
+
 interface ProductInterface {
     RequestResponse:
-        getProducts(void)(undefined),
-        getProduct(undefined)(undefined),
-        createProduct(undefined)(undefined),
-        updateProduct(undefined)(undefined),
-        deleteProduct(undefined)(undefined)
+        all(void)(undefined),
+        product(undefined)(undefined),
+        create(CreateRequest)(undefined),
+        update(undefined)(undefined),
+        delete(undefined)(undefined)
 }
 
 constants {
-    LOCATION_SERVICE_PRODUCT = "socket://localhost:9001",
+    LOCATION_SERVICE_PRODUCT = "socket://localhost:9051",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",

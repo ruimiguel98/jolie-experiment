@@ -25,7 +25,7 @@ interface PaymentInterface {
 }
 
 constants {
-    LOCATION_SERVICE_PAYMENT = "socket://localhost:9003",
+    LOCATION_SERVICE_PAYMENT = "socket://localhost:9056",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",

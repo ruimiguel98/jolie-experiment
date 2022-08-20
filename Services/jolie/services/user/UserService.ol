@@ -2,15 +2,15 @@ include "console.iol"
 include "database.iol"
 include "string_utils.iol"
 
-include "./ProductInterface.iol"
+include "./UserInterface.iol"
 
 execution { concurrent }
 
 // deployment info
-inputPort ProductPort {
-    Location: LOCATION_SERVICE_PRODUCT
+inputPort UserPort {
+    Location: LOCATION_SERVICE_USER
     Protocol: http { .format = "json" }
-    Interfaces: ProductInterface
+    Interfaces: UserInterface
 }
 
 // prepare database connection (creates table if does not exist)
@@ -28,8 +28,8 @@ init
 
     // create table if it does not exist
     scope (createTable) {
-        install (SQLException => println@Console("Product table already there")());
-        update@Database(SQL_CREATE_TABLE_PRODUCT)(ret)
+        install (SQLException => println@Console("User table already there")());
+        update@Database(SQL_CREATE_TABLE_USER)(ret)
     }
 }
 
@@ -39,19 +39,21 @@ main
     [ 
         all()(response) {
             query@Database(
-                "select * from product"
+                "SELECT * FROM users"
             )(sqlResponse);
+
             response.values -> sqlResponse.row
         } 
     ]
 
     [ 
-        product(request)(response) {
+        user(request)(response) {
             query@Database(
-                "select * from product where id=:id" {
+                "SELECT * FROM users WHERE id=:id::numeric" {
                     .id = request.id
                 }
             )(sqlResponse);
+
             if (#sqlResponse.row == 1) {
                 response -> sqlResponse.row[0]
             }
@@ -60,15 +62,18 @@ main
 
     [ 
         create(request)(response) {
-            messageSuccess = "The product was created with success!";
+            messageSuccess = "The user was created with success!";
 
             update@Database(
-                "insert into public.product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
+                "INSERT INTO public.users(id, address, cart_products, credit_card, email, real_name, phone)
+                 VALUES(:id::numeric, :address, :cartProducts, :creditCard, :email, :realName, :phone);" {
                     .id = request.id,
-                    .name = request.name,
-                    .description = request.description,
-                    .type = request.type,
-                    .price = request.price,
+                    .address = request.address,
+                    .cartProducts = request.cartProducts,
+                    .creditCard = request.creditCard,
+                    .email = request.email,
+                    .realName = request.realName,
+                    .phone = request.phone,
                 }
             )(sqlResponse.status)
 
@@ -81,9 +86,15 @@ main
     [ 
         update(request)(response) {
             update@Database(
-                "update product set name=:name where id=:id" {
-                    .name = request.name,
-                    .id = request.id
+                "UPDATE public.users SET address=:address, cart_products=:cartProducts, credit_card=:creditCard, email=:email, real_name=:realName, phone=:phone
+                WHERE id=:id::numeric;" {
+                    .id = request.id,
+                    .address = request.address,
+                    .cartProducts = request.cartProducts,
+                    .creditCard = request.creditCard,
+                    .email = request.email,
+                    .realName = request.realName,
+                    .phone = request.phone
                 }
             )(response.status)
         } 
@@ -92,7 +103,7 @@ main
     [ 
         delete(request)(response) {
             update@Database(
-                "delete from product where id=:id" {
+                "DELETE FROM users WHERE id=:id::numeric" {
                     .id = request.id
                 }
             )(response.status)

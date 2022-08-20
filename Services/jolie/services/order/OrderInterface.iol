@@ -1,16 +1,3 @@
-type OrderStatusRequest {
-    .id: int
-}
-
-type OrderStatusResponse {
-    .id: int
-    .status: int
-}
-
-type OrdersListRequest {
-    .user_id: int
-}
-
 type OrdersListResponse  {
     row[0, 999999]: void  {
         .id: int
@@ -22,20 +9,35 @@ type OrdersListResponse  {
     }
 }
 
+type CreateOrderRequest {
+    .id: int
+    .userId: int
+    .status: string
+    .orderAmount: string
+    .addressToShip: string
+    .orderProducts: string
+}
 
 interface OrderInterface {
     RequestResponse:
-        placeOrder(undefined)(undefined),
+        // CRUD operations
+        all(undefined)(undefined),
+        order(undefined)(undefined),
+        create(CreateOrderRequest)(undefined),
+        update(CreateOrderRequest)(undefined),
+        delete(undefined)(undefined),
+
+        // OTHER operations
         processOrder(undefined)(undefined),
         shipOrder(undefined)(undefined),
         finishOrder(undefined)(undefined),
-        getOrderStatus(OrderStatusRequest)(OrderStatusResponse),
-        getMyOrders(OrdersListRequest)(OrdersListResponse)
+        getOrderStatus(undefined)(undefined),
+        getMyOrders(undefined)(undefined)
 }
 
 
 constants {
-    LOCATION_SERVICE_ORDER = "socket://localhost:9005",
+    LOCATION_SERVICE_ORDER = "socket://localhost:9053",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
@@ -46,12 +48,13 @@ constants {
 
 
     SQL_CREATE_ORDER_INFO = "CREATE TABLE public.orders (
-                                    id numeric NOT NULL,
-                                    cart_id numeric NOT NULL,
-                                    user_id numeric NOT NULL,
-                                    address_to_ship text NOT NULL,
-                                    payment_used text NOT NULL,
-                                    status numeric NOT NULL
-                                );
-                                COMMENT ON TABLE public.orders IS 'Table that holds the order information. One user can have multiple orders';"
+                                    id int4 NOT NULL,
+                                    address_to_ship varchar(255) NULL,
+                                    order_amount varchar(255) NULL,
+                                    order_products _int8 NULL,
+                                    status varchar(255) NULL,
+                                    user_id int4 NOT NULL,
+                                    CONSTRAINT orders_pkey PRIMARY KEY (id)
+                            );
+                            COMMENT ON TABLE public.orders IS 'Table that holds the order information.';"
 }
