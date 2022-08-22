@@ -1,29 +1,3 @@
-// type CheckoutRequest:void {
-// 	.cart?:void {
-// 		.id:int
-// 	}
-
-//     .shipment?:void {
-// 		.id:int
-// 	}
-// }
-
-type CheckoutRequest:void {
-	.cart?:void {
-		.id:int
-	}
-
-    .shipment?:void {
-		.address:int
-	}
-
-    .payment?:void {
-		.card:int
-	}
-}
-
-
-
 interface CheckoutInterface {
 	RequestResponse:
 		checkoutPay(undefined)(undefined)
