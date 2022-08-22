@@ -1,9 +1,9 @@
 type CreateRequest {
-    .id: int
+    .id: string // to accept UUID values
     .name: string
     .description: string
-    .type: int
-    .price: int
+    .type: string
+    .price: double
 }
 
 type CreateResponse {
@@ -30,19 +30,16 @@ constants {
     SQL_DATABASE = "app-db",
     SQL_DRIVER = "postgresql",
 
-    SQL_CREATE_TABLE_PRODUCT = "CREATE TABLE public.product
-            (
-                id numeric(16) NOT NULL,
-                name text NOT NULL,
-                description text NOT NULL,
-                type text NOT NULL,
-                price numeric NOT NULL,
-                PRIMARY KEY (id)
-            );
+    SQL_CREATE_TABLE_PRODUCT = "CREATE TABLE product (
+                                    id VARCHAR(40),
+                                    description VARCHAR(50),
+                                    product VARCHAR(50),
+                                    price DECIMAL(5,2),
+                                    type VARCHAR(50)
+                                );
 
-            ALTER TABLE IF EXISTS public.product
-                OWNER to postgres;
+                                ALTER TABLE IF EXISTS public.product
+                                    OWNER to postgres;
 
-            COMMENT ON TABLE public.product
-                IS 'Table that holds all the products of the application.';",
+                                COMMENT ON TABLE public.product IS 'Table that holds all the products of the application.';",
 }
