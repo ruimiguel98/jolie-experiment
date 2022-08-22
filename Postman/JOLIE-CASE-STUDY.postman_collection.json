@@ -87,23 +87,19 @@
 							"request": {
 								"method": "POST",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"cart\": {\r\n\t\t\"id\": {{random_number}}\r\n\t},\r\n\r\n    \"shipment\": {\r\n\t\t\"address\": 1\r\n\t},\r\n\r\n    \"payment\": {\r\n\t\t\"card\": 1\r\n\t}\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "localhost:9005/checkoutPay",
+									"raw": "{{server-jolie-checkout-service}}/checkoutPay?userId=8",
 									"host": [
-										"localhost"
+										"{{server-jolie-checkout-service}}"
 									],
-									"port": "9005",
 									"path": [
 										"checkoutPay"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "8"
+										}
 									]
 								}
 							},
@@ -290,14 +286,12 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:9001/getProducts",
-									"protocol": "http",
+									"raw": "{{server-jolie-product-service}}/all",
 									"host": [
-										"localhost"
+										"{{server-jolie-product-service}}"
 									],
-									"port": "9001",
 									"path": [
-										"getProducts"
+										"all"
 									]
 								}
 							},
@@ -309,19 +303,758 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:9001/getProduct?id=1",
-									"protocol": "http",
+									"raw": "{{server-jolie-product-service}}/product?id=7",
 									"host": [
-										"localhost"
+										"{{server-jolie-product-service}}"
 									],
-									"port": "9001",
 									"path": [
-										"getProduct"
+										"product"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "1"
+											"value": "7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createProduct",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 15\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-product-service}}/create",
+									"host": [
+										"{{server-jolie-product-service}}"
+									],
+									"path": [
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProduct",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"My new product edited\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-product-service}}/update?id=25401937",
+									"host": [
+										"{{server-jolie-product-service}}"
+									],
+									"path": [
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "25401937"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProduct",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-product-service}}/delete?id=25401937",
+									"host": [
+										"{{server-jolie-product-service}}"
+									],
+									"path": [
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "25401937"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Order",
+					"item": [
+						{
+							"name": "getOrders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-order-service}}/all",
+									"host": [
+										"{{server-jolie-order-service}}"
+									],
+									"path": [
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrder",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-order-service}}/order?id=f3511458-9831-4ea5-9551-e8e6012e7cc1",
+									"host": [
+										"{{server-jolie-order-service}}"
+									],
+									"path": [
+										"order"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "f3511458-9831-4ea5-9551-e8e6012e7cc1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 7,\r\n    \"userId\": 1,\r\n    \"status\": \"CREATED\",\r\n    \"orderAmount\": \"100.99\",\r\n    \"addressToShip\": \"Rua Teste nº90\",\r\n    \"orderProducts\": \"[21, 67, 64]\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-order-service}}/create",
+									"host": [
+										"{{server-jolie-order-service}}"
+									],
+									"path": [
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateOrder",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"CREATED\",\r\n    \"orderAmount\": \"100.99\",\r\n    \"addressToShip\": \"Rua Teste number 90\",\r\n    \"orderProducts\": \"[21, 67, 69, 70]\",\r\n    \"userId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-order-service}}/update?id=13",
+									"host": [
+										"{{server-jolie-order-service}}"
+									],
+									"path": [
+										"update"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "13"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteOrder",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-order-service}}/delete?id=13",
+									"host": [
+										"{{server-jolie-order-service}}"
+									],
+									"path": [
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "13"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUserOrders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-order-service}}/userOrders?id=8",
+									"host": [
+										"{{server-jolie-order-service}}"
+									],
+									"path": [
+										"userOrders"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "getUsers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-user-service}}/all",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUser",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-user-service}}/user?id=8",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"user"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createUser",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"creditCard\": \"test\",\r\n    \"address\": \"Rua Teste, teste\",\r\n    \"phone\": \"912435345\",\r\n    \"cartProducts\": \"{12,20}\",\r\n    \"realName\": \"João Costa\",\r\n    \"email\": \"joao.costa@hotmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-user-service}}/create",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateUser",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"creditCard\": \"test2\",\r\n    \"address\": \"Rua Teste, teste\",\r\n    \"phone\": \"912435345\",\r\n    \"cartProducts\": \"{12,20}\",\r\n    \"realName\": \"João Costa\",\r\n    \"email\": \"joao.costa@hotmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-user-service}}/update?id=8",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteUser",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-user-service}}/delete?id=170",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "170"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addProductToCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-user-service}}/addProduct?userId=8&productId=21",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"addProduct"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "8"
+										},
+										{
+											"key": "productId",
+											"value": "21"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProductFromCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-user-service}}/removeProduct?userId=8&productId=21",
+									"host": [
+										"{{server-jolie-user-service}}"
+									],
+									"path": [
+										"removeProduct"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "8"
+										},
+										{
+											"key": "productId",
+											"value": "21"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Payment",
+					"item": [
+						{
+							"name": "withdrawlAccount",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cardNumber\": 23836798,\r\n    \"amount\": 10.0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-payment-service}}/withdrawlAccount",
+									"host": [
+										"{{server-jolie-payment-service}}"
+									],
+									"path": [
+										"withdrawlAccount"
+									],
+									"query": [
+										{
+											"key": "amount",
+											"value": "1000.0",
+											"disabled": true
+										},
+										{
+											"key": "cardNumber",
+											"value": "23836798",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Spring Boot Microservices",
+			"item": [
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "getUsers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/all",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUser",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/user?id=8",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"user"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createUser",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"name\": \"João Costa\",\r\n    \"email\": \"joao.costa@hotmail.com\",\r\n    \"phone\": \"912435345\",\r\n    \"address\": \"Rua Teste, nº90\",\r\n    \"cartProducts\": [12, 14, 17],\r\n    \"creditCard\": \"test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/create",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateUser",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"João Costa\",\r\n    \"email\": \"joao.costa@hotmail.com\",\r\n    \"phone\": \"912435345\",\r\n    \"address\": \"Rua Teste, nº90\",\r\n    \"cartProducts\": [12],\r\n    \"creditCard\": \"test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/update?id=8",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteUser",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/delete?id=11",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "11"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addProductToCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/cart/addProduct?userId=8&productId=21",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"cart",
+										"addProduct"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "8"
+										},
+										{
+											"key": "productId",
+											"value": "21"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProductFromCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-user-service}}/user/cart/removeProduct?userId=8&productId=21",
+									"host": [
+										"{{server-sb-user-service}}"
+									],
+									"path": [
+										"user",
+										"cart",
+										"removeProduct"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "8"
+										},
+										{
+											"key": "productId",
+											"value": "21"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Product",
+					"item": [
+						{
+							"name": "getProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-product-service}}/product/all",
+									"host": [
+										"{{server-sb-product-service}}"
+									],
+									"path": [
+										"product",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getProduct",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-product-service}}/product/product?id=6",
+									"host": [
+										"{{server-sb-product-service}}"
+									],
+									"path": [
+										"product",
+										"product"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "6"
 										}
 									]
 								}
@@ -354,14 +1087,13 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:9001/createProduct",
-									"protocol": "http",
+									"raw": "{{server-sb-product-service}}/product/create",
 									"host": [
-										"localhost"
+										"{{server-sb-product-service}}"
 									],
-									"port": "9001",
 									"path": [
-										"createProduct"
+										"product",
+										"create"
 									]
 								}
 							},
@@ -374,7 +1106,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"My new product edited\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"raw": "{\r\n    \"name\": \"My new product edited 2\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -382,19 +1114,18 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:9001/updateProduct?id=2",
-									"protocol": "http",
+									"raw": "{{server-sb-product-service}}/product/update?id=7",
 									"host": [
-										"localhost"
+										"{{server-sb-product-service}}"
 									],
-									"port": "9001",
 									"path": [
-										"updateProduct"
+										"product",
+										"update"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "2"
+											"value": "7"
 										}
 									]
 								}
@@ -407,19 +1138,18 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:9001/deleteProduct?id=1",
-									"protocol": "http",
+									"raw": "{{server-sb-product-service}}/product/delete?id=6",
 									"host": [
-										"localhost"
+										"{{server-sb-product-service}}"
 									],
-									"port": "9001",
 									"path": [
-										"deleteProduct"
+										"product",
+										"delete"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "1"
+											"value": "6"
 										}
 									]
 								}
@@ -429,47 +1159,10 @@
 					]
 				},
 				{
-					"name": "Payment",
+					"name": "Checkout",
 					"item": [
 						{
-							"name": "getSavedPaymentInfoList",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:9003/getSavedPaymentInfoList?user_owner=1",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "9003",
-									"path": [
-										"getSavedPaymentInfoList"
-									],
-									"query": [
-										{
-											"key": "user_owner",
-											"value": "1"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "addPaymentInfo",
+							"name": "checkoutPay",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -488,7 +1181,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"type_payment\": \"VISA\",\r\n    \"user_owner\": \"1\",\r\n    \"card_number\": \"4000 4098 4234 1234 1245\",\r\n    \"cart_expire_date\": \"08/24\",\r\n    \"name_on_card\": \"Rui Assis\",\r\n    \"card_security_code\": 493\r\n}",
+									"raw": "{\r\n    \"id\": {{random_number}}\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -496,151 +1189,19 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:9003/addPaymentInfo",
+									"raw": "{{server-sb-checkout-service}}/checkout/pay?userId=8",
 									"host": [
-										"localhost"
+										"{{server-sb-checkout-service}}"
 									],
-									"port": "9003",
 									"path": [
-										"addPaymentInfo"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "deletePaymentInfo",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 3\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:9003/deletePaymentInfo",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "9003",
-									"path": [
-										"deletePaymentInfo"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Address",
-					"item": [
-						{
-							"name": "getSavedAddressInfoList",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:9004/getSavedAddressInfoList?user_owner=1",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "9004",
-									"path": [
-										"getSavedAddressInfoList"
+										"checkout",
+										"pay"
 									],
 									"query": [
 										{
-											"key": "user_owner",
-											"value": "1"
+											"key": "userId",
+											"value": "8"
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "addAddressInfo",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"pm.environment.set(\"random_number\", _.random(1, 999999999))\r",
-											"\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"user_owner\": \"1\",\r\n    \"address\": \"Some random street, number 123\",\r\n    \"postal_code\": \"1234-123\",\r\n    \"city\": \"Porto\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:9004/addAddressInfo",
-									"host": [
-										"localhost"
-									],
-									"port": "9004",
-									"path": [
-										"addAddressInfo"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "deleteAddressInfo",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 3\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:9004/deleteAddressInfo",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "9004",
-									"path": [
-										"deleteAddressInfo"
 									]
 								}
 							},
@@ -651,6 +1212,141 @@
 				{
 					"name": "Order",
 					"item": [
+						{
+							"name": "getOrders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-order-service}}/order/all",
+									"host": [
+										"{{server-sb-order-service}}"
+									],
+									"path": [
+										"order",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrder",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-order-service}}/order/order?id=13",
+									"host": [
+										"{{server-sb-order-service}}"
+									],
+									"path": [
+										"order",
+										"order"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "13"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": 1,\r\n    \"status\": \"CREATED\",\r\n    \"orderAmount\": \"100.99\",\r\n    \"addressToShip\": \"Rua Teste nº90\",\r\n    \"orderProducts\": \"[21, 67, 64]\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-sb-order-service}}/order/create",
+									"host": [
+										"{{server-sb-order-service}}"
+									],
+									"path": [
+										"order",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateOrder",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": 1,\r\n    \"status\": \"CREATED\",\r\n    \"orderAmount\": \"100.99\",\r\n    \"addressToShip\": \"Rua Teste nº90\",\r\n    \"orderProducts\": [21, 67, 69] \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-sb-order-service}}/order/update?id=12",
+									"host": [
+										"{{server-sb-order-service}}"
+									],
+									"path": [
+										"order",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "12"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteOrder",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-sb-order-service}}/order/delete?id=12",
+									"host": [
+										"{{server-sb-order-service}}"
+									],
+									"path": [
+										"order",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "12"
+										}
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "placeOrder",
 							"event": [
@@ -677,11 +1373,12 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:9005/placeOrder",
+									"raw": "http://localhost:8086/placeOrder",
+									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "9005",
+									"port": "8086",
 									"path": [
 										"placeOrder"
 									]
@@ -704,11 +1401,12 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:9005/processOrder",
+									"raw": "http://localhost:8086/processOrder",
+									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "9005",
+									"port": "8086",
 									"path": [
 										"processOrder"
 									]
@@ -731,11 +1429,12 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:9005/shipOrder",
+									"raw": "http://localhost:8086/shipOrder",
+									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "9005",
+									"port": "8086",
 									"path": [
 										"shipOrder"
 									]
@@ -758,11 +1457,12 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:9005/finishOrder",
+									"raw": "http://localhost:8086/finishOrder",
+									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "9005",
+									"port": "8086",
 									"path": [
 										"finishOrder"
 									]
@@ -776,11 +1476,12 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:9005/getOrderStatus?id=174983831",
+									"raw": "http://localhost:8086/getOrderStatus?id=174983831",
+									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "9005",
+									"port": "8086",
 									"path": [
 										"getOrderStatus"
 									],
@@ -800,11 +1501,12 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:9005/getMyOrders?user_id=1",
+									"raw": "http://localhost:8086/getMyOrders?user_id=1",
+									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "9005",
+									"port": "8086",
 									"path": [
 										"getMyOrders"
 									],
@@ -819,46 +1521,106 @@
 							"response": []
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "Spring Boot Microservices",
-			"item": [
+				},
 				{
-					"name": "Product",
+					"name": "Email",
 					"item": [
 						{
-							"name": "getProducts",
+							"name": "sendEmail",
 							"request": {
-								"method": "GET",
+								"method": "POST",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject\": \"ACME Inc. - Order placed\",\r\n    \"message\": \"Dear customer your order has been placed and is now being processed\",\r\n    \"fromEmail\": \"nagios.cogsi.nagios@gmail.com\",\r\n    \"toEmail\": \"1191205@isep.ipp.pt\",\r\n    \"sentDate\": \"18/08/2022 13:33\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "localhost:8082/getProducts",
+									"raw": "{{server-sb-email-service}}/email/send",
 									"host": [
-										"localhost"
+										"{{server-sb-email-service}}"
 									],
-									"port": "8082",
 									"path": [
-										"getProducts"
+										"email",
+										"send"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Payment",
+					"item": [
+						{
+							"name": "charge",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"card_number\": \"23836798\",\r\n    \"name\": \"Giffie Tabart\",\r\n    \"expire_date\": \"2020-11\",\r\n    \"cvv\": \"880\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-sb-payment-service}}/payment/charge?amountCharged=100",
+									"host": [
+										"{{server-sb-payment-service}}"
+									],
+									"path": [
+										"payment",
+										"charge"
+									],
+									"query": [
+										{
+											"key": "amountCharged",
+											"value": "100"
+										}
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "getProduct",
+							"name": "getPayments",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:8082/getProduct?id=1",
+									"raw": "{{server-sb-payment-service}}/payment/all",
 									"host": [
-										"localhost"
+										"{{server-sb-payment-service}}"
 									],
-									"port": "8082",
 									"path": [
-										"getProduct"
+										"payment",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPayment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-sb-payment-service}}/payment/payment?id=1",
+									"host": [
+										"{{server-sb-payment-service}}"
+									],
+									"path": [
+										"payment",
+										"payment"
 									],
 									"query": [
 										{
@@ -871,24 +1633,13 @@
 							"response": []
 						},
 						{
-							"name": "createProduct",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
+							"name": "createPayment",
 							"request": {
 								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"raw": "{\r\n\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -896,27 +1647,26 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8082/createProduct",
-									"protocol": "http",
+									"raw": "{{server-sb-payment-service}}/payment/create",
 									"host": [
-										"localhost"
+										"{{server-sb-payment-service}}"
 									],
-									"port": "8082",
 									"path": [
-										"createProduct"
+										"payment",
+										"create"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "updateProduct",
+							"name": "updatePayment",
 							"request": {
 								"method": "PUT",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 2,\r\n    \"name\": \"My new product edited\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"raw": "{\r\n\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -924,19 +1674,18 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8082/updateProduct?id=2",
-									"protocol": "http",
+									"raw": "{{server-sb-payment-service}}/payment/update?id=12",
 									"host": [
-										"localhost"
+										"{{server-sb-payment-service}}"
 									],
-									"port": "8082",
 									"path": [
-										"updateProduct"
+										"payment",
+										"update"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "2"
+											"value": "12"
 										}
 									]
 								}
@@ -944,24 +1693,32 @@
 							"response": []
 						},
 						{
-							"name": "deleteProduct",
+							"name": "deletePayment",
 							"request": {
 								"method": "DELETE",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "http://localhost:8082/deleteProduct?id=2",
-									"protocol": "http",
+									"raw": "{{server-sb-payment-service}}/payment/delete?id=12",
 									"host": [
-										"localhost"
+										"{{server-sb-payment-service}}"
 									],
-									"port": "8082",
 									"path": [
-										"deleteProduct"
+										"payment",
+										"delete"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "2"
+											"value": "12"
 										}
 									]
 								}
@@ -969,184 +1726,6 @@
 							"response": []
 						}
 					]
-				},
-				{
-					"name": "Checkout",
-					"item": []
-				},
-				{
-					"name": "Cart",
-					"item": [
-						{
-							"name": "cartRetrieve",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:8083/cartRetrieve?id=1",
-									"host": [
-										"localhost"
-									],
-									"port": "8083",
-									"path": [
-										"cartRetrieve"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "1"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartCreate",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"user\": 1\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:9002/cartCreate",
-									"host": [
-										"localhost"
-									],
-									"port": "9002",
-									"path": [
-										"cartCreate"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartDelete",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "localhost:8001/cartDelete?id=",
-									"host": [
-										"localhost"
-									],
-									"port": "8001",
-									"path": [
-										"cartDelete"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": ""
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartAppendProduct",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:9002/cartAppendProduct",
-									"host": [
-										"localhost"
-									],
-									"port": "9002",
-									"path": [
-										"cartAppendProduct"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartRemoveProduct",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:9002/cartRemoveProduct",
-									"host": [
-										"localhost"
-									],
-									"port": "9002",
-									"path": [
-										"cartRemoveProduct"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartDelete",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:9002/cartDelete?id=1",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "9002",
-									"path": [
-										"cartDelete"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "1"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Email",
-					"item": []
 				}
 			]
 		},
@@ -1169,6 +1748,168 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "TEST",
+			"item": [
+				{
+					"name": "localhost:9090/user/save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"name\": \"Test\",\r\n    \"balance\": 2000.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9090/user/save",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"user",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:9090/order/create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": null,\r\n    \"orderAmount\": 100,\r\n    \"status\": \"CREATED\",\r\n    \"userId\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9090/order/create",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"order",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:9090/order/all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9090/order/all",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"order",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server-sb-product-service",
+			"value": "http://localhost:9001",
+			"type": "string"
+		},
+		{
+			"key": "server-sb-user-service",
+			"value": "http://localhost:9002",
+			"type": "string"
+		},
+		{
+			"key": "server-sb-order-service",
+			"value": "http://localhost:9003",
+			"type": "string"
+		},
+		{
+			"key": "server-sb-checkout-service",
+			"value": "http://localhost:9004",
+			"type": "string"
+		},
+		{
+			"key": "server-sb-payment-service",
+			"value": "http://localhost:9005",
+			"type": "string"
+		},
+		{
+			"key": "server-sb-email-service",
+			"value": "http://localhost:9006",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-product-service",
+			"value": "http://localhost:9051",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-user-service",
+			"value": "http://localhost:9052",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-order-service",
+			"value": "http://localhost:9053",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-checkout-service",
+			"value": "http://localhost:9054",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-email-service",
+			"value": "http://localhost:9055",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-payment-service",
+			"value": "http://localhost:9056",
+			"type": "string"
 		}
 	]
 }
