@@ -1,6 +1,7 @@
 include "console.iol"
 include "database.iol"
 include "string_utils.iol"
+include "time.iol"
 
 include "./PaymentInterface.iol"
 
@@ -32,64 +33,50 @@ init
         install (SQLException => println@Console("Payment table already exists")());
         update@Database(SQL_CREATE_PAYMENT_INFO)(ret)
     }
+
+    getCurrentDateTime@Time( )( currentDateTime ) // call this API to create a GLOBAL VARIABLE for current datetime to be present in logs
 }
 
 // behaviour info
 main
 {
     [ 
-        addPaymentInfo(request)(response) {
+        withdrawlAccount(request)(response) {
+            println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  withdrawling account with number " +
+             request.cardNumber+ " for the amount " + request.amount )(  )
 
-            println@Console( "Adding payment information" )(  )
-
-            update@Database(
-                "INSERT INTO payment(id, type_payment, user_owner, card_number, cart_expire_date, name_on_card, card_security_code) 
-                  VALUES (:id::int4, :type_payment, :user_owner, :card_number, :cart_expire_date, :name_on_card, :card_security_code::numeric);" {
-                    .id = request.id,
-                    .type_payment = request.type_payment,
-                    .user_owner = request.user_owner,
-                    .card_number = request.card_number,
-                    .cart_expire_date = request.cart_expire_date,
-                    .name_on_card = request.name_on_card,
-                    .card_security_code = request.card_security_code,
+            query@Database( 
+                "SELECT account_balance FROM payment WHERE card_number=:cardNumber;" {
+                    .cardNumber = request.cardNumber
                 }
-            )(response.status)
-        }
-    ]
-
-    [ 
-        deletePaymentInfo(request)(response) {
-
-            println@Console( "Deleting payment information" )(  )
-
-            update@Database(
-                "DELETE FROM payment WHERE id=:id::int4;" {
-                    .id = request.id,
-                }
-            )(response.status)
-            
-        }
-    ]
-
-    [ 
-        getSavedPaymentInfoList(request)(response) {
-
-            USER_DOES_NOT_EXIST_MESSAGE = "The provided user id " + request.user_owner + " is not in the system"
-
-            println@Console( "Fetching list of saved payments information for user " + request.user_owner )(  )
-
-            query@Database(
-                "SELECT * FROM payment WHERE user_owner=:user_owner::int4" {
-                    .user_owner = request.user_owner
-                }
-            )(sqlResponse)
+             )( sqlResponse )
 
             if (#sqlResponse.row >= 1) {
                 response -> sqlResponse
             }
-            else {
-                response.message -> USER_DOES_NOT_EXIST_MESSAGE
+
+            accountBalance = response.row[0].account_balance
+
+            println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  this account has the amount " + accountBalance )(  )
+
+
+            // check account balance
+            if ( double(accountBalance) > double(request.amount) ) { // always force types when using math
+                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  balance is enough " )(  )
+
+                update@Database(
+                    "UPDATE payment SET account_balance = :newBalance
+                     WHERE card_number=:cardNumber::numeric;" {
+                        .cardNumber = request.cardNumber,
+                        .newBalance = double(accountBalance) - double(request.amount)
+                    }
+                )(response.status)
             }
-        } 
+            else {
+                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  balance is NOT enough " )(  )
+                response.status = 0 // 0 means not enough balance in the account
+            }
+        }
     ]
+
 }

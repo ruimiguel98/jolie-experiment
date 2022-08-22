@@ -1,11 +1,13 @@
 include "console.iol"
 include "database.iol"
 include "string_utils.iol"
+include "time.iol"
 
 include "./CheckoutInterface.iol"
 include "../order/OrderInterface.iol"
 include "../payment/PaymentInterface.iol"
 include "../email/EmailInterface.iol"
+include "../user/UserInterface.iol"
 
 execution { concurrent }
 
@@ -25,6 +27,11 @@ outputPort EmailService {
     Protocol: http { .format = "json" }
     Interfaces: EmailInterface
 }
+outputPort UserService {
+    Location: LOCATION_SERVICE_USER
+    Protocol: http { .format = "json" }
+    Interfaces: UserInterface
+}
 
 // deployment info
 inputPort CheckoutPort {
@@ -34,7 +41,8 @@ inputPort CheckoutPort {
     Redirects: 
         Order => OrderService,
         Payment => PaymentService,
-        Email => EmailService
+        Email => EmailService,
+        User => UserService
 }
 
 // prepare database connection (creates table if does not exist)
@@ -56,6 +64,8 @@ init
         install (SQLException => println@Console("Checkout table already exists")());
         update@Database(SQL_CREATE_CHECKOUT_TABLE)(ret)
     }
+
+    getCurrentDateTime@Time( )( currentDateTime ) // call this API to create a GLOBAL VARIABLE for current datetime to be present in logs
 }
 
 // behaviour info
@@ -81,31 +91,54 @@ main
     [ 
         checkoutPay( request)( response ) {
 
-            println@Console( "This is the checkout service trying to call a order service ")();
+            // user
+            println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
-            create@OrderService( request.userId )( reponse )
+            request.id = request.userId
 
-            // order 
-            if ( response ) {
+            user@UserService( request )( response );
+
+            println@Console( "[CHECKOUT] - Checkout being done by user with ID " + request.userId )( );
+            println@Console( "[CHECKOUT] - Checkout being done for the following cart products " + response.cart_products )( );
+
+
+            // confirming payment
+            requestPayment.cardNumber = 23836798;
+            requestPayment.amount = 100.00;
+            withdrawlAccount@PaymentService( requestPayment )( responsePayment )
+
+            if ( responsePayment.status == 1 ) {
+                // create order
+                println@Console( "[CHECKOUT] - This is the checkout service trying to call a order service ")()
+
+                getRandomUUID@StringUtils( )( responseUUID )
+                order.id = responseUUID;
+                order.userId = int(request.userId);
+                order.status = "1 - CREATED";
+                order.orderAmount = "100";
+                order.addressToShip = "Rua teste";
+                order.orderProducts = response.cart_products;
                 
+                create@OrderService( order )( response )
+
+                println@Console( "[CHECKOUT] - Order has been created ")()
+
+                // send email
+                println@Console( "[CHECKOUT] - Sending confirmation email ")()
+                // sendEmail@EmailService(  )( responseEmail )
+
+                // update@Database(
+                //     "INSERT INTO checkout(id, card, address) 
+                //       VALUES (:id::numeric, :card::numeric, :address::numeric);" {
+                //         .id = request.cart.id,
+                //         .card = request.payment.card,
+                //         .address = request.shipment.address
+                //     }
+                // )(response.status)
             }
             else {
-                
+                response.message = "Not enought balance on user bank account"
             }
-
-
-
-
-
-
-            // update@Database(
-            //     "INSERT INTO checkout(id, card, address) 
-            //       VALUES (:id::numeric, :card::numeric, :address::numeric);" {
-            //         .id = request.cart.id,
-            //         .card = request.payment.card,
-            //         .address = request.shipment.address
-            //     }
-            // )(response.status)
 
         } 
     ]

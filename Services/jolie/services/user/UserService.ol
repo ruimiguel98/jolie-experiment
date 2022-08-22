@@ -48,6 +48,9 @@ main
 
     [ 
         user(request)(response) {
+            
+            println@Console( "[USER] - Requesting the user with id " + request.id )(  )
+
             query@Database(
                 "SELECT * FROM users WHERE id=:id::numeric" {
                     .id = request.id

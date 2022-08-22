@@ -72,7 +72,7 @@ main
 
     [
         create(request)(response) {
-            println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] -  create order" )(  )
+            println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - create order" )(  )
 
             update@Database(
                 "INSERT INTO public.orders
@@ -121,6 +121,22 @@ main
                     .id = request.id
                 }
             )(response.status)
+        } 
+    ]
+
+    [ 
+        userOrders(request)(response) {
+            println@Console( "[ORDER] - [" + currentDateTime + "] - [/userOrders] - getting orders from user with id " + request.id )(  )
+
+            query@Database(
+                "SELECT * FROM orders WHERE user_id=:id::numeric" {
+                    .id = request.id
+                }
+            )(sqlResponse)
+
+            if (#sqlResponse.row >= 1) {
+                response -> sqlResponse
+            }
         } 
     ]
 

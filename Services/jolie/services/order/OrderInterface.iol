@@ -1,14 +1,3 @@
-type OrdersListResponse  {
-    row[0, 999999]: void  {
-        .id: int
-        .cart_id: int
-        .user_id: int
-        .address_to_ship: string
-        .payment_used: string
-        .status: int
-    }
-}
-
 type CreateOrderRequest {
     .id: string // to accept UUID values
     .userId: int
@@ -26,6 +15,9 @@ interface OrderInterface {
         create(CreateOrderRequest)(undefined),
         update(CreateOrderRequest)(undefined),
         delete(undefined)(undefined),
+
+        // OTHER operations
+        userOrders(undefined)(undefined)
 }
 
 
