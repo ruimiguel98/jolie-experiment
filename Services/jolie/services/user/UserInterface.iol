@@ -1,11 +1,10 @@
 type CreateRequest {
-    .id: int
-    .address: string
-    .cartProducts: string
-    .creditCard: string
-    .email: string
+    .id: string // to accept UUID values
     .realName: string
+    .email: string
     .phone: string
+    .address: string
+    .gender: string
 }
 
 type CreateResponse {
@@ -33,13 +32,12 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_TABLE_USER = "CREATE TABLE public.users (
-                                id int4 NOT NULL,
-                                address varchar(255) NULL,
-                                cart_products _int8 NULL,
-                                credit_card varchar(255) NULL,
-                                email varchar(255) NULL,
-                                real_name varchar(40) NULL,
-                                phone varchar(255) NULL,
+                                id VARCHAR(40),
+                                real_name VARCHAR(50),
+                                email VARCHAR(50),
+                                phone VARCHAR(50),
+                                address VARCHAR(50),
+                                gender VARCHAR(50),
                                 CONSTRAINT users_pkey PRIMARY KEY (id)
                             );"
 }

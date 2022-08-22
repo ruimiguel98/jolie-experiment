@@ -52,7 +52,7 @@ main
             println@Console( "[USER] - Requesting the user with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM users WHERE id=:id::numeric" {
+                "SELECT * FROM users WHERE id=:id" {
                     .id = request.id
                 }
             )(sqlResponse);
@@ -68,15 +68,14 @@ main
             messageSuccess = "The user was created with success!";
 
             update@Database(
-                "INSERT INTO public.users(id, address, cart_products, credit_card, email, real_name, phone)
-                 VALUES(:id::numeric, :address, :cartProducts, :creditCard, :email, :realName, :phone);" {
+                "INSERT INTO public.users(id, real_name, email, phone, address, gender)
+                 VALUES(:id, :realName, :email, :phone, :address, :gender);" {
                     .id = request.id,
-                    .address = request.address,
-                    .cartProducts = request.cartProducts,
-                    .creditCard = request.creditCard,
-                    .email = request.email,
                     .realName = request.realName,
+                    .email = request.email,
                     .phone = request.phone,
+                    .address = request.address,
+                    .gender = request.gender
                 }
             )(sqlResponse.status)
 
@@ -89,15 +88,14 @@ main
     [ 
         update(request)(response) {
             update@Database(
-                "UPDATE public.users SET address=:address, cart_products=:cartProducts, credit_card=:creditCard, email=:email, real_name=:realName, phone=:phone
-                WHERE id=:id::numeric;" {
+                "UPDATE public.users SET real_name=:realName, email=:email, phone=:phone, address=:address, gender=:gender
+                WHERE id=:id;" {
                     .id = request.id,
-                    .address = request.address,
-                    .cartProducts = request.cartProducts,
-                    .creditCard = request.creditCard,
-                    .email = request.email,
                     .realName = request.realName,
-                    .phone = request.phone
+                    .email = request.email,
+                    .phone = request.phone,
+                    .address = request.address,
+                    .gender = request.gender
                 }
             )(response.status)
         } 
@@ -106,7 +104,7 @@ main
     [ 
         delete(request)(response) {
             update@Database(
-                "DELETE FROM users WHERE id=:id::numeric" {
+                "DELETE FROM users WHERE id=:id" {
                     .id = request.id
                 }
             )(response.status)
