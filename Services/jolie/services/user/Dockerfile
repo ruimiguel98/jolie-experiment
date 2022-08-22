@@ -14,5 +14,5 @@ RUN cp jdbc-postgresql.jar /usr/lib/jolie/lib/jdbc-postgresql.jar
 # Make port 9001 available to the world outside this container
 EXPOSE 9001
 
-# Run ProductService.ol when the container launches
-CMD jolie ProductService.ol
+# Run UserService.ol when the container launches
+CMD jolie UserService.ol
