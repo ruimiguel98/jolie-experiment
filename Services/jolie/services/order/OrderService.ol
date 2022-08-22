@@ -112,7 +112,6 @@ main
         }
     ]
 
-
     [ 
         delete(request)(response) {
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/delete] -  delete order with id " + request.id )(  )

@@ -26,13 +26,6 @@ interface OrderInterface {
         create(CreateOrderRequest)(undefined),
         update(CreateOrderRequest)(undefined),
         delete(undefined)(undefined),
-
-        // OTHER operations
-        processOrder(undefined)(undefined),
-        shipOrder(undefined)(undefined),
-        finishOrder(undefined)(undefined),
-        getOrderStatus(undefined)(undefined),
-        getMyOrders(undefined)(undefined)
 }
 
 
