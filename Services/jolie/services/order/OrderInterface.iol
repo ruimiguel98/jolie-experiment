@@ -10,7 +10,7 @@ type OrdersListResponse  {
 }
 
 type CreateOrderRequest {
-    .id: int
+    .id: string // to accept UUID values
     .userId: int
     .status: string
     .orderAmount: string
@@ -48,10 +48,10 @@ constants {
 
 
     SQL_CREATE_ORDER_INFO = "CREATE TABLE public.orders (
-                                    id int4 NOT NULL,
+                                    id varchar(128) NOT NULL,
                                     address_to_ship varchar(255) NULL,
                                     order_amount varchar(255) NULL,
-                                    order_products _int8 NULL,
+                                    order_products varchar(9999) NULL,
                                     status varchar(255) NULL,
                                     user_id int4 NOT NULL,
                                     CONSTRAINT orders_pkey PRIMARY KEY (id)
