@@ -1,5 +1,4 @@
 type CreateRequest {
-    .id: string // to accept UUID values
     .realName: string
     .email: string
     .phone: string
@@ -7,28 +6,22 @@ type CreateRequest {
     .gender: string
 }
 
-type CreateResponse {
-    .message: string
-}
-
-
 interface UserInterface {
     RequestResponse:
         all(void)(undefined),
         user(undefined)(undefined),
-        create(CreateRequest)(CreateResponse),
+        create(CreateRequest)(undefined),
         update(undefined)(undefined),
         delete(undefined)(undefined)
 }
 
 constants {
-    LOCATION_SERVICE_USER = "socket://localhost:9052",
+    LOCATION_SERVICE_USER = "socket://host.docker.internal:9052",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
-    SQL_HOST = "localhost",
-    // SQL_HOST = "172.30.0.1",
-    SQL_DATABASE = "app-db",
+    SQL_HOST = "host.docker.internal",
+    SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_TABLE_USER = "CREATE TABLE public.users (

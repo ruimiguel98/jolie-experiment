@@ -4,12 +4,11 @@ interface EmailInterface {
 }
 
 constants {
-    LOCATION_SERVICE_EMAIL = "socket://localhost:9055",
+    LOCATION_SERVICE_EMAIL = "socket://host.docker.internal:9055",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
-    // SQL_HOST = "172.30.0.1",
-    SQL_HOST = "localhost",
-    SQL_DATABASE = "app-db",
+    SQL_HOST = "host.docker.internal",
+    SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 }

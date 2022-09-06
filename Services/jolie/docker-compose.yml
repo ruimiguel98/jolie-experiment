@@ -32,6 +32,71 @@ services:
     links:
       - postgres-db
 
+  user-service-app:
+    container_name: user-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/user/Dockerfile
+    ports:
+      - "9052:9052"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+
+  order-service-app:
+    container_name: order-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/order/Dockerfile
+    ports:
+      - "9053:9053"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+
+  checkout-service-app:
+    container_name: checkout-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/checkout/Dockerfile
+    ports:
+      - "9054:9054"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+
+  email-service-app:
+    container_name: email-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/email/Dockerfile
+    ports:
+      - "9055:9055"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+
+  payment-service-app:
+    container_name: payment-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/payment/Dockerfile
+    ports:
+      - "9056:9056"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+
   cart-service-app:
     container_name: cart-service-app
     build:

@@ -21,12 +21,11 @@ interface ProductInterface {
 }
 
 constants {
-    LOCATION_SERVICE_PRODUCT = "socket://localhost:9051",
+    LOCATION_SERVICE_PRODUCT = "socket://host.docker.internal:9051",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
     SQL_HOST = "host.docker.internal",
-    // SQL_HOST = "172.30.0.1",
     SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 

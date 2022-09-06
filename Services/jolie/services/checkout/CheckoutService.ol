@@ -90,56 +90,54 @@ main
 
     [ 
         checkoutPay( request)( response ) {
-
-            // user
             println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
-            request.id = request.userId
+            //----------------------------- 1. GET ALL USER INFO OF THE USER DOING THE CHECKOUT --------------------------------
+            user@UserService( request.userId )( response );
 
-            user@UserService( request )( response );
-
-            println@Console( "[CHECKOUT] - Checkout being done by user with ID " + request.userId )( );
+            println@Console( "[CHECKOUT] - Checkout being done by user with id " + request.userId )( );
             println@Console( "[CHECKOUT] - Checkout being done for the following cart products " + response.cart_products )( );
 
+            customResponse.message = "This is a custom message"
+            // // confirming payment
+            // requestPayment.cardNumber = 23836798;
+            // requestPayment.amount = 100.00;
+            // withdrawlAccount@PaymentService( requestPayment )( responsePayment )
 
-            // confirming payment
-            requestPayment.cardNumber = 23836798;
-            requestPayment.amount = 100.00;
-            withdrawlAccount@PaymentService( requestPayment )( responsePayment )
+            // if ( responsePayment.status == 1 ) {
+            //     // create order
+            //     println@Console( "[CHECKOUT] - This is the checkout service trying to call a order service ")()
 
-            if ( responsePayment.status == 1 ) {
-                // create order
-                println@Console( "[CHECKOUT] - This is the checkout service trying to call a order service ")()
-
-                getRandomUUID@StringUtils( )( responseUUID )
-                order.id = responseUUID;
-                order.userId = int(request.userId);
-                order.status = "1 - CREATED";
-                order.orderAmount = "100";
-                order.addressToShip = "Rua teste";
-                order.orderProducts = response.cart_products;
+            //     getRandomUUID@StringUtils( )( responseUUID )
+            //     order.id = responseUUID;
+            //     order.userId = int(request.userId);
+            //     order.status = "1 - CREATED";
+            //     order.orderAmount = "100";
+            //     order.addressToShip = "Rua teste";
+            //     order.orderProducts = response.cart_products;
                 
-                create@OrderService( order )( response )
+            //     create@OrderService( order )( response )
 
-                println@Console( "[CHECKOUT] - Order has been created ")()
+            //     println@Console( "[CHECKOUT] - Order has been created ")()
 
-                // send email
-                println@Console( "[CHECKOUT] - Sending confirmation email ")()
-                // sendEmail@EmailService(  )( responseEmail )
+            //     // send email
+            //     println@Console( "[CHECKOUT] - Sending confirmation email ")()
+            //     // sendEmail@EmailService(  )( responseEmail )
 
-                // update@Database(
-                //     "INSERT INTO checkout(id, card, address) 
-                //       VALUES (:id::numeric, :card::numeric, :address::numeric);" {
-                //         .id = request.cart.id,
-                //         .card = request.payment.card,
-                //         .address = request.shipment.address
-                //     }
-                // )(response.status)
-            }
-            else {
-                response.message = "Not enought balance on user bank account"
-            }
+            //     // update@Database(
+            //     //     "INSERT INTO checkout(id, card, address) 
+            //     //       VALUES (:id::numeric, :card::numeric, :address::numeric);" {
+            //     //         .id = request.cart.id,
+            //     //         .card = request.payment.card,
+            //     //         .address = request.shipment.address
+            //     //     }
+            //     // )(response.status)
+            // }
+            // else {
+            //     customResponse.message = "Not enought balance on user bank account"
+            // }
 
+            response -> customResponse
         } 
     ]
 

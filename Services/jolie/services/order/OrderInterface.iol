@@ -22,15 +22,13 @@ interface OrderInterface {
 
 
 constants {
-    LOCATION_SERVICE_ORDER = "socket://localhost:9053",
+    LOCATION_SERVICE_ORDER = "socket://host.docker.internal:9053",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
-    // SQL_HOST = "172.30.0.1",
-    SQL_HOST = "localhost",
-    SQL_DATABASE = "app-db",
+    SQL_HOST = "host.docker.internal",
+    SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
-
 
     SQL_CREATE_ORDER_INFO = "CREATE TABLE public.orders (
                                     id varchar(128) NOT NULL,

@@ -33,7 +33,7 @@ interface CartInterface {
 
 
 constants {
-    LOCATION_SERVICE_CART = "socket://localhost:9057",
+    LOCATION_SERVICE_CART = "socket://host.docker.internal:9057",
     LOCATION_SERVICE_PRODUCT = "socket://host.docker.internal:9051", // used by cart orchestrator
 
     SQL_USERNAME = "postgres",

@@ -4,13 +4,12 @@ interface CheckoutInterface {
 }
 
 constants {
-    LOCATION_SERVICE_CHECKOUT = "socket://localhost:9054",
+    LOCATION_SERVICE_CHECKOUT = "socket://host.docker.internal:9054",
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
-    // SQL_HOST = "172.30.0.1",
-    SQL_HOST = "localhost",
-    SQL_DATABASE = "app-db",
+    SQL_HOST = "host.docker.internal",
+    SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_CHECKOUT_TABLE = "CREATE TABLE public.checkout (

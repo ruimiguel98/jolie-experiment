@@ -11,8 +11,8 @@ RUN wget https://jdbc.postgresql.org/download/postgresql-42.4.0.jar
 RUN mv postgresql-42.4.0.jar jdbc-postgresql.jar
 RUN cp jdbc-postgresql.jar /usr/lib/jolie/lib/jdbc-postgresql.jar
 
-# Make port 9001 available to the world outside this container
-EXPOSE 9001
+# Make port 9052 available to the world outside this container
+EXPOSE 9052
 
 # Run UserService.ol when the container launches
-CMD jolie UserService.ol
+CMD jolie ./services/userUserService.ol
