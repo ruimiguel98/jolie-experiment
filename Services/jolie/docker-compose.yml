@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  kong-api-gateway:
+    container_name: kong-api-gateway
+    image: kong:latest
+    volumes:
+      - ./apigateway/kong.yml:/usr/local/kong/declarative/kong.yml
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "127.0.0.1:8001:8001"
+      - "127.0.0.1:8444:8444"
+
+  product-service-app:
+    container_name: product-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/product/Dockerfile
+    ports:
+      - "9051:9051"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+
+  cart-service-app:
+    container_name: cart-service-app
+    build:
+    # build from Dockerfile
+      context: .
+      dockerfile: ./services/cart/Dockerfile
+    ports:
+      - "9057:9057"
+    # volumes:
+    #   - "./:/app"
+    links:
+      - postgres-db
+      
+  postgres-db:
+    container_name: general-db
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=welcome1
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local

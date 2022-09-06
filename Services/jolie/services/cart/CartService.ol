@@ -4,14 +4,23 @@ include "string_utils.iol"
 include "time.iol"
 
 include "./CartInterface.iol"
+include "../product/ProductInterface.iol"
 
 execution { concurrent }
 
 // deployment info
+outputPort ProductService {
+    Location: LOCATION_SERVICE_PRODUCT
+    Protocol: http { .format = "json" }
+    Interfaces: ProductInterface
+}
+
 inputPort CartPort {
     Location: LOCATION_SERVICE_CART
     Protocol: http { .format = "json" }
     Interfaces: CartInterface
+    Redirects: 
+        Product => ProductService
 }
 
 // prepare database connection (creates table if does not exist)
@@ -59,7 +68,7 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/cart] -  fetch cart with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM cart WHERE id=:id" {
+                "SELECT * FROM cart WHERE id = :id" {
                     .id = request.id
                 }
             )(sqlResponse);
@@ -74,15 +83,24 @@ main
         create(request)(response) {
             println@Console( "[CART] - [" + currentDateTime + "] - [/create] - create cart" )(  )
 
+            getRandomUUID@StringUtils(  )( randomUUID )
+
             update@Database(
-                "INSERT INTO public.cart(id, user_id, cart_produtcs, cart_total)
-                 VALUES(:id, :userId, :cartProducts, :cartTotal::numeric);" {
-                    .id = request.id,
-                    .userId = request.userId,
-                    .cartProducts = request.cartProducts,
-                    .cartTotal = request.cartTotal,
+                "INSERT INTO public.cart(id, user_id)
+                 VALUES(:id, :userId);" {
+                    .id = randomUUID, // UUID auto generated
+                    .userId = request.userId
                 }
             )(response.status)
+
+            // verify if the request was successfull
+            if ( response.status == 1 ) {
+                println@Console( "[CART] - [" + currentDateTime + "] - [/create] - cart created with ID " + randomUUID )(  )
+            }
+            else {
+                println@Console( "[CART] - [" + currentDateTime + "] - [/create] - ERROR creating a new cart" )(  )
+            }
+
         }
     ]
 
@@ -91,21 +109,19 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/update] -  update cart with id " + request.id )(  )
 
             update@Database(
-                "UPDATE cart SET
-                    address_to_ship = :addressToShip,
-                    order_amount = :orderAmount,
-                    order_products = :orderProducts,
-                    status = :status,
-                    user_id= :userId::numeric
-                WHERE id=:id;" {
-                    .id = request.id,
-                    .addressToShip = request.addressToShip,
-                    .orderAmount = request.orderAmount,
-                    .orderProducts = request.orderProducts,
-                    .status = request.status,
+                "UPDATE cart SET user_id = :userId WHERE id = :id;" {
+                    .id = request.id
                     .userId = request.userId
                 }
             )(response.status)
+
+            // verify if the request was successfull
+            if ( response.status == 1 ) {
+                println@Console( "[CART] - [" + currentDateTime + "] - [/update] - cart updated with ID " + request.id )(  )
+            }
+            else {
+                println@Console( "[CART] - [" + currentDateTime + "] - [/update] - ERROR - failed to update cart with ID " + request.id )(  )
+            }
         }
     ]
 
@@ -119,6 +135,96 @@ main
                 }
             )(response.status)
         } 
+    ]
+
+    [
+        addProduct(request)(response) {
+            println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] -  adding product with id " +
+             request.productId + " to cart with id " + request.cartId )(  )
+
+            product@ProductService( requestProduct.id )( responseProduct )
+
+            // if the product exists in the database add it to the cart
+            if ( responseProduct.id == null ) {
+
+                //----------------------------- 1. CHECK IF PRODUCT ALREADY EXISTS IN THE CART -------------------------------- 
+                query@Database(
+                    "SELECT * FROM cart_products WHERE cart_id = :cartId AND product_id = :productId;" {
+                        .cartId = request.cartId
+                        .productId = request.productId
+                    }
+                )(sqlResponseProductCheck);
+
+                if (#sqlResponseProductCheck.row >= 1) {
+                    println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - ERROR - the product already exists in the cart, can't be added" )(  )
+                }
+                else {
+                    println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - this product does not exist in the provided cart, adding it... " )(  )
+                }
+
+                
+                //----------------------------- 2. ADD PRODUCT TO THE CART -------------------------------- 
+                update@Database(
+                "INSERT INTO cart_products(cart_id, product_id)
+                 VALUES(:cartId, :productId);" {
+                    .cartId = request.cartId, // UUID auto generated
+                    .productId = request.productId
+                    }
+                )(sqlResponseProductAdd.status)
+
+                if ( sqlResponseProductAdd.status == 1 ) {
+                    println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - new product " + request.productId +
+                     " added to cart with ID " + request.cartId )(  )
+
+                    customResponse.message = "Product added to the cart"
+                }
+                else {
+                    println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - ERROR - new product " + request.productId +
+                     " could NOT be added to cart with ID " + request.cartId )(  )
+
+                    customResponse.error = "Error adding product to the cart"
+                }
+
+
+                //----------------------------- 3. SEND CUSTOM RESPONSE TO CLIENT -------------------------------- 
+                response -> customResponse
+            }
+            else {
+                println@Console( "There is not product with such ID" )(  )
+            }
+        }
+    ]
+    
+    [
+        removeProduct(request)(response) {
+            println@Console( "[CART] - [" + currentDateTime + "] - [/removeProductFromCart] -  removing product with id " +
+             request.productId + " from cart with id " + request.cartId )(  )
+
+            //----------------------------- 1. REMOVE PRODUCT FROM THE CART -------------------------------- 
+            update@Database(
+            "DELETE FROM cart_products WHERE cart_id = :cartId AND product_id = :productId;" {
+                .cartId = request.cartId, // UUID auto generated
+                .productId = request.productId
+                }
+            )(sqlResponseProductRemove.status)
+
+            if ( sqlResponseProductRemove.status == 1 ) {
+                println@Console( "[CART] - [" + currentDateTime + "] - [/removeProductFromCart] - product " + request.productId +
+                    " revemoed from cart with id " + request.cartId )(  )
+
+                customResponse.message = "Product removed from the cart"
+            }
+            else {
+                println@Console( "[CART] - [" + currentDateTime + "] - [/removeProductFromCart] - ERROR - product with id " + request.productId +
+                    " could NOT be removed from cart with id " + request.cartId )(  )
+
+                customResponse.error = "Error removing product from the cart"
+                customResponse.tip = "Make sure the product exists in the database"
+            }
+
+            //----------------------------- 2. SEND CUSTOM RESPONSE TO CLIENT -------------------------------- 
+            response -> customResponse
+        }
     ]
 
 }

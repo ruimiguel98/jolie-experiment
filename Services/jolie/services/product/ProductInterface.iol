@@ -1,6 +1,6 @@
 type CreateRequest {
     .id: string // to accept UUID values
-    .name: string
+    .product: string
     .description: string
     .type: string
     .price: double
@@ -25,9 +25,9 @@ constants {
 
     SQL_USERNAME = "postgres",
     SQL_PASSWORD = "welcome1",
-    SQL_HOST = "localhost",
+    SQL_HOST = "host.docker.internal",
     // SQL_HOST = "172.30.0.1",
-    SQL_DATABASE = "app-db",
+    SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_TABLE_PRODUCT = "CREATE TABLE product (

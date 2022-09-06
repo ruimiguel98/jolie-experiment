@@ -63,9 +63,9 @@ main
             messageSuccess = "The product was created with success!";
 
             update@Database(
-                "insert into public.product(id, name, description, type, price) values (:id, :name, :description, :type, :price)" {
+                "insert into public.product(id, product, description, type, price) values (:id, :product, :description, :type, :price)" {
                     .id = request.id,
-                    .name = request.name,
+                    .product = request.product,
                     .description = request.description,
                     .type = request.type,
                     .price = request.price,
@@ -81,8 +81,8 @@ main
     [ 
         update(request)(response) {
             update@Database(
-                "update product set name=:name where id=:id" {
-                    .name = request.name,
+                "UPDATE product SET product=:product WHERE id=:id" {
+                    .product = request.product,
                     .id = request.id
                 }
             )(response.status)
@@ -92,7 +92,7 @@ main
     [ 
         delete(request)(response) {
             update@Database(
-                "delete from product where id=:id" {
+                "DELETE FROM product WHERE id=:id" {
                     .id = request.id
                 }
             )(response.status)
