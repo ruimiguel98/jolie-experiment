@@ -4,9 +4,9 @@ servers:
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/ruimiguel98/jolie-case-study/1.0.0
 info:
-  description: This is an API to interact with an E-Commerce system built using Jolie programming language.
+  description: This is an API to interact with an E-Commerce application built using Jolie programming language.
   version: "1.0.0"
-  title: Jolie Case Study - E-Commerce API
+  title: Jolie Experiment - E-Commerce API
   contact:
     email: you@your-company.com
   license:
@@ -18,14 +18,15 @@ tags:
   - name: customers
     description: Operations available to regular customers
 paths:
-  /getProducts:
+  /products/all:
     get:
       tags:
         - customers
+        - moderators
       summary: get the collection of products
       operationId: getProducts
       description: |
-        By passing in the appropriate params, you can search for
+        By passing in the appropriate params, one can search for
         products in the system
       parameters:
         - in: query
@@ -45,15 +46,46 @@ paths:
                   $ref: '#/components/schemas/Product'
         '400':
           description: bad input parameter
-  /getProduct:
+  /products/product:
     get:
       tags:
         - customers
+        - moderators
       summary: get a specific product information
       operationId: getProduct
       description: |
-        By passing in the appropriate params, you can search for a specific
+        By passing in the appropriate params, one can search for a specific
         product in the system
+      parameters:
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up inventory
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Product'
+        '500':
+          description: bad input parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Error'
+  /products/create:
+    post:
+      tags:
+        - moderators
+      summary: create a new product in the system
+      operationId: createProduct
+      description: |
+        By passing in the appropriate params, one can create a new product in the system
       parameters:
         - in: query
           name: searchString
@@ -137,6 +169,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InventoryItem'
         description: Inventory item to add
+
 components:
   schemas:
     InventoryItem:
@@ -177,13 +210,13 @@ components:
       type: object
     Product:
       required:
-        - name
-        - price
-        - description
         - id
+        - product
+        - description
+        - price
         - type
       properties:
-        name:
+        product:
           type: string
           example: Smart TV LG OLED 4K
         price:
@@ -194,7 +227,7 @@ components:
           example: A super high quality image TV with a smart embedded operating system
         id:
           type: integer
-          example: 123456789
+          example: f3511458-9831-4ea5-9551-e8e6012e7cc1
         type:
           type: string
           example: Electronics
@@ -202,48 +235,50 @@ components:
     Order:
       required:
         - id
-        - cart_id
-        - user_id
         - address_to_ship
-        - payment_used
+        - order_amount
+        - order_products
         - status
+        - user_id
       properties:
         id:
-          type: integer
-          example: 123456789
-        cart_id:
-          type: integer
-          example: 123456789
-        user_id:
-          type: integer
-          example: 123456789
+          type: UUID
+          example: f3511458-9831-4ea5-9551-e8e6012e7cc1
         address_to_ship:
           type: string
           example: 1 Microsoft Way, Redmond, WA 98052. (425) 882-8080
-        payment_used:
-          type: string
-          example: 123456789
-        status:
+        order_amount:
           type: integer
-          example: 1
+          example: 100
+        order_products:
+          type: string
+          example: {12,20}
+        status:
+          type: string
+          example: CREATED
+        user_id:
+          type: UUID
+          example: 6a501bd0-5434-4d5b-8fd0-491287e24eb9
       type: object
     Cart:
       required:
         - id
-        - user_owner
-        - products
+        - cart_products
+        - cart_total
+        - user_id
       properties:
         id:
-          type: integer
+          type: UUID
+          example: c15e6c14-af67-45be-96ec-db5a79da3fa5
+        cart_products:
+          type: string
           example: 123456789
-        user_owner:
-          type: integer
-          example: 123456789
-        products:
-          type: array
-          items:
-            type: integer
-          example: '[1, 2, 3]'
+        cart_total:
+          type: double
+          example: 100.00
+        user_id:
+          type: UUID
+          example: 6a501bd0-5434-4d5b-8fd0-491287e24eb9
       type: object
     Payment:
       required:
