@@ -1,5 +1,5 @@
 type PaymentWithdrawlRequest {
-    .cardNumber: int
+    .cardNumber: string
     .amount: double
 }
 
@@ -19,12 +19,12 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_PAYMENT_INFO = "CREATE TABLE public.payment (
-                                    card_number int4 NOT NULL,
-                                    cvv varchar(255) NULL,
+                                    card_number varchar(20) NOT NULL,
+                                    cvv varchar(3) NULL,
                                     account_balance varchar(255) NULL,
-                                    card_type varchar(255) NULL,
-                                    expire_date varchar(255) NULL,
-                                    real_name varchar(255) NULL,
+                                    card_type varchar(50) NULL,
+                                    expire_date varchar(50) NULL,
+                                    real_name varchar(100) NULL,
                                     CONSTRAINT payment_pkey PRIMARY KEY (card_number)
                                 );"
 }

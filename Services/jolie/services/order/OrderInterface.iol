@@ -1,10 +1,16 @@
-type CreateOrderRequest {
+type Product {
     .id: string // to accept UUID values
-    .userId: int
+    .quantity: int
+}
+
+type CreateOrderRequest {
+    .userId: string // to accept UUID values
     .status: string
-    .orderAmount: string
     .addressToShip: string
-    .orderProducts: string
+    .products[1,9999]: any {
+        .id: string
+        .quantity: int
+    }
 }
 
 interface OrderInterface {
@@ -12,8 +18,8 @@ interface OrderInterface {
         // CRUD operations
         all(undefined)(undefined),
         order(undefined)(undefined),
-        create(CreateOrderRequest)(undefined),
-        update(CreateOrderRequest)(undefined),
+        create(undefined)(undefined),
+        update(undefined)(undefined),
         delete(undefined)(undefined),
 
         // OTHER operations
@@ -30,14 +36,20 @@ constants {
     SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 
-    SQL_CREATE_ORDER_INFO = "CREATE TABLE public.orders (
+    SQL_CREATE_ORDER_INFO = "CREATE TABLE orders (
                                     id varchar(128) NOT NULL,
-                                    address_to_ship varchar(255) NULL,
-                                    order_amount varchar(255) NULL,
-                                    order_products varchar(9999) NULL,
-                                    status varchar(255) NULL,
-                                    user_id int4 NOT NULL,
+                                    address_to_ship varchar(255) NOT NULL,
+                                    status varchar(255) NOT NULL,
+                                    user_id varchar(128) NOT NULL,
                                     CONSTRAINT orders_pkey PRIMARY KEY (id)
                             );
-                            COMMENT ON TABLE public.orders IS 'Table that holds the order information.';"
+                            COMMENT ON TABLE orders IS 'Table that holds the order information.';
+                            
+                            CREATE TABLE order_products (
+                                    order_id varchar(128) NOT NULL,
+                                    product_id varchar(128) NOT NULL,
+                                    quantity numeric NOT NULL DEFAULT 1
+                            );
+                            COMMENT ON TABLE order_products IS 'Data relative to the products associated with an order';
+                            "
 }

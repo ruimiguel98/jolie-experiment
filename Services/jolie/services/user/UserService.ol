@@ -56,7 +56,7 @@ main
             println@Console( "[USER] - Requesting the user with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM users WHERE id=:id" {
+                "SELECT * FROM users WHERE id = :id" {
                     .id = request.id
                 }
             )(sqlResponse);
@@ -87,7 +87,7 @@ main
 
             // verify if the request was successfull
             if ( #sqlResponse.status == 1 ) {
-                println@Console( "[CART] - [" + currentDateTime + "] - [/create] - user created with ID " + randomUUID )(  )
+                println@Console( "[USER] - [" + currentDateTime + "] - [/create] - user created with ID " + randomUUID )(  )
                 customResponse.message = "User created with success"
                 customResponse.user.id = randomUUID
                 customResponse.user.realName = request.realName
@@ -97,7 +97,7 @@ main
                 customResponse.user.gender = request.gender
             }
             else {
-                println@Console( "[CART] - [" + currentDateTime + "] - [/create] - ERROR creating a new user" )(  )
+                println@Console( "[USER] - [" + currentDateTime + "] - [/create] - ERROR creating a new user" )(  )
                 customResponse.error = "Error while creating the new user"
             }
 
@@ -123,11 +123,11 @@ main
 
             // verify if the request was successfull
             if ( #sqlResponse.status == 1 ) {
-                println@Console( "[CART] - [" + currentDateTime + "] - [/update] - succes update on user with id " + request.id )(  )
+                println@Console( "[USER] - [" + currentDateTime + "] - [/update] - succes update on user with id " + request.id )(  )
                 customResponse.message = "User updated with success"
             }
             else {
-                println@Console( "[CART] - [" + currentDateTime + "] - [/update] - ERROR updating user with id " + request.id )(  )
+                println@Console( "[USER] - [" + currentDateTime + "] - [/update] - ERROR updating user with id " + request.id )(  )
                 customResponse.error = "Error while creating the new user"
             }
 
@@ -147,11 +147,11 @@ main
 
             // verify if the request was successfull
             if ( #sqlResponse.status == 1 ) {
-                println@Console( "[CART] - [" + currentDateTime + "] - [/delete] - deleted user with ID " + request.id )(  )
+                println@Console( "[USER] - [" + currentDateTime + "] - [/delete] - deleted user with ID " + request.id )(  )
                 customResponse.message = "User deleted with success"
             }
             else {
-                println@Console( "[CART] - [" + currentDateTime + "] - [/delete] - ERROR deleting the user" )(  )
+                println@Console( "[USER] - [" + currentDateTime + "] - [/delete] - ERROR deleting the user" )(  )
                 customResponse.error = "Error deleting the user"
                 customResponse.tip = "Make sure that the user exists in the database"
             }

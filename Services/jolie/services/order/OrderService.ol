@@ -59,13 +59,13 @@ main
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/order] -  fetch order with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM orders WHERE id=:id" {
-                    .id = request.id
+                "SELECT * FROM orders WHERE id = :id" {
+                    .id = randomUUID
                 }
             )(sqlResponse);
 
             if (#sqlResponse.row >= 1) {
-                response -> sqlResponse
+                response -> sqlResponse.row[0]
             }
         }
     ]
@@ -74,18 +74,42 @@ main
         create(request)(response) {
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - create order" )(  )
 
+            getRandomUUID@StringUtils(  )( randomUUID )
+
             update@Database(
-                "INSERT INTO public.orders
-                (id, address_to_ship, order_amount, order_products, status, user_id)
-                VALUES(:id, :addressToShip, :orderAmount, :orderProducts, :status, :userId);" {
-                    .id = request.id,
+                "INSERT INTO orders (id, address_to_ship, status, user_id)
+                 VALUES(:id, :addressToShip, :status, :userId);" {
+                    .id = randomUUID,
                     .addressToShip = request.addressToShip,
-                    .orderAmount = request.orderAmount,
-                    .orderProducts = request.orderProducts,
                     .status = request.status,
                     .userId = request.userId
                 }
-            )(response.status)
+            )(sqlResponseOrder.status)
+
+            // iterate the products array and insert one row in the database per product ID in the array
+            for( product in request.products ) {
+                update@Database(
+                    "INSERT INTO order_products (order_id, product_id, quantity)
+                     VALUES(:orderId, :productId, :quantity::numeric);" {
+                        .orderId = randomUUID,
+                        .productId = product.id,
+                        .quantity = product.quantity
+                    }
+                )(sqlResponseOrderProducts.status)
+            }
+
+            // verify if the request was successfull
+            if ( #sqlResponseOrder.status == 1 && #sqlResponseOrderProducts == 1) {
+                println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - order created with ID " + randomUUID )(  )
+                customResponse.message = "Order created with success"
+                customResponse.orderId = randomUUID
+            }
+            else {
+                println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - ERROR creating a new order" )(  )
+                customResponse.error = "Error while creating the new order"
+            }
+
+            response -> customResponse
         }
     ]
 
@@ -96,19 +120,28 @@ main
             update@Database(
                 "UPDATE orders SET
                     address_to_ship = :addressToShip,
-                    order_amount = :orderAmount,
-                    order_products = :orderProducts,
                     status = :status,
-                    user_id= :userId::numeric
+                    user_id= :userId
                 WHERE id=:id;" {
                     .id = request.id,
                     .addressToShip = request.addressToShip,
-                    .orderAmount = request.orderAmount,
-                    .orderProducts = request.orderProducts,
                     .status = request.status,
                     .userId = request.userId
                 }
-            )(response.status)
+            )(sqlResponse.status)
+
+            
+            // verify if the request was successfull
+            if ( #sqlResponse.status == 1) {
+                println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - order created with ID " + randomUUID )(  )
+                customResponse.message = "Order updated created with success"
+            }
+            else {
+                println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - ERROR creating a new order" )(  )
+                customResponse.error = "Error while creating the new order"
+            }
+
+            response -> customResponse
         }
     ]
 
@@ -117,10 +150,22 @@ main
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/delete] -  delete order with id " + request.id )(  )
 
             update@Database(
-                "DELETE FROM orders WHERE id=:id" {
+                "DELETE FROM orders WHERE id = :id" {
                     .id = request.id
                 }
-            )(response.status)
+            )(sqlResponse.status)
+
+            // verify if the request was successfull
+            if ( #sqlResponse.status == 1) {
+                println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - order created with ID " + randomUUID )(  )
+                customResponse.message = "Order delete with sucess, with id " + request.id
+            }
+            else {
+                println@Console( "[ORDER] - [" + currentDateTime + "] - [/create] - ERROR creating a new order" )(  )
+                customResponse.error = "Error while deleting the order" + request.id
+            }
+
+            response -> customResponse
         } 
     ]
 
@@ -129,8 +174,8 @@ main
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/userOrders] - getting orders from user with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM orders WHERE user_id=:id::numeric" {
-                    .id = request.id
+                "SELECT * FROM orders WHERE user_id = :userId" {
+                    .userId = request.userId
                 }
             )(sqlResponse)
 

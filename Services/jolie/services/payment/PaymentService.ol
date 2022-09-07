@@ -40,42 +40,48 @@ init
 // behaviour info
 main
 {
-    [ 
+    [
         withdrawlAccount(request)(response) {
-            println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  withdrawling account with number " +
+            println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] - withdrawling account with number " +
              request.cardNumber+ " for the amount " + request.amount )(  )
 
+
+            //----------------------------- 1. CHECK IF ACCOUNT EXISTS IN THE MOCK BANK DATABASE --------------------------------
             query@Database( 
-                "SELECT account_balance FROM payment WHERE card_number=:cardNumber;" {
+                "SELECT account_balance FROM payment WHERE card_number = :cardNumber;" {
                     .cardNumber = request.cardNumber
                 }
-             )( sqlResponse )
+            )( sqlResponse )
+            
+            accountBalance = sqlResponse.row[0].account_balance
 
-            if (#sqlResponse.row >= 1) {
-                response -> sqlResponse
-            }
-
-            accountBalance = response.row[0].account_balance
-
-            println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  this account has the amount " + accountBalance )(  )
+            println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] - this account has the amount " + accountBalance )(  )
 
 
-            // check account balance
+            //----------------------------- 2. CHECK ACCOUNT BALANCE IN THE MOCK BANK DATABASE --------------------------------
             if ( double(accountBalance) > double(request.amount) ) { // always force types when using math
-                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  balance is enough " )(  )
+                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] - balance is enough " )(  )
 
+                //----------------------------- 3. WITHDRAWL FROM THE ACCOUNT IN THE MOCK BANK DATABASE --------------------------------
                 update@Database(
                     "UPDATE payment SET account_balance = :newBalance
-                     WHERE card_number=:cardNumber::numeric;" {
+                        WHERE card_number = :cardNumber;" {
                         .cardNumber = request.cardNumber,
                         .newBalance = double(accountBalance) - double(request.amount)
                     }
-                )(response.status)
+                )(sqlResponse)
+
+                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] - account withdrawled with success " )(  )
+                customResponse.message = "Account withdrawled with success"
+                customResponse.status = "SUCCESS"
             }
             else {
-                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] -  balance is NOT enough " )(  )
-                response.status = 0 // 0 means not enough balance in the account
+                println@Console( "[PAYMENT] - [" + currentDateTime + "] - [/withdrawlAccount] - balance is NOT enough " )(  )
+                customResponse.error = "Not enough balance in the account"
+                customResponse.status = "ERROR"
             }
+
+            response -> customResponse
         }
     ]
 

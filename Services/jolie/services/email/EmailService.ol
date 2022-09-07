@@ -1,7 +1,6 @@
 include "console.iol"
 include "database.iol"
 include "string_utils.iol"
-include "smtp.iol"
 include "time.iol"
 
 
@@ -20,7 +19,24 @@ inputPort EmailPort {
 // configure SMTP
 init
 {
-    // provide SMTP connection info
+    with (connectionInfo) {
+        .username = SQL_USERNAME;
+        .password = SQL_PASSWORD;
+        .host = SQL_HOST;
+        .database = SQL_DATABASE; // "." for memory-only
+        .driver = SQL_DRIVER
+    };
+
+    connect@Database(connectionInfo)();
+    println@Console("Successfull connection to the PostgreSQL database")();
+
+    // create check table if it does not exist
+    scope (createTable) {
+        install (SQLException => println@Console("Email table already exists")());
+        update@Database(SQL_CREATE_EMAIL_INFO)(ret)
+    }
+
+    // provide SMTP connection info 
     // with (smtpInfo) {
     //     .subject = "Payment confirmed";
     //     .authenticate = {
@@ -45,10 +61,11 @@ init
 main
 {
     [ 
-        sendEmail()(response) {
+        sendEmail(request)(response) {
             // sendMail@SMTP( request )( response )
-            response.emailSent = "This was the email sent"
-            
+            customResponse.status = "SEND"
+
+            response -> customResponse
         } 
     ]
 }

@@ -52,6 +52,7 @@ main
                     .id = request.id
                 }
             )(sqlResponse);
+            
             if (#sqlResponse.row == 1) {
                 response -> sqlResponse.row[0]
             }

@@ -91,10 +91,10 @@ main
                     .id = randomUUID, // UUID auto generated
                     .userId = request.userId
                 }
-            )(response.status)
+            )(sqlResponse.status)
 
             // verify if the request was successfull
-            if ( response.status == 1 ) {
+            if ( #sqlResponse.status == 1 ) {
                 println@Console( "[CART] - [" + currentDateTime + "] - [/create] - cart created with ID " + randomUUID )(  )
             }
             else {

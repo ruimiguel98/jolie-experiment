@@ -71,87 +71,60 @@ init
 // behaviour info
 main
 {
-    // [ 
-    //     checkoutPay( request )( response ) {
-
-    //         println@Console( "Request for checkout has ID: " + request.cart.id )(  )
-
-    //         cartRetrieve@CartPort( request.cart )( response )
-    //         println@Console( "Retrieved cart with ID " + response.cart.id )(  )
-
-    //         // response.cartId = response;
-
-    //         // // processPayment@PaymentPort( "mytest" )()
-    //         // response.values = "This is just a test" 
-
-    //         // sendShipment@ShippingPort( request )( response )
-    //     } 
-    // ]
-
     [ 
         checkoutPay( request)( response ) {
             println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
             //----------------------------- 1. GET ALL USER INFO OF THE USER DOING THE CHECKOUT --------------------------------
-            user@UserService( request.userId )( response );
+            user@UserService( request.user )( responseUser );
+            println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Checkout being done by user with id " + request.user.id )( );
 
-            println@Console( "[CHECKOUT] - Checkout being done by user with id " + request.userId )( );
-            println@Console( "[CHECKOUT] - Checkout being done for the following cart products " + response.cart_products )( );
 
-            customResponse.message = "This is a custom message"
-            // // confirming payment
-            // requestPayment.cardNumber = 23836798;
-            // requestPayment.amount = 100.00;
-            // withdrawlAccount@PaymentService( requestPayment )( responsePayment )
+            //----------------------------- 2. WITHDRAWL PROVIDED BANK ACCOUNT --------------------------------
+            withdrawlAccount@PaymentService( request.payment )( responsePayment )
+            
+            if ( responsePayment.status == "SUCCESS" ) {
+                println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Payment processed with success")( )
 
-            // if ( responsePayment.status == 1 ) {
-            //     // create order
-            //     println@Console( "[CHECKOUT] - This is the checkout service trying to call a order service ")()
-
-            //     getRandomUUID@StringUtils( )( responseUUID )
-            //     order.id = responseUUID;
-            //     order.userId = int(request.userId);
-            //     order.status = "1 - CREATED";
-            //     order.orderAmount = "100";
-            //     order.addressToShip = "Rua teste";
-            //     order.orderProducts = response.cart_products;
+                //----------------------------- 3. PLACE THE ORDER --------------------------------
+                println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Placing the order")( )
                 
-            //     create@OrderService( order )( response )
+                getRandomUUID@StringUtils( )( responseUUID )
 
-            //     println@Console( "[CHECKOUT] - Order has been created ")()
+                create@OrderService( request.order )( responseOrder )
 
-            //     // send email
-            //     println@Console( "[CHECKOUT] - Sending confirmation email ")()
-            //     // sendEmail@EmailService(  )( responseEmail )
+                println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Order placed with success")( )
 
-            //     // update@Database(
-            //     //     "INSERT INTO checkout(id, card, address) 
-            //     //       VALUES (:id::numeric, :card::numeric, :address::numeric);" {
-            //     //         .id = request.cart.id,
-            //     //         .card = request.payment.card,
-            //     //         .address = request.shipment.address
-            //     //     }
-            //     // )(response.status)
-            // }
-            // else {
-            //     customResponse.message = "Not enought balance on user bank account"
-            // }
+
+                //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
+                println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Sending email")( )
+                sendEmail@EmailService(  )( responseEmail )
+
+
+                //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
+                println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Updating checkout database")( )
+
+                getRandomUUID@StringUtils( )( cartResponseUUID )
+
+                update@Database(
+                    "INSERT INTO checkout(id, order_id, cart_id) VALUES (:id, :orderId, :cartId);" {
+                        .id = cartResponseUUID
+                        .orderId = responseOrder.orderId,
+                        .cartId = responseOrder.id,
+                    }
+                )(sqlResponse)
+
+                customResponse.message = "Checkout done with success"
+                customResponse.subMessage = "The order has been placed"
+                customResponse.orderId = responseOrder.id
+            }
+            else if (responsePayment.status == "ERROR") {
+                println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - ERROR not enough balance")( )
+                customResponse.error = "Not enough balance"
+            }
+
 
             response -> customResponse
         } 
     ]
-
-    // [ 
-    //     checkoutPay( request )( response ) {
-    //         update@Database(
-    //             "INSERT INTO checkout(id, card, address) 
-    //               VALUES (:id::numeric, :card::numeric, :address::numeric);" {
-    //                 .id = request.cart.id,
-    //                 .card = request.payment.card,
-    //                 .address = request.shipment.address
-    //             }
-    //         )(response.status)
-
-    //     } 
-    // ]
 }

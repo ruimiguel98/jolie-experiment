@@ -1,6 +1,26 @@
+type Product {
+    .id: string // to accept UUID values
+    .quantity: int
+}
+
+type CheckoutPayRequest {
+    .user {
+        .id: string
+    }
+    .payment {
+        .cardNumber: string
+        .amount: double
+    }
+    .order {
+        .status: string
+        .addressToShip: string
+        .products[0, *]: Product // an array of Products
+    }
+}
+
 interface CheckoutInterface {
 	RequestResponse:
-		checkoutPay(undefined)(undefined)
+		checkoutPay(CheckoutPayRequest)(undefined)
 }
 
 constants {
@@ -12,10 +32,10 @@ constants {
     SQL_DATABASE = "postgres",
     SQL_DRIVER = "postgresql",
 
-    SQL_CREATE_CHECKOUT_TABLE = "CREATE TABLE public.checkout (
-                                    id numeric NOT NULL,
-                                    card numeric NOT NULL,
-                                    address numeric NULL
+    SQL_CREATE_CHECKOUT_TABLE = "CREATE TABLE checkout (
+                                    id varchar(128) NOT NULL,
+                                    order_id varchar(128) NOT NULL,
+                                    cart_id varchar(128) NULL
                                 );
-                                COMMENT ON TABLE public.payment IS 'Table that holds the several checkout information. This table holds the data necessary after a click on the checkout button.';"
+                                COMMENT ON TABLE checkout IS 'Table that holds the order and cart ids about checkouts with success.';"
 }
