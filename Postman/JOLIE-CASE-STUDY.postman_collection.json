@@ -87,19 +87,22 @@
 							"request": {
 								"method": "POST",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user\": {\r\n        \"id\": \"7fb7205d-c239-41a0-9d8b-7934eb369608\"\r\n    },\r\n    \"payment\": {\r\n        \"cardNumber\": \"3567061451262084\",\r\n        \"amount\": 400.20\r\n    },\r\n    \"order\": {\r\n        \"status\": \"CREATED\",\r\n        \"addressToShip\": \"Rua Teste nº90\",\r\n        \"products\": [\r\n            {\r\n                \"id\": \"142351431623\",\r\n                \"quantity\": 2\r\n            },\r\n            {\r\n                \"id\": \"352362546\",\r\n                \"quantity\": 1\r\n            },\r\n            {\r\n                \"id\": \"45742724574527\",\r\n                \"quantity\": 1\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{server-jolie-checkout-service}}/checkoutPay?userId=8",
+									"raw": "{{server-jolie-checkout-service}}/checkoutPay",
 									"host": [
 										"{{server-jolie-checkout-service}}"
 									],
 									"path": [
 										"checkoutPay"
-									],
-									"query": [
-										{
-											"key": "userId",
-											"value": "8"
-										}
 									]
 								}
 							},
@@ -111,23 +114,39 @@
 					"name": "Cart",
 					"item": [
 						{
-							"name": "cartRetrieve",
+							"name": "getCarts",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:9002/cartRetrieve?id=1",
+									"raw": "{{server-jolie-cart-service}}/all",
 									"host": [
-										"localhost"
+										"{{server-jolie-cart-service}}"
 									],
-									"port": "9002",
 									"path": [
-										"cartRetrieve"
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCart",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server-jolie-cart-service}}/cart?id=c15e6c14-af67-45be-96ec-db5a79da3fa5",
+									"host": [
+										"{{server-jolie-cart-service}}"
+									],
+									"path": [
+										"cart"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "1"
+											"value": "c15e6c14-af67-45be-96ec-db5a79da3fa5"
 										}
 									]
 								}
@@ -135,13 +154,13 @@
 							"response": []
 						},
 						{
-							"name": "cartCreate",
+							"name": "createCart",
 							"event": [
 								{
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -152,7 +171,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"user\": 1\r\n}",
+									"raw": "{\r\n    \"userId\": \"1ca923b0-2fc0-433c-842c-5c9723df03d9\",\r\n    \"cartProducts\": \"{21, 22}\",\r\n    \"cartTotal\": \"100.00\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -160,36 +179,43 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:9002/cartCreate",
+									"raw": "{{server-jolie-cart-service}}/create",
 									"host": [
-										"localhost"
+										"{{server-jolie-cart-service}}"
 									],
-									"port": "9002",
 									"path": [
-										"cartCreate"
+										"create"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "cartDelete",
+							"name": "updateCart",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"c15e6c14-af67-45be-96ec-db5a79da3fa5\",\r\n    \"cartProducts\": \"{21, 22}\",\r\n    \"cartTotal\": \"120.00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "localhost:8001/cartDelete?id=",
+									"raw": "{{server-jolie-cart-service}}/update?id=c15e6c14-af67-45be-96ec-db5a79da3fa5",
 									"host": [
-										"localhost"
+										"{{server-jolie-cart-service}}"
 									],
-									"port": "8001",
 									"path": [
-										"cartDelete"
+										"update"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": ""
+											"value": "c15e6c14-af67-45be-96ec-db5a79da3fa5"
 										}
 									]
 								}
@@ -197,78 +223,86 @@
 							"response": []
 						},
 						{
-							"name": "cartAppendProduct",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:9002/cartAppendProduct",
-									"host": [
-										"localhost"
-									],
-									"port": "9002",
-									"path": [
-										"cartAppendProduct"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartRemoveProduct",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 1,\r\n    \"product\": 22\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:9002/cartRemoveProduct",
-									"host": [
-										"localhost"
-									],
-									"port": "9002",
-									"path": [
-										"cartRemoveProduct"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "cartDelete",
+							"name": "deleteCart",
 							"request": {
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:9002/cartDelete?id=1",
-									"protocol": "http",
+									"raw": "{{server-jolie-cart-service}}/delete?id=25401937",
 									"host": [
-										"localhost"
+										"{{server-jolie-cart-service}}"
 									],
-									"port": "9002",
 									"path": [
-										"cartDelete"
+										"delete"
 									],
 									"query": [
 										{
 											"key": "id",
-											"value": "1"
+											"value": "25401937"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addProductToCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\": \"c15e6c14-af67-45be-96ec-db5a79da3fa5\",\r\n    \"productId\": \"920e9dc7-5cf3-43b7-a598-6b881c2757ae\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-cart-service}}/addProduct",
+									"host": [
+										"{{server-jolie-cart-service}}"
+									],
+									"path": [
+										"addProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProductFromCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\": \"c15e6c14-af67-45be-96ec-db5a79da3fa5\",\r\n    \"productId\": \"920e9dc7-5cf3-43b7-a598-6b881c2757ae\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-cart-service}}/removeProduct",
+									"host": [
+										"{{server-jolie-cart-service}}"
+									],
+									"path": [
+										"removeProduct"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "8",
+											"disabled": true
+										},
+										{
+											"key": "productId",
+											"value": "21",
+											"disabled": true
 										}
 									]
 								}
@@ -338,7 +372,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"name\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 15\r\n}",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"product\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 15\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -464,7 +498,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 7,\r\n    \"userId\": 1,\r\n    \"status\": \"CREATED\",\r\n    \"orderAmount\": \"100.99\",\r\n    \"addressToShip\": \"Rua Teste nº90\",\r\n    \"orderProducts\": \"[21, 67, 64]\"\r\n}",
+									"raw": "{\r\n    \"userId\": \"7fb7205d-c239-41a0-9d8b-7934eb369608\",\r\n    \"status\": \"CREATED\",\r\n    \"addressToShip\": \"Rua Teste nº90\",\r\n    \"products\": [\r\n        {\r\n            \"id\": \"142351431623\"\r\n        },\r\n        {\r\n            \"id\": \"352362546\"\r\n        },\r\n        {\r\n            \"id\": \"45742724574527\"\r\n        }\r\n    ]\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -603,7 +637,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{server-jolie-user-service}}/user?id=8",
+									"raw": "{{server-jolie-user-service}}/user?id=e0630bb6-4af0-46bc-a90f-0466a999bf32",
 									"host": [
 										"{{server-jolie-user-service}}"
 									],
@@ -613,7 +647,7 @@
 									"query": [
 										{
 											"key": "id",
-											"value": "8"
+											"value": "e0630bb6-4af0-46bc-a90f-0466a999bf32"
 										}
 									]
 								}
@@ -627,7 +661,7 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"pm.environment.set(\"random_number\", _.random(1, 999))"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -638,7 +672,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"creditCard\": \"test\",\r\n    \"address\": \"Rua Teste, teste\",\r\n    \"phone\": \"912435345\",\r\n    \"cartProducts\": \"{12,20}\",\r\n    \"realName\": \"João Costa\",\r\n    \"email\": \"joao.costa@hotmail.com\"\r\n}",
+									"raw": "{\r\n    \"realName\": \"John Cena\",\r\n    \"email\": \"john.cena@gmail.com\",\r\n    \"phone\": \"586-269-1569\",\r\n    \"address\": \"3236 Trailsway Hill\",\r\n    \"gender\": \"Male\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -664,7 +698,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"creditCard\": \"test2\",\r\n    \"address\": \"Rua Teste, teste\",\r\n    \"phone\": \"912435345\",\r\n    \"cartProducts\": \"{12,20}\",\r\n    \"realName\": \"João Costa\",\r\n    \"email\": \"joao.costa@hotmail.com\"\r\n}",
+									"raw": "{\r\n    \"realName\": \"Steve Orton\",\r\n    \"email\": \"steve.orton@gmail.com\",\r\n    \"phone\": \"586-269-1569\",\r\n    \"address\": \"3236 Trailsway Hill\",\r\n    \"gender\": \"Male\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -672,7 +706,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{server-jolie-user-service}}/update?id=8",
+									"raw": "{{server-jolie-user-service}}/update?id=c14199d0-9383-4ad5-ae44-66b89fc0780f",
 									"host": [
 										"{{server-jolie-user-service}}"
 									],
@@ -682,7 +716,7 @@
 									"query": [
 										{
 											"key": "id",
-											"value": "8"
+											"value": "c14199d0-9383-4ad5-ae44-66b89fc0780f"
 										}
 									]
 								}
@@ -695,7 +729,7 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{server-jolie-user-service}}/delete?id=170",
+									"raw": "{{server-jolie-user-service}}/delete?id=742402b5-82bb-4c9c-81d6-5d5fbab1d23c",
 									"host": [
 										"{{server-jolie-user-service}}"
 									],
@@ -705,61 +739,7 @@
 									"query": [
 										{
 											"key": "id",
-											"value": "170"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "addProductToCart",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{server-jolie-user-service}}/addProduct?userId=8&productId=21",
-									"host": [
-										"{{server-jolie-user-service}}"
-									],
-									"path": [
-										"addProduct"
-									],
-									"query": [
-										{
-											"key": "userId",
-											"value": "8"
-										},
-										{
-											"key": "productId",
-											"value": "21"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "deleteProductFromCart",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{server-jolie-user-service}}/removeProduct?userId=8&productId=21",
-									"host": [
-										"{{server-jolie-user-service}}"
-									],
-									"path": [
-										"removeProduct"
-									],
-									"query": [
-										{
-											"key": "userId",
-											"value": "8"
-										},
-										{
-											"key": "productId",
-											"value": "21"
+											"value": "742402b5-82bb-4c9c-81d6-5d5fbab1d23c"
 										}
 									]
 								}
@@ -1733,99 +1713,689 @@
 			"name": "API Gateway",
 			"item": [
 				{
-					"name": "New Request",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8000",
-							"host": [
-								"localhost"
-							],
-							"port": "8000"
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "TEST",
-			"item": [
-				{
-					"name": "localhost:9090/user/save",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 4,\r\n    \"name\": \"Test\",\r\n    \"balance\": 2000.0\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					"name": "product",
+					"item": [
+						{
+							"name": "getProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/product/all",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"product",
+										"all"
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "localhost:9090/user/save",
-							"host": [
-								"localhost"
+						{
+							"name": "getProduct",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/product/product?id=410970932",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"product",
+										"product"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "410970932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createProduct",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))"
+										],
+										"type": "text/javascript"
+									}
+								}
 							],
-							"port": "9090",
-							"path": [
-								"user",
-								"save"
-							]
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{random_number}},\r\n    \"product\": \"My new product\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 15\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/product/create",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"product",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProduct",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"My new product edited\",\r\n    \"description\": \"This is a fancy product\",\r\n    \"type\": 1,\r\n    \"price\": 14 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/product/update?id=410970932",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"product",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "410970932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProduct",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/product/delete?id=410970932",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"product",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "410970932"
+										}
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "localhost:9090/order/create",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": null,\r\n    \"orderAmount\": 100,\r\n    \"status\": \"CREATED\",\r\n    \"userId\": 4\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					"name": "cart",
+					"item": [
+						{
+							"name": "getCarts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/cart/all",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"all"
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "localhost:9090/order/create",
-							"host": [
-								"localhost"
+						{
+							"name": "getCart",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/cart/cart?id=c15e6c14-af67-45be-96ec-db5a79da3fa5",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"cart"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "c15e6c14-af67-45be-96ec-db5a79da3fa5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCart",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
 							],
-							"port": "9090",
-							"path": [
-								"order",
-								"create"
-							]
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"1ca923b0-2fc0-433c-842c-5c9723df03d9\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/cart/create",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateCart",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"c15e6c14-af67-45be-96ec-db5a79da3fa5\",\r\n    \"cartProducts\": \"{21, 22}\",\r\n    \"cartTotal\": \"120.00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/cart/update?id=c15e6c14-af67-45be-96ec-db5a79da3fa5",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "c15e6c14-af67-45be-96ec-db5a79da3fa5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteCart",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/cart/delete?id=c15e6c14-af67-45be-96ec-db5a79da3fa5",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "c15e6c14-af67-45be-96ec-db5a79da3fa5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addProductToCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\": \"874adf58-f8b8-4c04-8307-ce7d4f4bf78f\",\r\n    \"productId\": \"256629411\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/cart/addProduct",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"addProduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProductFromCart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\": \"874adf58-f8b8-4c04-8307-ce7d4f4bf78f\",\r\n    \"productId\": \"256629411\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/cart/removeProduct",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"cart",
+										"removeProduct"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "localhost:9090/order/all",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:9090/order/all",
-							"host": [
-								"localhost"
-							],
-							"port": "9090",
-							"path": [
-								"order",
-								"all"
-							]
+					"name": "order",
+					"item": [
+						{
+							"name": "getOrders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/order/all",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"order",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrder",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/order/order?id=",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"order",
+										"order"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"7fb7205d-c239-41a0-9d8b-7934eb369608\",\r\n    \"status\": \"CREATED\",\r\n    \"addressToShip\": \"Rua Teste nº90\",\r\n    \"products\": [\r\n        {\r\n            \"id\": \"142351431623\",\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"id\": \"352362546\",\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"id\": \"45742724574527\",\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/order/create",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"order",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateOrder",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 7,\r\n    \"status\": \"CREATED\",\r\n    \"orderAmount\": \"100.99\",\r\n    \"addressToShip\": \"Rua Teste number 90\",\r\n    \"orderProducts\": \"[21, 67, 69, 70]\",\r\n    \"userId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/order/update",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"order",
+										"update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteOrder",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/order/delete?id=7",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"order",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUserOrders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/order/userOrders?id=1",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"order",
+										"userOrders"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
+				},
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "getUsers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/user/all",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"user",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUser",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/user/user?id=7fb7205d-c239-41a0-9d8b-7934eb369608",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"user",
+										"user"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "7fb7205d-c239-41a0-9d8b-7934eb369608"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createUser",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"realName\": \"John Cena\",\r\n    \"email\": \"john.cena@gmail.com\",\r\n    \"phone\": \"586-269-1569\",\r\n    \"address\": \"3236 Trailsway Hill\",\r\n    \"gender\": \"Male\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/user/create",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"user",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateUser",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"realName\": \"John Cena 2\",\r\n    \"address\": \"3236 Trailsway Hill\",\r\n    \"gender\": \"Male\",\r\n    \"phone\": \"586-269-1569\",\r\n    \"id\": \"5923e5ef-fdc6-4175-95bf-f2b978cca311\",\r\n    \"email\": \"john.cena@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/user/update",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"user",
+										"update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteUser",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/user/delete?id=5923e5ef-fdc6-4175-95bf-f2b978cca311",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"user",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "5923e5ef-fdc6-4175-95bf-f2b978cca311"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "checkout",
+					"item": [
+						{
+							"name": "checkoutPay",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"random_number\", _.random(1, 999999999))\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user\": {\r\n        \"id\": \"7fb7205d-c239-41a0-9d8b-7934eb369608\"\r\n    },\r\n    \"payment\": {\r\n        \"cardNumber\": \"3567061451262084\",\r\n        \"amount\": 400.20\r\n    },\r\n    \"order\": {\r\n        \"status\": \"CREATED\",\r\n        \"addressToShip\": \"Rua Teste nº90\",\r\n        \"products\": [\r\n            {\r\n                \"id\": \"142351431623\",\r\n                \"quantity\": 2\r\n            },\r\n            {\r\n                \"id\": \"352362546\",\r\n                \"quantity\": 1\r\n            },\r\n            {\r\n                \"id\": \"45742724574527\",\r\n                \"quantity\": 1\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server-jolie-checkout-service}}/checkoutPay?userId=7fb7205d-c239-41a0-9d8b-7934eb369608",
+									"host": [
+										"{{server-jolie-checkout-service}}"
+									],
+									"path": [
+										"checkoutPay"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "7fb7205d-c239-41a0-9d8b-7934eb369608"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
@@ -1836,7 +2406,23 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"function generateUUID() { // Public Domain/MIT",
+					"    var d = new Date().getTime();//Timestamp",
+					"    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported",
+					"    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
+					"        var r = Math.random() * 16;//random number between 0 and 16",
+					"        if(d > 0){//Use timestamp until depleted",
+					"            r = (d + r)%16 | 0;",
+					"            d = Math.floor(d/16);",
+					"        } else {//Use microseconds since page-load if supported",
+					"            r = (d2 + r)%16 | 0;",
+					"            d2 = Math.floor(d2/16);",
+					"        }",
+					"        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);",
+					"    });",
+					"}",
+					"",
+					"pm.environment.set(\"random_number\", generateUUID())"
 				]
 			}
 		},
@@ -1909,6 +2495,11 @@
 		{
 			"key": "server-jolie-payment-service",
 			"value": "http://localhost:9056",
+			"type": "string"
+		},
+		{
+			"key": "server-jolie-cart-service",
+			"value": "http://localhost:9057",
 			"type": "string"
 		}
 	]
