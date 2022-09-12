@@ -68,14 +68,25 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/cart] -  fetch cart with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM cart WHERE id = :id" {
+                "SELECT c.id, c.user_id, cp.product_id, cp.quantity, cp.price_total  FROM cart c, cart_products cp WHERE cp.cart_id = :id AND c.id = cp.cart_id;" {
                     .id = request.id
                 }
             )(sqlResponse);
 
             if (#sqlResponse.row >= 1) {
-                response -> sqlResponse
+                customResponse.id = sqlResponse.row[0].id
+                customResponse.userId = sqlResponse.row[0].user_id
+                customResponse.cartPriceTotal = 0
+
+                for( i = 0, i < #sqlResponse.row, i++ ){
+                    customResponse.products[i].productId = sqlResponse.row[i].product_id
+                    customResponse.products[i].quantity = sqlResponse.row[i].quantity
+                    customResponse.products[i].price = sqlResponse.row[i].price_total
+                    customResponse.cartPriceTotal += sqlResponse.row[i].price_total
+                }
             }
+
+            response -> customResponse
         }
     ]
 
@@ -142,10 +153,13 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] -  adding product with id " +
              request.productId + " to cart with id " + request.cartId )(  )
 
-            product@ProductService( requestProduct.id )( responseProduct )
+            requestProduct.id = request.productId
+            product@ProductService( requestProduct )( responseProduct )
+            
+            println@Console( "This product costs " + responseProduct.price )(  )
 
             // if the product exists in the database add it to the cart
-            if ( responseProduct.id == null ) {
+            // if ( responseProduct.id == null ) {
 
                 //----------------------------- 1. CHECK IF PRODUCT ALREADY EXISTS IN THE CART -------------------------------- 
                 query@Database(
@@ -165,10 +179,12 @@ main
                 
                 //----------------------------- 2. ADD PRODUCT TO THE CART -------------------------------- 
                 update@Database(
-                "INSERT INTO cart_products(cart_id, product_id)
-                 VALUES(:cartId, :productId);" {
-                    .cartId = request.cartId, // UUID auto generated
-                    .productId = request.productId
+                "INSERT INTO cart_products(cart_id, product_id, quantity, price_total)
+                 VALUES(:cartId, :productId, :quantity, :priceTotal);" {
+                        .cartId = request.cartId, // UUID auto generated
+                        .productId = request.productId,
+                        .quantity = request.quantity,
+                        .priceTotal = double(responseProduct.price) * request.quantity
                     }
                 )(sqlResponseProductAdd.status)
 
@@ -188,10 +204,10 @@ main
 
                 //----------------------------- 3. SEND CUSTOM RESPONSE TO CLIENT -------------------------------- 
                 response -> customResponse
-            }
-            else {
-                println@Console( "There is not product with such ID" )(  )
-            }
+            // }
+            // else {
+            //     println@Console( "There is not product with such ID" )(  )
+            // }
         }
     ]
     

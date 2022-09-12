@@ -10,6 +10,7 @@ type UpdateCartRequest {
 type AddProductRequest {
     .cartId: string // to accept UUID values
     .productId: string // to accept UUID values
+    .quantity: int
 }
 
 type RemoveProductRequest {
@@ -51,7 +52,8 @@ constants {
                             CREATE TABLE public.cart_products (
                                 cart_id varchar(128) NOT NULL,
                                 product_id varchar(128) NOT NULL,
-                                quantity numeric NOT NULL DEFAULT 1
+                                quantity numeric NOT NULL DEFAULT 1,
+                                price_total NOT NULL
                             );
                             COMMENT ON TABLE public.cart IS 'Table that holds the cart information.';
                             COMMENT ON TABLE public.cart_products IS 'Table that holds the cart products information.';"
