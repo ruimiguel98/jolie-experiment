@@ -1,6 +1,7 @@
 include "console.iol"
 include "database.iol"
 include "string_utils.iol"
+include "time.iol"
 
 include "./ProductInterface.iol"
 
@@ -31,6 +32,8 @@ init
         install (SQLException => println@Console("Product table already there")());
         update@Database(SQL_CREATE_TABLE_PRODUCT)(ret)
     }
+
+    getCurrentDateTime@Time( )( currentDateTime ) // call this API to create a GLOBAL VARIABLE for current datetime to be present in logs
 }
 
 // behaviour info
@@ -61,11 +64,15 @@ main
 
     [ 
         create(request)(response) {
-            messageSuccess = "The product was created with success!";
+            println@Console( "[PRODUCT] - [" + currentDateTime + "] - [/create] - create product" )(  )
+
+            getRandomUUID@StringUtils(  )( randomUUID )
+
+
 
             update@Database(
-                "insert into public.product(id, product, description, type, price) values (:id, :product, :description, :type, :price)" {
-                    .id = request.id,
+                "INSERT INTO product(id, product, description, type, price) VALUES (:id, :product, :description, :type, :price)" {
+                    .id = randomUUID, // UUID auto generated
                     .product = request.product,
                     .description = request.description,
                     .type = request.type,
@@ -73,9 +80,18 @@ main
                 }
             )(sqlResponse.status)
 
-            if (#sqlResponse.status == 1) {
-                response.message -> messageSuccess
+            // verify if the request was successfull
+            if ( #sqlResponse.status == 1 ) {
+                println@Console( "[PRODUCT] - [" + currentDateTime + "] - [/create] - product created with ID " + randomUUID )(  )
+                customResponse.message = "The product was created with success!"
+                customResponse.productId = randomUUID
             }
+            else {
+                println@Console( "[PRODUCT] - [" + currentDateTime + "] - [/create] - ERROR creating a new product" )(  )
+                customResponse.error = "Error creating the new product!"
+            }
+
+            response -> customResponse
         } 
     ]  
 

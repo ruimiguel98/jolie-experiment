@@ -1,5 +1,4 @@
 type CreateRequest {
-    .id: string // to accept UUID values
     .product: string
     .description: string
     .type: string
@@ -33,8 +32,9 @@ constants {
                                     id VARCHAR(40),
                                     description VARCHAR(50),
                                     product VARCHAR(50),
-                                    price DECIMAL(5,2),
-                                    type VARCHAR(50)
+                                    price DECIMAL(20,2),
+                                    type VARCHAR(50),
+                                    CONSTRAINT product_pkey PRIMARY KEY (id)
                                 );
 
                                 ALTER TABLE IF EXISTS public.product
