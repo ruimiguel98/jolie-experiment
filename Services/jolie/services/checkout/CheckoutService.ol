@@ -27,11 +27,7 @@ outputPort EmailService {
     Protocol: http { .format = "json" }
     Interfaces: EmailInterface
 }
-outputPort UserService {
-    Location: LOCATION_SERVICE_USER
-    Protocol: http { .format = "json" }
-    Interfaces: UserInterface
-}
+
 
 // deployment info
 inputPort CheckoutPort {
@@ -75,18 +71,13 @@ main
         checkoutPay( request)( response ) {
             println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
-            //----------------------------- 1. GET ALL USER INFO OF THE USER DOING THE CHECKOUT --------------------------------
-            user@UserService( request.user )( responseUser );
-            println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Checkout being done by user with id " + request.user.id )( );
-
-
-            //----------------------------- 2. WITHDRAWL PROVIDED BANK ACCOUNT --------------------------------
+            //----------------------------- 1. WITHDRAWL PROVIDED BANK ACCOUNT --------------------------------
             withdrawlAccount@PaymentService( request.payment )( responsePayment )
             
             if ( responsePayment.status == "SUCCESS" ) {
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Payment processed with success")( )
 
-                //----------------------------- 3. PLACE THE ORDER --------------------------------
+                //----------------------------- 2. PLACE THE ORDER --------------------------------
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Placing the order")( )
                 
                 getRandomUUID@StringUtils( )( responseUUID )
