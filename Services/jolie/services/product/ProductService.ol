@@ -51,7 +51,7 @@ main
     [ 
         product(request)(response) {
             query@Database(
-                "select * from product where id=:id" {
+                "select * from product where id = :id::uuid" { // type cast is important for POSTGRES
                     .id = request.id
                 }
             )(sqlResponse);
@@ -68,10 +68,8 @@ main
 
             getRandomUUID@StringUtils(  )( randomUUID )
 
-
-
             update@Database(
-                "INSERT INTO product(id, product, description, type, price) VALUES (:id, :product, :description, :type, :price)" {
+                "INSERT INTO product(id, product, description, type, price) VALUES (:id::uuid, :product, :description, :type, :price)" {
                     .id = randomUUID, // UUID auto generated
                     .product = request.product,
                     .description = request.description,
@@ -98,7 +96,7 @@ main
     [ 
         update(request)(response) {
             update@Database(
-                "UPDATE product SET product=:product WHERE id=:id" {
+                "UPDATE product SET product=:product WHERE id = :id::uuid" {
                     .product = request.product,
                     .id = request.id
                 }
@@ -109,7 +107,7 @@ main
     [ 
         delete(request)(response) {
             update@Database(
-                "DELETE FROM product WHERE id=:id" {
+                "DELETE FROM product WHERE id = :id::uuid" {
                     .id = request.id
                 }
             )(response.status)
