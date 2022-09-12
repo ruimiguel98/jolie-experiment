@@ -8,6 +8,7 @@ include "../order/OrderInterface.iol"
 include "../payment/PaymentInterface.iol"
 include "../email/EmailInterface.iol"
 include "../user/UserInterface.iol"
+include "../cart/CartInterface.iol"
 
 execution { concurrent }
 
@@ -27,6 +28,11 @@ outputPort EmailService {
     Protocol: http { .format = "json" }
     Interfaces: EmailInterface
 }
+outputPort CartService {
+    Location: LOCATION_SERVICE_CART
+    Protocol: http { .format = "json" }
+    Interfaces: CartInterface
+}
 
 
 // deployment info
@@ -38,7 +44,7 @@ inputPort CheckoutPort {
         Order => OrderService,
         Payment => PaymentService,
         Email => EmailService,
-        User => UserService
+        Cart => CartService
 }
 
 // prepare database connection (creates table if does not exist)
@@ -71,17 +77,25 @@ main
         checkoutPay( request)( response ) {
             println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
+
+            //----------------------------- 2. PLACE THE ORDER --------------------------------
+            cart@CartService( request.cart )( responseCart )
+            request.payment.amount = responseCart.cartPriceTotal
+
             //----------------------------- 1. WITHDRAWL PROVIDED BANK ACCOUNT --------------------------------
             withdrawlAccount@PaymentService( request.payment )( responsePayment )
             
             if ( responsePayment.status == "SUCCESS" ) {
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Payment processed with success")( )
 
+
                 //----------------------------- 2. PLACE THE ORDER --------------------------------
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Placing the order")( )
                 
                 getRandomUUID@StringUtils( )( responseUUID )
 
+                request.order.orderPriceTotal = responseCart.cartPriceTotal
+                request.order.userId = responseCart.userId
                 create@OrderService( request.order )( responseOrder )
 
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Order placed with success")( )
@@ -113,7 +127,6 @@ main
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - ERROR not enough balance")( )
                 customResponse.error = "Not enough balance"
             }
-
 
             response -> customResponse
         } 

@@ -8,6 +8,7 @@ type CreateOrderRequest {
     .status: string
     .addressToShip: string
     .products[1, *]: Product // an array of Products
+    .orderPriceTotal: double
 }
 
 interface OrderInterface {

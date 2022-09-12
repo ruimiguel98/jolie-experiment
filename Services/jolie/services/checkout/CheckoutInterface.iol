@@ -9,12 +9,14 @@ type CheckoutPayRequest {
     }
     .payment {
         .cardNumber: string
-        .amount: double
     }
     .order {
         .status: string
         .addressToShip: string
         .products[0, *]: Product // an array of Products
+    }
+    .cart {
+        .id: string
     }
 }
 
