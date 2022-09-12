@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/product")
@@ -26,17 +27,17 @@ public class ProductController {
     }
 
     @GetMapping("/product")
-    public Product getProduct(@RequestParam(name="id", required = true) int productId) {
+    public Product getProduct(@RequestParam(name="id", required = true) UUID productId) {
         return productService.getProductById(productId);
     }
 
     @PutMapping("/update")
-    public Product updateProduct(@RequestBody Product product, @RequestParam("id") int productId) {
+    public Product updateProduct(@RequestBody Product product, @RequestParam("id") UUID productId) {
         return productService.updateProduct(product, productId);
     }
 
     @DeleteMapping("/delete")
-    public String deleteProduct(@RequestParam("id") int productId) {
+    public String deleteProduct(@RequestParam("id") UUID productId) {
         productService.deleteProductById(productId);
         return "Product deleted successfully";
     }

@@ -1,14 +1,13 @@
 package org.example.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.example.bean.Product;
 import org.example.repo.ProductCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -26,15 +25,15 @@ public class ProductService {
         return products;
     }
 
-    public Product getProductById(int productId) {
+    public Product getProductById(UUID productId) {
         return productCRUD.findById(productId).get();
     }
 
-    public Product updateProduct(Product product, int productId) {
+    public Product updateProduct(Product product, UUID productId) {
         Product productDB = productCRUD.findById(productId).get();
 
-        if (Objects.nonNull(product.getName()) && !"".equalsIgnoreCase(product.getName())) {
-            productDB.setName(product.getName());
+        if (Objects.nonNull(product.getProduct()) && !"".equalsIgnoreCase(product.getProduct())) {
+            productDB.setProduct(product.getProduct());
         }
 
         if (Objects.nonNull(product.getDescription()) && !"".equalsIgnoreCase(product.getDescription())) {
@@ -52,7 +51,7 @@ public class ProductService {
         return productCRUD.save(productDB);
     }
 
-    public void deleteProductById(int productId) {
+    public void deleteProductById(UUID productId) {
         productCRUD.deleteById(productId);
     }
 }
