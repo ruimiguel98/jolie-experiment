@@ -7,10 +7,7 @@ type CreateOrderRequest {
     .userId: string // to accept UUID values
     .status: string
     .addressToShip: string
-    .products[1,9999]: any {
-        .id: string
-        .quantity: int
-    }
+    .products[1, *]: Product // an array of Products
 }
 
 interface OrderInterface {
