@@ -1,6 +1,7 @@
 package org.example.bean;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity(name = "Email")
 @Table(name = "email")
@@ -10,18 +11,18 @@ public class Email {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private UUID id;
     private String subject;
     private String message;
     private String fromEmail;
     private String toEmail;
     private String sentDate;
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
