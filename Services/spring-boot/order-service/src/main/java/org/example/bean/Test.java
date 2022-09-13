@@ -1,40 +1,35 @@
 package org.example.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "Order")
-@Table(name = "orders")
-public class Order {
+@TypeDef(
+        name = "list-array",
+        typeClass = ListArrayType.class
+)
+@JsonIgnoreProperties(ignoreUnknown = true) // ESSENTIAL FOR THE ABODE TYPE DEF TO WORK
+public class Test {
 
     private static final long serialVersionUID = -4551323276601557391L;
 
-    @Id
-    @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
-    @GenericGenerator(name = "UUIDGenerator", strategy = "uuid2")
-    @GeneratedValue(generator = "UUIDGenerator")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-
-    @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
-    @Column(name = "user_id", updatable = false, nullable = false)
     private UUID userId;
     private String status;
     private String addressToShip;
 
+    @Type(type = "list-array")
+    private List<String> products;
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public UUID getUserId() {
@@ -61,14 +56,21 @@ public class Order {
         this.addressToShip = addressToShip;
     }
 
+    public List<String> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<String> products) {
+        this.products = products;
+    }
 
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +
                 ", userId=" + userId +
                 ", status='" + status + '\'' +
                 ", addressToShip='" + addressToShip + '\'' +
                 '}';
     }
+
 }

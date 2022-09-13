@@ -12,6 +12,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderNotificationListener {
@@ -26,7 +27,7 @@ public class OrderNotificationListener {
     UserCRUD userCRUD;
 
     @KafkaListener(topics = "checkout-topic", groupId = "foo")
-    public void listenGroupFoo(String userId, String address) {
+    public void listenGroupFoo(UUID userId, String address) {
 
         System.out.println("Received message in group foo: user id - " + userId + " and address - " + address);
 //        ObjectMapper object = new ObjectMapper();
@@ -40,20 +41,18 @@ public class OrderNotificationListener {
 //        }
 
         // save order for the logged-in user
-        User user = userCRUD.findById(Integer.parseInt(userId)).get();
-        List<Long> cartProducts = user.getCartProducts();
-
-        // places the order for this checkout of products
-        Order order = new Order();
-        order.setOrderAmount("100");
-        order.setAddressToShip(user.getAddress());
-        order.setStatus("1 - WAITING PAYMENT");
-        order.setOrderProducts(cartProducts);
-        order.setUserId(Integer.parseInt(userId));
-        orderCRUD.save(order);
-
-        System.out.println("Order saved:");
-        System.out.println(order.toString());
+//        User user = userCRUD.findById(Integer.parseInt(userId)).get();
+//        List<Long> cartProducts = user.getCartProducts();
+//
+//        // places the order for this checkout of products
+//        Order order = new Order();
+//        order.setAddressToShip(user.getAddress());
+//        order.setStatus("1 - WAITING PAYMENT");
+//        order.setUserId(Integer.parseInt(userId));
+//        orderCRUD.save(order);
+//
+//        System.out.println("Order saved:");
+//        System.out.println(order.toString());
 
 //
 //        if (user.getBalance() > order.getOrderAmount()) {

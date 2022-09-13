@@ -1,11 +1,11 @@
 package org.example.repo;
 
 import org.example.bean.Order;
+import org.example.bean.OrderProducts;
+import org.example.bean.OrderProductsId;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
-
 @Repository
-public interface OrderCRUD extends CrudRepository<Order, UUID> {
+public interface OrderProductsCRUD extends CrudRepository<OrderProducts, OrderProductsId> {
 }
