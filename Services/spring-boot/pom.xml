@@ -25,7 +25,7 @@
 	<groupId>org.example</groupId>
 	<artifactId>app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>App</name>
+	<name>E-Commerce Application</name>
 	<description>Demo project for Jolie experimentation</description>
 
 </project>

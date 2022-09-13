@@ -16,6 +16,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>common-dto</name>
     <description>Project common DTO</description>
+    <packaging>jar</packaging>
 
     <properties>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
@@ -62,4 +63,8 @@
             <version>2.10.4</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>CommonDTO</finalName>
+    </build>
 </project>
