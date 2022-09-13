@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PaymentCRUD extends CrudRepository<Payment, Integer> {
+public interface PaymentCRUD extends CrudRepository<Payment, String> {
 }

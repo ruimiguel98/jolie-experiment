@@ -1,27 +1,34 @@
 package org.example.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 @Entity(name = "Payment")
 @Table(name = "payment")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Payment {
 
     private static final long serialVersionUID = -4551323276601557391L;
 
     @Id
-    private Integer cardNumber;
-    private String name;
+    @Type(type="java.lang.String")
+    private String cardNumber;
+    private String realName;
     private String expireDate;
     private String CVV;
     private String cardType;
     private String accountBalance;
 
-    public String getName() {
-        return name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getExpireDate() {
@@ -40,11 +47,11 @@ public class Payment {
         this.CVV = CVV;
     }
 
-    public Integer getCardNumber() {
+    public String getCardNumber() {
         return cardNumber;
     }
 
-    public void setCardNumber(Integer cardNumber) {
+    public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
     }
 
