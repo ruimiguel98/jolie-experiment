@@ -29,7 +29,7 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_TABLE_PRODUCT = "CREATE TABLE product (
-                                    id VARCHAR(40),
+                                    id UUID,
                                     description VARCHAR(50),
                                     product VARCHAR(50),
                                     price DECIMAL(20,2),

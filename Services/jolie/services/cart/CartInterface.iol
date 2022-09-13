@@ -45,13 +45,13 @@ constants {
 
 
     SQL_CREATE_CART_INFO = "CREATE TABLE public.cart (
-                                id varchar(128) NOT NULL,
-                                user_id varchar(128) null,
+                                id UUID NOT NULL,
+                                user_id UUID null,
                                 CONSTRAINT cart_pkey PRIMARY KEY (id)
                             );
                             CREATE TABLE public.cart_products (
-                                cart_id varchar(128) NOT NULL,
-                                product_id varchar(128) NOT NULL,
+                                cart_id UUID NOT NULL,
+                                product_id UUID NOT NULL,
                                 quantity numeric NOT NULL DEFAULT 1,
                                 price_total NOT NULL
                             );

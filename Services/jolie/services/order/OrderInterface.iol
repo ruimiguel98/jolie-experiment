@@ -35,17 +35,17 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_ORDER_INFO = "CREATE TABLE orders (
-                                    id varchar(128) NOT NULL,
+                                    id UUID NOT NULL,
                                     address_to_ship varchar(255) NOT NULL,
                                     status varchar(255) NOT NULL,
-                                    user_id varchar(128) NOT NULL,
+                                    user_id UUID NOT NULL,
                                     CONSTRAINT orders_pkey PRIMARY KEY (id)
                             );
                             COMMENT ON TABLE orders IS 'Table that holds the order information.';
                             
                             CREATE TABLE order_products (
-                                    order_id varchar(128) NOT NULL,
-                                    product_id varchar(128) NOT NULL,
+                                    order_id UUID NOT NULL,
+                                    product_id UUID NOT NULL,
                                     quantity numeric NOT NULL DEFAULT 1
                             );
                             COMMENT ON TABLE order_products IS 'Data relative to the products associated with an order';

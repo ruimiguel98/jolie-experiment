@@ -56,7 +56,7 @@ main
             println@Console( "[USER] - Requesting the user with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM users WHERE id = :id" {
+                "SELECT * FROM users WHERE id = :id::uuid" {
                     .id = request.id
                 }
             )(sqlResponse);
@@ -75,7 +75,7 @@ main
 
             update@Database(
                 "INSERT INTO users(id, real_name, email, phone, address, gender)
-                 VALUES(:id, :realName, :email, :phone, :address, :gender);" {
+                 VALUES(:id::uuid, :realName, :email, :phone, :address, :gender);" {
                     .id = randomUUID, // UUID auto generated
                     .realName = request.realName,
                     .email = request.email,
@@ -111,7 +111,7 @@ main
 
             update@Database(
                 "UPDATE users SET real_name=:realName, email=:email, phone=:phone, address=:address, gender=:gender
-                WHERE id=:id;" {
+                WHERE id = :id::uuid;" {
                     .id = request.id,
                     .realName = request.realName,
                     .email = request.email,
@@ -140,7 +140,7 @@ main
             println@Console( "[USER] - [" + currentDateTime + "] - [/delete] - delete user with ID " + request.id )(  )
 
             update@Database(
-                "DELETE FROM users WHERE id = :id" {
+                "DELETE FROM users WHERE id = :id::uuid" {
                     .id = request.id
                 }
             )(sqlResponse.status)

@@ -13,7 +13,7 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_EMAIL_INFO = "CREATE TABLE emails (
-                                    id varchar(128) NOT NULL,
+                                    id UUID NOT NULL,
                                     subject varchar(128) NOT  NULL,
                                     message varchar(255) NOT NULL,
                                     toEmail varchar(255) NOT NOT NULL,

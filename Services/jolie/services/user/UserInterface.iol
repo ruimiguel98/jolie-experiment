@@ -25,7 +25,7 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_TABLE_USER = "CREATE TABLE public.users (
-                                id VARCHAR(40),
+                                id UUID,
                                 real_name VARCHAR(50),
                                 email VARCHAR(50),
                                 phone VARCHAR(50),

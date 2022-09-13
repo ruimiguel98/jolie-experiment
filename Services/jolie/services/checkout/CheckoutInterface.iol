@@ -35,9 +35,9 @@ constants {
     SQL_DRIVER = "postgresql",
 
     SQL_CREATE_CHECKOUT_TABLE = "CREATE TABLE checkout (
-                                    id varchar(128) NOT NULL,
-                                    order_id varchar(128) NOT NULL,
-                                    cart_id varchar(128) NULL
+                                    id UUID NOT NULL,
+                                    order_id UUID NOT NULL,
+                                    cart_id UUID NULL
                                 );
                                 COMMENT ON TABLE checkout IS 'Table that holds the order and cart ids about checkouts with success.';"
 }
