@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -14,41 +15,6 @@ public class UserService {
     @Autowired
     UserCRUD userCRUD;
 
-    // ----------------------------------------------------------
-    // --------------- Special operations
-    // ----------------------------------------------------------
-    public User addProductToCart(int userId, Long productId) {
-        User userDB = userCRUD.findById(userId).get();
-
-        if (Objects.nonNull(userDB.getCartProducts())) {
-
-            List<Long> cartProducts = userDB.getCartProducts();
-            cartProducts.add(productId);
-
-            userDB.setCartProducts(cartProducts);
-        }
-
-        return userCRUD.save(userDB);
-    }
-
-    public User removeProductFromCart(int userId, Long productId) {
-        User userDB = userCRUD.findById(userId).get();
-
-        if (Objects.nonNull(userDB.getCartProducts())) {
-
-            List<Long> cartProducts = userDB.getCartProducts();
-            cartProducts.remove(productId);
-
-            userDB.setCartProducts(cartProducts);
-        }
-
-        return userCRUD.save(userDB);
-    }
-
-
-    // ----------------------------------------------------------
-    // --------------- CRUD operations
-    // ----------------------------------------------------------
     public User createUser(User user) {
         user = userCRUD.save(user);
         return user;
@@ -59,15 +25,15 @@ public class UserService {
         return products;
     }
 
-    public User getUserById(int userId) {
+    public User getUserById(UUID userId) {
         return userCRUD.findById(userId).get();
     }
 
-    public User updateUser(User user, int userId) {
+    public User updateUser(User user, UUID userId) {
         User userDB = userCRUD.findById(userId).get();
 
-        if (Objects.nonNull(user.getName()) && !"".equalsIgnoreCase(user.getName())) {
-            userDB.setName(user.getName());
+        if (Objects.nonNull(user.getRealName()) && !"".equalsIgnoreCase(user.getRealName())) {
+            userDB.setRealName(user.getRealName());
         }
 
         if (Objects.nonNull(user.getPhone()) && !"".equalsIgnoreCase(user.getPhone())) {
@@ -78,14 +44,18 @@ public class UserService {
             userDB.setAddress(user.getAddress());
         }
 
-        if (Objects.nonNull(user.getCartProducts())) {
-            userDB.setCartProducts(user.getCartProducts());
+        if (Objects.nonNull(user.getGender())) {
+            userDB.setGender(user.getGender());
+        }
+
+        if (Objects.nonNull(user.getEmail())) {
+            userDB.setEmail(user.getEmail());
         }
 
         return userCRUD.save(userDB);
     }
 
-    public void deleteUserById(int userId) {
+    public void deleteUserById(UUID userId) {
         userCRUD.deleteById(userId);
     }
 }

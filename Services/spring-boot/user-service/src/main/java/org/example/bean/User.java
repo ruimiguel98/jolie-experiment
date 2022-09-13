@@ -1,53 +1,51 @@
 package org.example.bean;
 
-import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.UUID;
 
-@Entity(name = "User")
+@Entity
 @Table(name = "users")
-@TypeDef(
-        name = "list-array",
-        typeClass = ListArrayType.class
-)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
     private static final long serialVersionUID = -4551323276601557391L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String name;
+    @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
+    @GenericGenerator(name = "UUIDGenerator", strategy = "uuid2")
+    @GeneratedValue(generator = "UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+    private String realName;
     private String email;
     private String phone;
     private String address;
+    private String gender;
 
-    @Type(type = "list-array")
-    @Column(
-            name = "cartProducts",
-            columnDefinition = "_int8"
-    )
-    private List<Long> cartProducts;
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
-    private String creditCard;
-
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getEmail() {
@@ -74,19 +72,11 @@ public class User {
         this.address = address;
     }
 
-    public List<Long> getCartProducts() {
-        return cartProducts;
+    public String getGender() {
+        return gender;
     }
 
-    public void setCartProducts(List<Long> cartProducts) {
-        this.cartProducts = cartProducts;
-    }
-
-    public String getCreditCard() {
-        return creditCard;
-    }
-
-    public void setCreditCard(String creditCard) {
-        this.creditCard = creditCard;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
