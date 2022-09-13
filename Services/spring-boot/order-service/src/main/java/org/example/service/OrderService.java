@@ -21,7 +21,7 @@ public class OrderService {
     @Autowired
     OrderProductsCRUD orderProductsCRUD;
 
-    public Order createOrder(CreateOrderForm createOrderForm) {
+    public CreateOrderForm createOrder(CreateOrderForm createOrderForm) {
 
         UUID orderUUID = UUID.randomUUID();
 
@@ -42,7 +42,7 @@ public class OrderService {
 
         orderCRUD.save(order);
 
-        return null;
+        return createOrderForm;
     }
 
     public List<Order> getAllOrders() {

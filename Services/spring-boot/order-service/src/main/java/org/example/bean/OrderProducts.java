@@ -21,7 +21,6 @@ public class OrderProducts {
     private Integer quantity;
 
 
-
     public UUID getOrderId() {
         return orderId;
     }

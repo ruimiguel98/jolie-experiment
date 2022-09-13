@@ -17,12 +17,11 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping(value = "/create")
-    public Order createOrder(@RequestBody CreateOrderForm createOrderForm) {
+    public CreateOrderForm createOrder(@RequestBody CreateOrderForm createOrderForm) {
 
-//        order = orderService.createOrder(order);
-        orderService.createOrder(createOrderForm);
+        createOrderForm = orderService.createOrder(createOrderForm);
 
-        return null;
+        return createOrderForm;
     }
 
     @GetMapping("/all")
