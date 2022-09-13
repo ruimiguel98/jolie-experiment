@@ -2,7 +2,6 @@ package org.example.controller;
 
 import org.example.bean.CreateOrderForm;
 import org.example.bean.Order;
-import org.example.bean.Test;
 import org.example.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +17,11 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping(value = "/create")
-    public Order createOrder(@RequestBody Test test) {
+    public Order createOrder(@RequestBody CreateOrderForm createOrderForm) {
 
 //        order = orderService.createOrder(order);
-        orderService.createOrder(test);
+        orderService.createOrder(createOrderForm);
+
         return null;
     }
 

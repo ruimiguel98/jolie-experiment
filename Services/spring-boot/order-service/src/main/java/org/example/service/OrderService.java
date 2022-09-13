@@ -1,9 +1,8 @@
 package org.example.service;
 
-import org.example.bean.CreateOrderForm;
 import org.example.bean.Order;
 import org.example.bean.OrderProducts;
-import org.example.bean.Test;
+import org.example.bean.CreateOrderForm;
 import org.example.repo.OrderCRUD;
 import org.example.repo.OrderProductsCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +21,26 @@ public class OrderService {
     @Autowired
     OrderProductsCRUD orderProductsCRUD;
 
-    public Order createOrder(Test test) {
+    public Order createOrder(CreateOrderForm createOrderForm) {
 
-        OrderProducts orderProducts = new OrderProducts();
-        orderProducts.setOrderId(UUID.fromString("5bf3afb6-2aa7-4ecf-8673-5d5a26cf0e44"));
-        orderProducts.setProductId(UUID.fromString("384fcc57-27e8-4020-99d9-c304f13948da"));
-        orderProducts.setQuantity(1);
+        UUID orderUUID = UUID.randomUUID();
 
-        orderProductsCRUD.save(orderProducts);
+        for (UUID productUUID : createOrderForm.getProducts()) {
+            OrderProducts orderProducts = new OrderProducts();
+            orderProducts.setOrderId(orderUUID);
+            orderProducts.setProductId(productUUID);
+            orderProducts.setQuantity(1);
 
-//        order = orderCRUD.save(order);
+            orderProductsCRUD.save(orderProducts);
+        }
+
+        Order order = new Order();
+        order.setId(orderUUID);
+        order.setUserId(createOrderForm.getUserId());
+        order.setStatus(createOrderForm.getStatus());
+        order.setAddressToShip(createOrderForm.getAddressToShip());
+
+        orderCRUD.save(order);
 
         return null;
     }

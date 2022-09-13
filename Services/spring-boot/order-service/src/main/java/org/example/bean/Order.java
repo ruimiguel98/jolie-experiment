@@ -14,8 +14,6 @@ public class Order {
 
     @Id
     @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
-    @GenericGenerator(name = "UUIDGenerator", strategy = "uuid2")
-    @GeneratedValue(generator = "UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
