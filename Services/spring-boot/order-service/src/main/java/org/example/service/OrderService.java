@@ -64,7 +64,7 @@ public class OrderService {
         return orderCRUD.save(orderDB);
     }
 
-    public void deleteOrderById(UUID productId) {
-        orderCRUD.deleteById(productId);
+    public void deleteOrderById(UUID orderId) {
+        orderCRUD.deleteById(orderId);
     }
 }
