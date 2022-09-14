@@ -1,25 +1,27 @@
 package org.example.bean;
 
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
 public class CartProductsId implements Serializable {
 
+    @Id
+    @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
     private UUID cartId;
+
+    @Id
+    @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
     private UUID productId;
-
-    private Integer quantity;
-
-    private Double priceTotal;
 
     public CartProductsId() {}
 
-    public CartProductsId(UUID cartId, UUID productId, Integer quantity, Double priceTotal) {
+    public CartProductsId(UUID cartId, UUID productId) {
         this.cartId = cartId;
         this.productId = productId;
-        this.quantity = quantity;
-        this.priceTotal = priceTotal;
     }
 
     @Override
@@ -27,12 +29,12 @@ public class CartProductsId implements Serializable {
         if (this == o) return true;
         if (!(o instanceof CartProductsId)) return false;
         CartProductsId that = (CartProductsId) o;
-        return Objects.equals(cartId, that.cartId) && Objects.equals(getProductId(), that.getProductId()) && Objects.equals(quantity, that.quantity) && Objects.equals(priceTotal, that.priceTotal);
+        return Objects.equals(cartId, that.cartId) && Objects.equals(getProductId(), that.getProductId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cartId, getProductId(), quantity, priceTotal);
+        return Objects.hash(cartId, getProductId());
     }
 
     public UUID getCartId() {
@@ -51,19 +53,4 @@ public class CartProductsId implements Serializable {
         this.productId = productId;
     }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getPriceTotal() {
-        return priceTotal;
-    }
-
-    public void setPriceTotal(Double priceTotal) {
-        this.priceTotal = priceTotal;
-    }
 }

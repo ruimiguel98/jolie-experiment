@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.example.bean.Cart;
 import org.example.bean.CartProducts;
 import org.example.service.CartService;
@@ -45,6 +46,7 @@ public class CartController {
 
     @PostMapping("/addProduct")
     public CartProducts addProductToCart(@RequestBody CartProducts cartProducts) {
+
         cartService.addProductToCart(cartProducts);
         return cartProducts;
     }

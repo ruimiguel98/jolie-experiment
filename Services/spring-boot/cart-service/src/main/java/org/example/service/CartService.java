@@ -2,21 +2,27 @@ package org.example.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.example.bean.Cart;
 import org.example.bean.CartProducts;
+import org.example.bean.CartProductsId;
 import org.example.repo.CartCRUD;
 import org.example.repo.CartProductsCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
 @Service
 public class CartService {
+
+    private String productTotalPrice;
 
     @Autowired
     CartCRUD cartCRUD;
@@ -29,8 +35,6 @@ public class CartService {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
-
-    ObjectMapper om = new ObjectMapper();
 
     public Cart createCart(Cart cart) {
 
@@ -65,22 +69,31 @@ public class CartService {
         cartCRUD.deleteById(cartId);
     }
 
-    public void addProductToCart(CartProducts cartProducts) {
+    public String addProductToCart(CartProducts cartProducts) {
 
-        cartProducts.setPriceTotal(100.00);
+        // send the productId as key and the quantity as the value to Product service
+        kafkaTemplate.send(topicName, cartProducts.getProductId().toString(), cartProducts.getQuantity().toString());
 
-        // release msg for product service
-        String message = null;
-
+        // receive the total price for this product
+        // this value comes from the product service to always be up to date
         try {
-            message = om.writeValueAsString(cartProducts.getProductId()); // pass the product ID to the product service
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            Thread.sleep(3000); // wait for the variable to be updated
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        kafkaTemplate.send(topicName, message);
-
+        cartProducts.setPriceTotal(Double.parseDouble(productTotalPrice));
 
         cartProductsCRUD.save(cartProducts);
+
+        return null;
     }
+
+    @KafkaListener(topics = "product-price-topic", groupId = "foo")
+    public void listenGroupFoo(ConsumerRecord<String, String> consumer) {
+        System.out.println("Received message: key - " + consumer.key());
+        System.out.println("Received message: value - " + consumer.value());
+
+        productTotalPrice = consumer.value();
+    }
+
 }
