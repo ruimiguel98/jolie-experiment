@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class CartService {
 
-    private String productTotalPrice;
+    private CartProducts cartProducts;
 
     @Autowired
     CartCRUD cartCRUD;
@@ -31,7 +31,7 @@ public class CartService {
     CartProductsCRUD cartProductsCRUD;
 
     @Value("${cart.topic.name}")
-    private String topicName;
+    private String cartTopic;
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -69,31 +69,20 @@ public class CartService {
         cartCRUD.deleteById(cartId);
     }
 
-    public String addProductToCart(CartProducts cartProducts) {
-
+    public CartProducts addProductToCart(CartProducts cartProducts) {
         // send the productId as key and the quantity as the value to Product service
-        kafkaTemplate.send(topicName, cartProducts.getProductId().toString(), cartProducts.getQuantity().toString());
+        kafkaTemplate.send(cartTopic, cartProducts.getProductId().toString(), cartProducts.getQuantity().toString());
 
-        // receive the total price for this product
-        // this value comes from the product service to always be up to date
-        try {
-            Thread.sleep(3000); // wait for the variable to be updated
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        cartProducts.setPriceTotal(Double.parseDouble(productTotalPrice));
+        this.cartProducts = cartProducts;
 
-        cartProductsCRUD.save(cartProducts);
-
-        return null;
+        return cartProducts;
     }
 
     @KafkaListener(topics = "product-price-topic", groupId = "foo")
     public void listenGroupFoo(ConsumerRecord<String, String> consumer) {
-        System.out.println("Received message: key - " + consumer.key());
-        System.out.println("Received message: value - " + consumer.value());
-
-        productTotalPrice = consumer.value();
+        String productTotalPrice = consumer.value();
+        cartProducts.setPriceTotal(Double.parseDouble(productTotalPrice));
+        cartProductsCRUD.save(cartProducts);
     }
 
 }
