@@ -46,8 +46,11 @@ public class CartController {
 
     @PostMapping("/addProduct")
     public CartProducts addProductToCart(@RequestBody CartProducts cartProducts) {
+        return cartService.addProductToCart(cartProducts);
+    }
 
-        cartService.addProductToCart(cartProducts);
-        return cartProducts;
+    @PostMapping("/removeProduct")
+    public String removeProductFromCart(@RequestBody CartProducts cartProducts) {
+        return cartService.removeProductFromCart(cartProducts);
     }
 }

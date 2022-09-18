@@ -14,10 +14,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CartService {
@@ -69,6 +66,18 @@ public class CartService {
         cartCRUD.deleteById(cartId);
     }
 
+    public String removeProductFromCart(CartProducts cartProducts) {
+        CartProductsId cartProductsId = new CartProductsId();
+        cartProductsId.setProductId(cartProducts.getProductId());
+        cartProductsId.setCartId(cartProducts.getCartId());
+
+        System.out.println("test " + cartProductsCRUD.findById(cartProductsId));
+
+        cartProductsCRUD.deleteById(cartProductsId);
+
+        return "Product " + cartProducts.getProductId() + " removed from cart " + cartProducts.getCartId();
+    }
+
     public CartProducts addProductToCart(CartProducts cartProducts) {
         // send the productId as key and the quantity as the value to Product service
         kafkaTemplate.send(cartTopic, cartProducts.getProductId().toString(), cartProducts.getQuantity().toString());
@@ -84,5 +93,4 @@ public class CartService {
         cartProducts.setPriceTotal(Double.parseDouble(productTotalPrice));
         cartProductsCRUD.save(cartProducts);
     }
-
 }
