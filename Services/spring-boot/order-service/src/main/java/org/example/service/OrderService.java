@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.bean.Order;
 import org.example.bean.OrderProducts;
 import org.example.bean.CreateOrderForm;
+import org.example.bean.CreateOrderFormProductElement;
 import org.example.repo.OrderCRUD;
 import org.example.repo.OrderProductsCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,11 @@ public class OrderService {
 
         UUID orderUUID = UUID.randomUUID();
 
-        for (UUID productUUID : createOrderForm.getProducts()) {
+        for (CreateOrderFormProductElement product : createOrderForm.getProducts()) {
             OrderProducts orderProducts = new OrderProducts();
             orderProducts.setOrderId(orderUUID);
-            orderProducts.setProductId(productUUID);
-            orderProducts.setQuantity(1);
+            orderProducts.setProductId(product.getId());
+            orderProducts.setQuantity(product.getQuantity());
 
             orderProductsCRUD.save(orderProducts);
         }

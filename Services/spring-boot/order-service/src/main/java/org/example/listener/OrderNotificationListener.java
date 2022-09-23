@@ -1,16 +1,21 @@
 package org.example.listener;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.example.bean.CreateOrderForm;
+import org.example.bean.CreateOrderFormProductElement;
 import org.example.bean.Order;
-import org.example.dto.User;
+import org.example.bean.OrderProducts;
 import org.example.repo.OrderCRUD;
-import org.example.repo.UserCRUD;
+import org.example.repo.OrderProductsCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,53 +23,69 @@ import java.util.UUID;
 public class OrderNotificationListener {
 
     @Value("${checkout.topic.name}")
-    private String topicName;
+    private String checkoutTopic;
 
     @Autowired
     OrderCRUD orderCRUD;
 
     @Autowired
-    UserCRUD userCRUD;
+    OrderProductsCRUD orderProductsCRUD;
 
     @KafkaListener(topics = "checkout-topic", groupId = "foo")
-    public void listenGroupFoo(UUID userId, String address) {
+    public void listenCheckoutTopic(ConsumerRecord<String, String> payload) {
 
-        System.out.println("Received message in group foo: user id - " + userId + " and address - " + address);
-//        ObjectMapper object = new ObjectMapper();
-//        Order order = null;
+        System.out.println("Received message in group foo: user id - " + payload.value());
 
-//        try {
-//            order = object.readValue(userId, Order.class);
-//        }
-//        catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
+        JsonObject checkoutJsonObject = new JsonParser().parse(payload.value()).getAsJsonObject();
+        JsonObject orderJsonObject = checkoutJsonObject.getAsJsonObject("order");
 
-        // save order for the logged-in user
-//        User user = userCRUD.findById(Integer.parseInt(userId)).get();
-//        List<Long> cartProducts = user.getCartProducts();
-//
-//        // places the order for this checkout of products
-//        Order order = new Order();
-//        order.setAddressToShip(user.getAddress());
-//        order.setStatus("1 - WAITING PAYMENT");
-//        order.setUserId(Integer.parseInt(userId));
-//        orderCRUD.save(order);
-//
-//        System.out.println("Order saved:");
-//        System.out.println(order.toString());
+        System.out.println("Checkout user " + checkoutJsonObject.get("userId").getAsString());
+        System.out.println("Order status - " + orderJsonObject.get("status").getAsString());
+        System.out.println("AddressToShip status - " + orderJsonObject.get("addressToShip").getAsString());
+        System.out.println("Products - " + orderJsonObject.get("products").getAsJsonArray());
+        System.out.println("Frist product - " + orderJsonObject.get("products").getAsJsonArray().get(0).getAsJsonObject());
 
-//
-//        if (user.getBalance() > order.getOrderAmount()) {
-//            user.setBalance(user.getBalance() - order.getOrderAmount());
-//            order.setStatus("SUCCESS");
-//            userCRUD.save(user);
-//            orderCRUD.save(order);
-//        }
-//        else {
-//            order.setStatus("FAILED");
-//            orderCRUD.save(order);
-//        }
+
+        String userId = checkoutJsonObject.get("userId").getAsString();
+        String status = orderJsonObject.get("status").getAsString();
+        String addressToShip = orderJsonObject.get("addressToShip").getAsString();
+        List<CreateOrderFormProductElement> products = new ArrayList<>();
+
+        for (int i = 0; i < orderJsonObject.get("products").getAsJsonArray().size(); i++) {
+            JsonObject productJsonObject = orderJsonObject.get("products").getAsJsonArray().get(i).getAsJsonObject();
+            System.out.printf("createOrderFormProductElement " + productJsonObject);
+
+            CreateOrderFormProductElement createOrderFormProductElement = new CreateOrderFormProductElement();
+            createOrderFormProductElement.setId(UUID.fromString(productJsonObject.get("id").getAsString()));
+            createOrderFormProductElement.setQuantity(productJsonObject.get("quantity").getAsInt());
+
+            products.add(createOrderFormProductElement);
+        }
+
+        CreateOrderForm createOrderForm = new CreateOrderForm();
+        createOrderForm.setStatus(status);
+        createOrderForm.setAddressToShip(addressToShip);
+        createOrderForm.setUserId(UUID.fromString(userId));
+        createOrderForm.setProducts(products);
+
+        UUID orderUUID = UUID.randomUUID();
+
+        for (CreateOrderFormProductElement product : createOrderForm.getProducts()) {
+            OrderProducts orderProducts = new OrderProducts();
+            orderProducts.setOrderId(orderUUID);
+            orderProducts.setProductId(product.getId());
+            orderProducts.setQuantity(product.getQuantity());
+
+            orderProductsCRUD.save(orderProducts);
+        }
+
+        Order order = new Order();
+        order.setId(orderUUID);
+        order.setUserId(createOrderForm.getUserId());
+        order.setStatus(createOrderForm.getStatus());
+        order.setAddressToShip(createOrderForm.getAddressToShip());
+
+        orderCRUD.save(order);
     }
 
 }

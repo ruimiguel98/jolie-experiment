@@ -22,7 +22,7 @@ public class CreateOrderForm {
     private String addressToShip;
 
     @Type(type = "list-array")
-    private List<UUID> products;
+    private List<CreateOrderFormProductElement> products;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -52,21 +52,21 @@ public class CreateOrderForm {
         this.addressToShip = addressToShip;
     }
 
-    public List<UUID> getProducts() {
+    public List<CreateOrderFormProductElement> getProducts() {
         return products;
     }
 
-    public void setProducts(List<UUID> products) {
+    public void setProducts(List<CreateOrderFormProductElement> products) {
         this.products = products;
     }
 
     @Override
     public String toString() {
-        return "Order{" +
-                ", userId=" + userId +
+        return "CreateOrderForm{" +
+                "userId=" + userId +
                 ", status='" + status + '\'' +
                 ", addressToShip='" + addressToShip + '\'' +
+                ", products=" + products +
                 '}';
     }
-
 }

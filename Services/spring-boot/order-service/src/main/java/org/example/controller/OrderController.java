@@ -18,10 +18,7 @@ public class OrderController {
 
     @PostMapping(value = "/create")
     public CreateOrderForm createOrder(@RequestBody CreateOrderForm createOrderForm) {
-
-        createOrderForm = orderService.createOrder(createOrderForm);
-
-        return createOrderForm;
+        return orderService.createOrder(createOrderForm);
     }
 
     @GetMapping("/all")
