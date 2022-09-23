@@ -78,7 +78,7 @@ main
             println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
 
-            //----------------------------- 2. PLACE THE ORDER --------------------------------
+            //----------------------------- 0. GET TOTAL CART PRICE --------------------------------
             cart@CartService( request.cart )( responseCart )
             request.payment.amount = responseCart.cartPriceTotal
 

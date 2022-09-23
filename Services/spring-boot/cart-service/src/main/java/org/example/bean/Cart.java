@@ -12,8 +12,6 @@ import java.util.UUID;
 @Table(name = "cart")
 public class Cart {
 
-    private static final long serialVersionUID = -4551323276601557391L;
-
     @Id
     @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
     @Column(name = "id", updatable = false, nullable = false)
