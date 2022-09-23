@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.dto.Checkout;
+import org.example.bean.CreateCheckoutForm;
 import org.example.service.CheckoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +13,9 @@ public class CheckoutController {
     private CheckoutService checkoutService;
 
     @PostMapping(value = "/pay")
-    public String performCheckout(@RequestParam(name="userId", required = true) int userId) {
+    public String performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) {
 
-        checkoutService.performCheckout(userId);
+        checkoutService.performCheckout(createCheckoutForm);
         return "Performing checkout";
 
     }
