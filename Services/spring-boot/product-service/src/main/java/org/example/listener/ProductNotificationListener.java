@@ -1,19 +1,13 @@
 package org.example.listener;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.example.bean.Product;
 import org.example.repo.ProductCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -48,7 +42,7 @@ public class ProductNotificationListener {
 
         Double totalPrice = productDB.getPrice() * productQuantity;
 
-        return "This is returned from Product" + totalPrice;
+        return totalPrice.toString();
     }
 
 }

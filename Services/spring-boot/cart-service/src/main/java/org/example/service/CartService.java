@@ -107,44 +107,14 @@ public class CartService {
 
         // get consumer record
         ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-        // return consumer value
 
+        // print consumer value
         System.out.println("The result is the following " + consumerRecord.value());
 
-        // return consumer value
-//        return consumerRecord.value();
-        return null;
+        Double productTotalPrice = Double.parseDouble(consumerRecord.value());
+        cartProducts.setPriceTotal(productTotalPrice);
+        cartProductsCRUD.save(cartProducts);
 
-//        ListenableFuture<SendResult<String, String>> future =  kafkaTemplate.send(
-//                cartTopic, cartProducts.getProductId().toString(), cartProducts.getQuantity().toString());
-//
-//        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
-//            @Override
-//            public void onSuccess(SendResult<String, String> result) {
-//                System.out.println("Sent message=[" + cartProducts.getQuantity().toString() +
-//                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
-//
-//                System.out.println("Result -> " + result.toString());
-//                System.out.println("Result2 -> " + result.getRecordMetadata().toString());
-//            }
-//            @Override
-//            public void onFailure(Throwable ex) {
-//                System.out.println("Unable to send message=["
-//                        + cartProducts.getQuantity().toString() + "] due to : " + ex.getMessage());
-//            }
-//        });
-//
-//        // send the productId as key and the quantity as the value to Product service
-////        kafkaTemplate.send(cartTopic, cartProducts.getProductId().toString(), cartProducts.getQuantity().toString());
-//
-//
-//        return cartProducts;
+        return cartProducts;
     }
-
-//    @KafkaListener(topics = "product-price-topic", groupId = "foo")
-//    public void listenProductPriceTopic(ConsumerRecord<String, String> consumer) {
-//        String productTotalPrice = consumer.value();
-//        cartProducts.setPriceTotal(Double.parseDouble(productTotalPrice));
-//        cartProductsCRUD.save(cartProducts);
-//    }
 }
