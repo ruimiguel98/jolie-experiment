@@ -9,11 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
-@Service
+@Component
 public class ProductNotificationListener {
 
     @Value("${cart.topic.name}")
@@ -21,33 +26,29 @@ public class ProductNotificationListener {
 
     @Value("${product.price.topic.name}")
     private String productPriceTopicName;
+
     @Autowired
     ProductCRUD productCRUD;
 
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    @KafkaListener(topics = "${kafka.topic.request-topic}", groupId = "foo")
+    @SendTo
+    public String listenGroupFoo(String message) {
+        System.out.println("Received message: " + message);
 
-    ObjectMapper om = new ObjectMapper();
+        // divides the string 384fcc57-27e8-4020-99d9-c304f13948da/13 into 384fcc57-27e8-4020-99d9-c304f13948da and 13
+        // the first is the product id and the second the product quantity in units
+        ArrayList<String> list = new ArrayList<>(Arrays.asList(message.split("/")));
+        String productId = list.get(0).replaceAll("\"", "");
+        Integer productQuantity = Integer.parseInt(list.get(1).replaceAll("\"", ""));
 
-    @KafkaListener(topics = "cart-topic", groupId = "foo")
-    public void listenGroupFoo(ConsumerRecord<String, String> consumer) {
 
-        System.out.println("Received message: key - " + consumer.key());
-        System.out.println("Received message: value - " + consumer.value());
-
-        UUID productUUID = UUID.fromString(consumer.key());
-        Integer productQuantity = Integer.parseInt(consumer.value());
-
-        Product productDB = productCRUD.findById(productUUID).get();
+        Product productDB = productCRUD.findById(UUID.fromString(productId)).get();
         System.out.println("The product price is " + productDB.getPrice());
         System.out.println("The product quantity is " + productQuantity);
 
         Double totalPrice = productDB.getPrice() * productQuantity;
 
-        System.out.println("The total price is " + totalPrice);
-
-        kafkaTemplate.send(productPriceTopicName, totalPrice.toString());
-
+        return "This is returned from Product" + totalPrice;
     }
 
 }

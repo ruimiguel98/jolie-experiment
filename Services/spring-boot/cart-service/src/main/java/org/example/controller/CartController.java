@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping(value = "/cart")
@@ -45,7 +46,7 @@ public class CartController {
     }
 
     @PostMapping("/addProduct")
-    public CartProducts addProductToCart(@RequestBody CartProducts cartProducts) {
+    public CartProducts addProductToCart(@RequestBody CartProducts cartProducts) throws ExecutionException, InterruptedException {
         return cartService.addProductToCart(cartProducts);
     }
 
