@@ -5,6 +5,8 @@ import org.example.service.CheckoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping(value = "/checkout")
 public class CheckoutController {
@@ -13,7 +15,7 @@ public class CheckoutController {
     private CheckoutService checkoutService;
 
     @PostMapping(value = "/pay")
-    public String performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) {
+    public String performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) throws ExecutionException, InterruptedException {
 
         checkoutService.performCheckout(createCheckoutForm);
         return "Performing checkout";

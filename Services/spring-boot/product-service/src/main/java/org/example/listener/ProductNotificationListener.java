@@ -18,7 +18,7 @@ public class ProductNotificationListener {
     @Autowired
     ProductCRUD productCRUD;
 
-    @KafkaListener(topics = "${kafka.topic.request-topic}", groupId = "foo")
+    @KafkaListener(topics = "${kafka.topic.product-price-request-topic}", groupId = "foo")
     @SendTo
     public String listenGroupFoo(String message) {
         System.out.println("Received message: " + message);
