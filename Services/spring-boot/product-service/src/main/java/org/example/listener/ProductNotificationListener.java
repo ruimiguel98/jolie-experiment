@@ -15,12 +15,6 @@ import java.util.UUID;
 @Component
 public class ProductNotificationListener {
 
-    @Value("${cart.topic.name}")
-    private String cartTopicName;
-
-    @Value("${product.price.topic.name}")
-    private String productPriceTopicName;
-
     @Autowired
     ProductCRUD productCRUD;
 

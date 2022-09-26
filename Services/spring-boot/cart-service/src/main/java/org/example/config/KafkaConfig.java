@@ -15,7 +15,6 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
@@ -27,8 +26,8 @@ public class KafkaConfig {
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${kafka.topic.reply-topic}")
-    private String replyTopic;
+    @Value("${kafka.topic.product-price-reply-topic}")
+    private String replyTopicProductPrice;
 
     @Bean
     public Map<String, Object> producerConfigs() {
@@ -67,7 +66,7 @@ public class KafkaConfig {
 
     @Bean
     public KafkaMessageListenerContainer<String, String> replyContainer(ConsumerFactory<String, String> cf) {
-        ContainerProperties containerProperties = new ContainerProperties(replyTopic);
+        ContainerProperties containerProperties = new ContainerProperties(replyTopicProductPrice);
         return new KafkaMessageListenerContainer<>(cf, containerProperties);
     }
 

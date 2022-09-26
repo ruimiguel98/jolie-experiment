@@ -15,7 +15,6 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -28,17 +27,11 @@ public class CartService {
     @Autowired
     CartProductsCRUD cartProductsCRUD;
 
-    @Value("${cart.topic.name}")
-    private String cartTopic;
+    @Value("${kafka.topic.product-price-request-topic}")
+    private String requestTopicProductPrice;
 
-//    @Autowired
-//    private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Value("${kafka.topic.request-topic}")
-    private String requestTopic;
-
-    @Value("${kafka.topic.reply-topic}")
-    private String replyTopic;
+    @Value("${kafka.topic.product-price-reply-topic}")
+    private String replyTopicProductPrice;
 
     @Autowired
     private ReplyingKafkaTemplate<String, String, String> kafkaTemplate;
@@ -93,9 +86,9 @@ public class CartService {
         String toSendToRequestTopic = cartProducts.getProductId().toString() + "/" + cartProducts.getQuantity().toString();
 
         // create producer record
-        ProducerRecord<String, String> record = new ProducerRecord<>(requestTopic, toSendToRequestTopic);
+        ProducerRecord<String, String> record = new ProducerRecord<>(requestTopicProductPrice, toSendToRequestTopic);
         // set reply topic in header
-        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
+        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopicProductPrice.getBytes()));
         // post in kafka topic
         RequestReplyFuture<String, String, String> sendAndReceive = kafkaTemplate.sendAndReceive(record);
 
