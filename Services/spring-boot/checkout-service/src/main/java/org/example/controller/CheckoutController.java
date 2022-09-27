@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.bean.Checkout;
 import org.example.bean.CreateCheckoutForm;
 import org.example.service.CheckoutService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,8 @@ public class CheckoutController {
     private CheckoutService checkoutService;
 
     @PostMapping(value = "/pay")
-    public String performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) throws Exception {
-
-        checkoutService.performCheckout(createCheckoutForm);
-        return "Performing checkout";
-
+    public Checkout performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) throws Exception {
+        Checkout checkout = checkoutService.performCheckout(createCheckoutForm);
+        return checkout;
     }
 }

@@ -64,6 +64,7 @@ public class ListenerTopicOrderRequest {
                         .builder()
                         .info("Order created with success")
                         .status("CREATED")
+                        .orderId(orderUUID.toString())
                         .build();
 
         System.out.println("Sending message: " + topicResponse.toString());

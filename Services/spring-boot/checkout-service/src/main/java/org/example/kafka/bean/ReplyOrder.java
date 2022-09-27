@@ -12,5 +12,6 @@ public class ReplyOrder {
 
     private String status;
     private String info;
+    private String orderId;
 
 }

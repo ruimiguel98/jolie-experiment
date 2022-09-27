@@ -58,7 +58,7 @@ public class CheckoutService {
     @Value("${spring.kafka.topic.request-order}")
     private String requestOrderTopic;
 
-    public String performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
+    public Checkout performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
         SenderReceiver senderReceiver = new SenderReceiver();
 
@@ -86,11 +86,22 @@ public class CheckoutService {
         }
 
         ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
-        System.out.println("The payment process returned " + topicResponseOrder.toString());
+        System.out.println("Order placed with ID " + topicResponseOrder.getOrderId());
 
 
+        //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
 
-        return  "Perfporming checkout";
+
+        //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
+        UUID checkoutUUID = UUID.randomUUID();
+        Checkout checkout = new Checkout(
+                checkoutUUID,
+                UUID.fromString(topicResponseOrder.getOrderId()),
+                createCheckoutForm.getCartId()
+        );
+//        checkoutCRUD.save(checkout);
+
+        return checkout;
 
     }
 

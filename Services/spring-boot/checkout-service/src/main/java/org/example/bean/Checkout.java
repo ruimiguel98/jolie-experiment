@@ -19,7 +19,6 @@ public class Checkout {
 
     @Id
     private UUID id;
-
     private UUID orderId;
     private UUID cartId;
 
