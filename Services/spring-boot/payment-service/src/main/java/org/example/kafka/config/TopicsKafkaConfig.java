@@ -4,7 +4,6 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
@@ -20,12 +19,6 @@ import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 @Configuration
 public class TopicsKafkaConfig {
 
-    @Value("${spring.kafka.topic.reply-cart-total}")
-    private String replyCartTotalTopic;
-
-    @Value("${spring.kafka.topic.request-cart-total}")
-    private String requestCartTotalTopic;
-
     @Value("${spring.kafka.topic.reply-payment-process}")
     private String replyPaymentProcessTopic;
 
@@ -40,28 +33,18 @@ public class TopicsKafkaConfig {
     // Listener Container to be set up in ReplyingKafkaTemplate
     @Bean
     public KafkaMessageListenerContainer<String, String> replyContainer(ConsumerFactory<String, String> cf) {
-        ContainerProperties containerProperties = new ContainerProperties(replyCartTotalTopic);
+        ContainerProperties containerProperties = new ContainerProperties(replyPaymentProcessTopic);
         return new KafkaMessageListenerContainer<>(cf, containerProperties);
     }
 
     // Automatic Topic creation
     @Bean
     public NewTopic topic1() {
-        return new NewTopic(replyCartTotalTopic, defaultPartitions, Short.parseShort(replicationFactor));
-    }
-
-    @Bean
-    public NewTopic topic2() {
-        return new NewTopic(requestCartTotalTopic, defaultPartitions, Short.parseShort(replicationFactor));
-    }
-
-    @Bean
-    public NewTopic topic3() {
         return new NewTopic(replyPaymentProcessTopic, defaultPartitions, Short.parseShort(replicationFactor));
     }
 
     @Bean
-    public NewTopic topic4() {
+    public NewTopic topic2() {
         return new NewTopic(requestPaymentProcessTopic, defaultPartitions, Short.parseShort(replicationFactor));
     }
 

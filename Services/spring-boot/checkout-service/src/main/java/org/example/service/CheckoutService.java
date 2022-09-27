@@ -6,7 +6,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.example.bean.*;
 import org.example.kafka.bean.ReplyCartTotal;
+import org.example.kafka.bean.ReplyPaymentProcess;
 import org.example.kafka.bean.RequestCartTotal;
+import org.example.kafka.bean.RequestPaymentProcess;
 import org.example.kafka.communication.SenderReceiver;
 import org.example.repo.CheckoutCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +32,20 @@ public class CheckoutService {
     @Autowired
     private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply;
 
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply1;
+
     @Value("${spring.kafka.topic.request-cart-total}")
     private String requestCartTotalTopic;
 
     @Value("${spring.kafka.topic.reply-cart-total}")
     private String replyCartTotalTopic;
+
+    @Value("${spring.kafka.topic.reply-payment-process}")
+    private String replyPaymentProcessTopic;
+
+    @Value("${spring.kafka.topic.request-payment-process}")
+    private String requestPaymentProcessTopic;
 
     public String performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
@@ -45,7 +56,13 @@ public class CheckoutService {
         ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
         System.out.println("The cart total is " + topicResponseCartTotal.toString());
 
+
         //----------------------------- 1. WITHDRAWAL PROVIDED BANK ACCOUNT --------------------------------
+        String cardNumber = createCheckoutForm.getCardNumber();
+        String cardCVV = createCheckoutForm.getCardCVV();
+        Double amountToWithdrawal = topicResponseCartTotal.getCartTotalPrice();
+        ReplyPaymentProcess topicResponsePaymentProcess = sendMessageWaitReplyPaymentProcessTopic(cardNumber, cardCVV, amountToWithdrawal);
+        System.out.println("The payment process returned " + topicResponsePaymentProcess.toString());
 
 
         //----------------------------- 2. PLACE THE ORDER --------------------------------
@@ -71,6 +88,32 @@ public class CheckoutService {
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyCartTotal topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyCartTotal.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+
+            throw new Exception();
+
+        }
+    }
+
+    public ReplyPaymentProcess sendMessageWaitReplyPaymentProcessTopic(String cardNumber, String CVV, Double amountToWithdrawal) throws Exception {
+
+        try {
+            RequestPaymentProcess topicRequest = RequestPaymentProcess
+                    .builder()
+                    .cardNumber(cardNumber)
+                    .CVV(CVV)
+                    .amountToWithdrawal(amountToWithdrawal)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>(requestPaymentProcessTopic, new Gson().toJson(topicRequest));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentProcessTopic.getBytes()));
+
+            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply1.sendAndReceive(record);
+            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
+
+            ReplyPaymentProcess topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyPaymentProcess.class);;
             return topicResponse;
 
         } catch (Exception e) {

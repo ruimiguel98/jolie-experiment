@@ -1,10 +1,18 @@
 package org.example.bean;
 
+import lombok.*;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.UUID;
 
+@Getter
+@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "Checkout")
 @Table(name = "checkout")
 public class Checkout {
@@ -15,27 +23,4 @@ public class Checkout {
     private UUID orderId;
     private UUID cartId;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(UUID orderId) {
-        this.orderId = orderId;
-    }
-
-    public UUID getCartId() {
-        return cartId;
-    }
-
-    public void setCartId(UUID cartId) {
-        this.cartId = cartId;
-    }
 }

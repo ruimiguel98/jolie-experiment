@@ -5,10 +5,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.example.bean.CreateCheckoutForm;
-import org.example.kafka.bean.PaymentFormRequest;
-import org.example.kafka.bean.PaymentFormResponse;
-import org.example.kafka.bean.TopicRequestCartTotal;
-import org.example.kafka.bean.TopicResponseCartTotal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,65 +38,6 @@ public class SenderReceiver {
 
     @Value("${spring.kafka.topic.reply-cart-total}")
     private String replyCartTotalTopic;
-
-    public String sendMessage(String message) {
-
-        PaymentFormRequest topicRequest = PaymentFormRequest.builder().cardNumber(message).build();
-
-        this.kafkaTemplate.send(requestPaymentTopic, new Gson().toJson(topicRequest));
-        return message;
-    }
-
-    public PaymentFormResponse sendMessageWaitReply(String message) throws Exception {
-
-        try {
-
-            PaymentFormRequest topicRequest = PaymentFormRequest
-                    .builder()
-                    .cardNumber(message)
-                    .amount(20.0)
-                    .build();
-
-            ProducerRecord<String, String> record = new ProducerRecord<>(requestPaymentTopic, new Gson().toJson(topicRequest));
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentTopic.getBytes()));
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply.sendAndReceive(record);
-            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-
-            PaymentFormResponse topicResponse = new Gson().fromJson(consumerRecord.value(), PaymentFormResponse.class);;
-            return topicResponse;
-
-        } catch (Exception e) {
-
-            throw new Exception();
-
-        }
-
-    }
-
-
-    public TopicResponseCartTotal sendMessageWaitReplyCartTotalTopic(String cartId) throws Exception {
-
-        try {
-
-            TopicRequestCartTotal topicRequest = TopicRequestCartTotal
-                    .builder()
-                    .id(cartId)
-                    .build();
-
-            ProducerRecord<String, String> record = new ProducerRecord<>(requestCartTotalTopic, new Gson().toJson(topicRequest));
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyCartTotalTopic.getBytes()));
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply.sendAndReceive(record);
-            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-
-            TopicResponseCartTotal topicResponse = new Gson().fromJson(consumerRecord.value(), TopicResponseCartTotal.class);;
-            return topicResponse;
-
-        } catch (Exception e) {
-
-            throw new Exception();
-
-        }
-    }
 
     private String sendMessageWaitReply(String requestTopic, String replyTopic, String message) throws ExecutionException, InterruptedException {
 //        // create producer record

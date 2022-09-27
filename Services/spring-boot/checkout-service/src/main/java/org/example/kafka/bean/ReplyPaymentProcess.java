@@ -8,8 +8,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestCartTotal {
+public class ReplyPaymentProcess {
 
-    private String id;
+    // 0 - error, 1 - success
+    private Integer status;
+    private String info;
 
 }
