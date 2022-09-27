@@ -28,23 +28,21 @@ public class ListenerTopicRequestCartTotal {
     @KafkaListener(topics = "${spring.kafka.topic.request-cart-total}")
     public String listenAndReply(String cartId) {
 
-        System.out.println("Received message on cart service from request-cart-total topic");
-        System.out.println("Message: " + cartId);
-
-        Cart cart = cartCRUD.findById(UUID.fromString(cartId)).get();
-        Double cartPriceTotal = cart.getCartPriceTotal();
-
-        System.out.println("The cart total is " + cartPriceTotal);
+        System.out.println("Received message: " + cartId);
 
         RequestCartTotal topicRequest = new Gson().fromJson(cartId, RequestCartTotal.class);
+
+        Cart cart = cartCRUD.findById(UUID.fromString(topicRequest.getId())).get();
+        Double cartPriceTotal = cart.getCartPriceTotal();
+
 
         ReplyCartTotal topicResponse =
                 ReplyCartTotal
                         .builder()
-                        .cartTotalPrice(250.0)
+                        .cartTotalPrice(cartPriceTotal)
                         .build();
 
-        System.out.println("This is the request on cart service " + topicResponse.toString());
+        System.out.println("Sent message: " + topicResponse.toString());
 
         return new Gson().toJson(topicResponse);
 
