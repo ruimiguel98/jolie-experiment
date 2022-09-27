@@ -13,10 +13,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ListenerTopicOrderRequest {
@@ -45,17 +42,22 @@ public class ListenerTopicOrderRequest {
         );
 
 
-        List<OrderProducts> orderProducts = new ArrayList<>();
+        for (Map.Entry<String, String> productEntry : topicRequest.getProducts().entrySet()) {
+            System.out.println(productEntry.getKey() + ":" + productEntry.getValue());
 
-        for (HashMap<String, String> product : topicRequest.getProducts()) {
-            OrderProducts orderProductsElement = new OrderProducts(
-                UUID.fromString(product.keySet().toString()),
-                    UUID.fromString(product.get(product.keySet())),
-                    123
+            String key = productEntry.getKey();
+            String value = productEntry.getValue();
+
+            OrderProducts orderProducts = new OrderProducts(
+                    orderUUID,
+                    UUID.fromString(key),
+                    Integer.parseInt(value)
             );
 
-            orderProducts.add(orderProductsElement);
+            orderProductsCRUD.save(orderProducts);
         }
+
+        orderCRUD.save(order);
 
         ReplyOrder topicResponse =
                 ReplyOrder

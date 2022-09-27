@@ -22,6 +22,6 @@ public class RequestOrder {
     private String addressToShip;
 
     // key -> productId | value -> quantity
-    private List<HashMap<String, String>> products;
+    private HashMap<String, String> products;
 
 }

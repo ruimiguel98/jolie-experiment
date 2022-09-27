@@ -52,6 +52,12 @@ public class CheckoutService {
     @Value("${spring.kafka.topic.request-payment-process}")
     private String requestPaymentProcessTopic;
 
+    @Value("${spring.kafka.topic.reply-order}")
+    private String replyOrderTopic;
+
+    @Value("${spring.kafka.topic.request-order}")
+    private String requestOrderTopic;
+
     public String performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
         SenderReceiver senderReceiver = new SenderReceiver();
@@ -74,11 +80,9 @@ public class CheckoutService {
         String userId = createCheckoutForm.getUserId().toString();
         String status = "CREATED";
         String addressToShip = createCheckoutForm.getOrder().getAddressToShip();
-        List<HashMap<String, String>> orderProducts = new ArrayList<>();
+        HashMap<String, String> orderProducts = new HashMap<>();
         for (Product product : createCheckoutForm.getOrder().getProducts()) {
-            HashMap<String, String> productHashMap = new HashMap<>();
-            productHashMap.put(product.getId(), product.getQuantity().toString());
-            orderProducts.add(productHashMap);
+            orderProducts.put(product.getId(), product.getQuantity().toString());
         }
 
         ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
@@ -140,7 +144,7 @@ public class CheckoutService {
         }
     }
 
-    public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, List<HashMap<String, String>> orderProducts) throws Exception {
+    public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, HashMap<String, String> orderProducts) throws Exception {
 
         try {
             RequestOrder topicRequest = RequestOrder
@@ -151,8 +155,8 @@ public class CheckoutService {
                     .products(orderProducts)
                     .build();
 
-            ProducerRecord<String, String> record = new ProducerRecord<>(requestPaymentProcessTopic, new Gson().toJson(topicRequest));
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentProcessTopic.getBytes()));
+            ProducerRecord<String, String> record = new ProducerRecord<>(requestOrderTopic, new Gson().toJson(topicRequest));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyOrderTopic.getBytes()));
 
             RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply2.sendAndReceive(record);
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
