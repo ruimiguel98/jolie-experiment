@@ -15,7 +15,7 @@ public class CheckoutController {
     private CheckoutService checkoutService;
 
     @PostMapping(value = "/pay")
-    public String performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) throws ExecutionException, InterruptedException {
+    public String performCheckout(@RequestBody CreateCheckoutForm createCheckoutForm) throws Exception {
 
         checkoutService.performCheckout(createCheckoutForm);
         return "Performing checkout";

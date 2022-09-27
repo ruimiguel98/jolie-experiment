@@ -8,9 +8,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentFormRequest {
+@ToString
+public class ReplyCartTotal {
 
-    private String cardNumber;
-    private Double amount;
+    private Double cartTotalPrice;
 
 }

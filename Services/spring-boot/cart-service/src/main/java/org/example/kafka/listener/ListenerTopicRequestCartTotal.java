@@ -1,8 +1,8 @@
 package org.example.kafka.listener;
 
 import com.google.gson.Gson;
-import org.example.kafka.bean.TopicRequestCartTotal;
-import org.example.kafka.bean.TopicResponseCartTotal;
+import org.example.kafka.bean.RequestCartTotal;
+import org.example.kafka.bean.ReplyCartTotal;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
@@ -17,10 +17,10 @@ public class ListenerTopicRequestCartTotal {
         System.out.println("Received message on cart service from request-cart-total topic");
         System.out.println("Message: " + message);
 
-        TopicRequestCartTotal topicRequest = new Gson().fromJson(message, TopicRequestCartTotal.class);
+        RequestCartTotal topicRequest = new Gson().fromJson(message, RequestCartTotal.class);
 
-        TopicResponseCartTotal topicResponse =
-                TopicResponseCartTotal
+        ReplyCartTotal topicResponse =
+                ReplyCartTotal
                         .builder()
                         .cartTotalPrice(250.0)
                         .build();

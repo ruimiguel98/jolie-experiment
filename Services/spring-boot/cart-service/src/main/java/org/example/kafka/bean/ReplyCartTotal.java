@@ -8,8 +8,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopicRequestCartTotal {
+public class ReplyCartTotal {
 
-    String id;
+    private Double cartTotalPrice;
 
 }

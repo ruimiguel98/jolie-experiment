@@ -1,31 +1,22 @@
 package org.example.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fasterxml.jackson.databind.ObjectWriter;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import com.google.gson.Gson;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.example.bean.CreateCheckoutForm;
-import org.example.bean.CreateCheckoutFormSerializer;
-import org.example.bean.Order;
+import org.apache.kafka.common.header.internals.RecordHeader;
+import org.example.bean.*;
+import org.example.kafka.bean.ReplyCartTotal;
+import org.example.kafka.bean.RequestCartTotal;
+import org.example.kafka.communication.SenderReceiver;
 import org.example.repo.CheckoutCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyFuture;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import java.util.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutionException;
-
-import org.apache.kafka.clients.producer.*;
 
 @Service
 public class CheckoutService {
@@ -33,85 +24,85 @@ public class CheckoutService {
     @Autowired
     CheckoutCRUD checkoutCRUD;
 
-    @Value("${checkout.topic.name}")
-    private String checkoutTopic;
-
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    ObjectMapper om = new ObjectMapper();
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply;
 
-    public String performCheckout(CreateCheckoutForm createCheckoutForm) {
+    @Value("${spring.kafka.topic.request-cart-total}")
+    private String requestCartTotalTopic;
 
-        System.out.println("createCheckoutForm " + createCheckoutForm.toString());
+    @Value("${spring.kafka.topic.reply-cart-total}")
+    private String replyCartTotalTopic;
+
+    public String performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
+
+        SenderReceiver senderReceiver = new SenderReceiver();
 
         //----------------------------- 0. GET TOTAL CART PRICE --------------------------------
-//        Cart cartDB = cartCRUD.findById(createCheckoutForm.getCartId()).get();
-//        System.out.println("cartDB id " + cartDB.getId());
+        String cartId = createCheckoutForm.getCartId().toString();
+        ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
+        System.out.println("The cart total is " + topicResponseCartTotal.toString());
 
-        ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-
-        String json;
-        try {
-            json = objectWriter.writeValueAsString(createCheckoutForm);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        kafkaTemplate.send(checkoutTopic, json);
+        //----------------------------- 1. WITHDRAWAL PROVIDED BANK ACCOUNT --------------------------------
 
 
-//        Properties props = new Properties();
-//        props.put("bootstrap.servers", "localhost:9092");
-//        props.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
-//        props.put("value.serializer", "CreateCheckoutFormSerializer");
-//
-//        Producer<String, Order> producer = new KafkaProducer<>(props);
-
-//        Order order = createCheckoutForm.getOrder();
-//
-//        producer.send(new ProducerRecord<>(checkoutTopic,"ORDER", order)).get();
-//
-//        System.out.println("Order Producer Completed.");
-//        producer.close();
+        //----------------------------- 2. PLACE THE ORDER --------------------------------
 
 
 
+        return  "Perfporming checkout";
 
-
-//        // save checkout for the logged in user
-//        User user = userCRUD.findById(userId).get();
-//        List<Long> cartProducts = user.getCartProducts();
-//
-//
-//        // places the order for this checkout of products
-//        Order order = new Order();
-//        order.setOrderAmount("100");
-//        order.setAddressToShip(address == null ? user.getAddress() : address);
-//        order.setStatus("1 - WAITING PAYMENT");
-//        order.setOrderProducts(cartProducts);
-//        order.setUserId(userId);
-//        orderCRUD.save(order);
-
-        //  Payment payment = new Payment();
-//        Email email = new Email();
-
-
-//        checkout.setStatus("CREATED");
-//        checkout = checkoutCRUD.save(checkout);
-
-        // after saving order lets release msg for payment service
-//        String message = null;
-//
-//        try {
-//            message = om.writeValueAsString(userId); // pass the user ID to the order service
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        kafkaTemplate.send(topicName, message);
-
-        return "Checkout is processing";
-//        return checkout;
     }
+
+    public ReplyCartTotal sendMessageWaitReplyCartTotalTopic(String cartId) throws Exception {
+
+        try {
+
+            RequestCartTotal topicRequest = RequestCartTotal
+                    .builder()
+                    .id(cartId)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>(requestCartTotalTopic, new Gson().toJson(topicRequest));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyCartTotalTopic.getBytes()));
+            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply.sendAndReceive(record);
+            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
+
+            ReplyCartTotal topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyCartTotal.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+
+            throw new Exception();
+
+        }
+    }
+
+    private String sendMessageWaitReply(String requestTopic, String replyTopic, String message) throws ExecutionException, InterruptedException {
+//        // create producer record
+//        ProducerRecord<String, String> record = new ProducerRecord<>(requestTopic, message);
+//        // set reply topic in header
+//        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
+//        // post in kafka topic
+//        RequestReplyFuture<String, String, String> sendAndReceive = kafkaTemplate.sendAndReceive(record);
+//
+//        // confirm if producer produced successfully
+//        SendResult<String, String> sendResult = sendAndReceive.getSendFuture().get();
+//
+//        //print all headers
+//        sendResult.getProducerRecord().headers().forEach(header -> System.out.println(header.key() + ":" + header.value().toString()));
+//
+//        // get consumer record
+//        ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
+//
+//        // print consumer value
+//        System.out.println("The result is the following " + consumerRecord.value());
+//
+//        return consumerRecord.value();
+        return null;
+    }
+
+
 }

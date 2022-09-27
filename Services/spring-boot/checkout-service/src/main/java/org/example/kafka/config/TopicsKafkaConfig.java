@@ -19,13 +19,6 @@ import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 @Configuration
 public class TopicsKafkaConfig {
 
-
-    @Value("${spring.kafka.topic.reply-payment}")
-    private String replyPaymentTopic;
-
-    @Value("${spring.kafka.topic.request-payment}")
-    private String requestPaymentTopic;
-
     @Value("${spring.kafka.topic.reply-cart-total}")
     private String replyCartTotalTopic;
 
@@ -40,7 +33,7 @@ public class TopicsKafkaConfig {
     // Listener Container to be set up in ReplyingKafkaTemplate
     @Bean
     public KafkaMessageListenerContainer<String, String> replyContainer(ConsumerFactory<String, String> cf) {
-        ContainerProperties containerProperties = new ContainerProperties(replyPaymentTopic);
+        ContainerProperties containerProperties = new ContainerProperties(replyCartTotalTopic);
         return new KafkaMessageListenerContainer<>(cf, containerProperties);
     }
 
@@ -53,16 +46,6 @@ public class TopicsKafkaConfig {
     @Bean
     public NewTopic topic2() {
         return new NewTopic(requestCartTotalTopic, defaultPartitions, Short.parseShort(replicationFactor));
-    }
-
-    @Bean
-    public NewTopic topic3() {
-        return new NewTopic(replyPaymentTopic, defaultPartitions, Short.parseShort(replicationFactor));
-    }
-
-    @Bean
-    public NewTopic topic4() {
-        return new NewTopic(requestPaymentTopic, defaultPartitions, Short.parseShort(replicationFactor));
     }
 
 }
