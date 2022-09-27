@@ -16,6 +16,8 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,9 @@ public class CheckoutService {
     @Autowired
     private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply2;
 
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply3;
+
     @Value("${spring.kafka.topic.request-cart-total}")
     private String requestCartTotalTopic;
 
@@ -58,14 +63,19 @@ public class CheckoutService {
     @Value("${spring.kafka.topic.request-order}")
     private String requestOrderTopic;
 
-    public Checkout performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
+    @Value("${spring.kafka.topic.reply-email}")
+    private String replyEmailTopic;
 
-        SenderReceiver senderReceiver = new SenderReceiver();
+    @Value("${spring.kafka.topic.request-email}")
+    private String requestEmailTopic;
+
+    public Checkout performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
         //----------------------------- 0. GET TOTAL CART PRICE --------------------------------
         String cartId = createCheckoutForm.getCartId().toString();
         ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
         System.out.println("The cart total is " + topicResponseCartTotal.toString());
+
 
 
         //----------------------------- 1. WITHDRAWAL PROVIDED BANK ACCOUNT --------------------------------
@@ -74,6 +84,7 @@ public class CheckoutService {
         Double amountToWithdrawal = topicResponseCartTotal.getCartTotalPrice();
         ReplyPaymentProcess topicResponsePaymentProcess = sendMessageWaitReplyPaymentProcessTopic(cardNumber, cardCVV, amountToWithdrawal);
         System.out.println("The payment process returned " + topicResponsePaymentProcess.toString());
+
 
 
         //----------------------------- 2. PLACE THE ORDER --------------------------------
@@ -89,7 +100,15 @@ public class CheckoutService {
         System.out.println("Order placed with ID " + topicResponseOrder.getOrderId());
 
 
+
         //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
+
+        ReplyEmail topicResponseEmail = sendMessageWaitReplyEmailTopic("ORDER PLACED",
+                "Your order has been placed",
+                "shipping@ourcompany.com",
+                "test@gmail.com",
+                "22/12/2022");
+        System.out.println("The email has been sent with the order placed confirmation");
 
 
         //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
@@ -182,29 +201,35 @@ public class CheckoutService {
         }
     }
 
-    private String sendMessageWaitReply(String requestTopic, String replyTopic, String message) throws ExecutionException, InterruptedException {
-//        // create producer record
-//        ProducerRecord<String, String> record = new ProducerRecord<>(requestTopic, message);
-//        // set reply topic in header
-//        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
-//        // post in kafka topic
-//        RequestReplyFuture<String, String, String> sendAndReceive = kafkaTemplate.sendAndReceive(record);
-//
-//        // confirm if producer produced successfully
-//        SendResult<String, String> sendResult = sendAndReceive.getSendFuture().get();
-//
-//        //print all headers
-//        sendResult.getProducerRecord().headers().forEach(header -> System.out.println(header.key() + ":" + header.value().toString()));
-//
-//        // get consumer record
-//        ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-//
-//        // print consumer value
-//        System.out.println("The result is the following " + consumerRecord.value());
-//
-//        return consumerRecord.value();
-        return null;
+    public ReplyEmail sendMessageWaitReplyEmailTopic(String subject, String message, String fromEmail, String toEmail, String sentDate) throws Exception {
+
+        try {
+            RequestEmail topicRequest = RequestEmail
+                    .builder()
+                    .subject(subject)
+                    .message(message)
+                    .fromEmail(fromEmail)
+                    .toEmail(toEmail)
+                    .sentDate(sentDate)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>(requestEmailTopic, new Gson().toJson(topicRequest));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyEmailTopic.getBytes()));
+
+            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply3.sendAndReceive(record);
+            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
+
+            ReplyEmail topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyEmail.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+
+            throw new Exception();
+
+        }
     }
+
+
 
 
 }
