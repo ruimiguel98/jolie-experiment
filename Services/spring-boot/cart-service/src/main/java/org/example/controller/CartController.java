@@ -46,7 +46,7 @@ public class CartController {
     }
 
     @PostMapping("/addProduct")
-    public CartProducts addProductToCart(@RequestBody CartProducts cartProducts) throws ExecutionException, InterruptedException {
+    public CartProducts addProductToCart(@RequestBody CartProducts cartProducts) throws Exception {
         return cartService.addProductToCart(cartProducts);
     }
 

@@ -28,4 +28,7 @@ public class Cart {
     @Column(name = "user_id", updatable = false, nullable = false)
     private UUID userId;
 
+    @Column(name = "cart_price_total", nullable = true, columnDefinition = "numeric default 0")
+    private Double cartPriceTotal;
+
 }

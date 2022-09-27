@@ -25,6 +25,12 @@ public class TopicsKafkaConfig {
     @Value("${spring.kafka.topic.request-cart-total}")
     private String requestCartTotalTopic;
 
+    @Value("${spring.kafka.topic.reply-product-price}")
+    private String replyProductPriceTopic;
+
+    @Value("${spring.kafka.topic.request-product-price}")
+    private String requestProductPriceTopic;
+
     @Value("${spring.kafka.binder.replication-factor}")
     private String replicationFactor;
 
@@ -33,7 +39,7 @@ public class TopicsKafkaConfig {
     // Listener Container to be set up in ReplyingKafkaTemplate
     @Bean
     public KafkaMessageListenerContainer<String, String> replyContainer(ConsumerFactory<String, String> cf) {
-        ContainerProperties containerProperties = new ContainerProperties(replyCartTotalTopic);
+        ContainerProperties containerProperties = new ContainerProperties(replyProductPriceTopic);
         return new KafkaMessageListenerContainer<>(cf, containerProperties);
     }
 
@@ -46,6 +52,16 @@ public class TopicsKafkaConfig {
     @Bean
     public NewTopic topic2() {
         return new NewTopic(requestCartTotalTopic, defaultPartitions, Short.parseShort(replicationFactor));
+    }
+
+    @Bean
+    public NewTopic topic3() {
+        return new NewTopic(replyProductPriceTopic, defaultPartitions, Short.parseShort(replicationFactor));
+    }
+
+    @Bean
+    public NewTopic topic4() {
+        return new NewTopic(requestProductPriceTopic, defaultPartitions, Short.parseShort(replicationFactor));
     }
 
 }
