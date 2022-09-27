@@ -1,28 +1,19 @@
 package org.example.bean;
 
-public class PaymentForm {
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serializable;
+
+@Data
+@NoArgsConstructor
+@Getter
+@Setter
+public class PaymentForm implements Serializable {
 
     private String cardNumber;
     private Double amount;
 
-    public PaymentForm(String cardNumber, Double amount) {
-        this.cardNumber = cardNumber;
-        this.amount = amount;
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
 }
