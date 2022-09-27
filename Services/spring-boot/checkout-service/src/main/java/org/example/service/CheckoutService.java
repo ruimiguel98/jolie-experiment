@@ -5,10 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.example.bean.*;
-import org.example.kafka.bean.ReplyCartTotal;
-import org.example.kafka.bean.ReplyPaymentProcess;
-import org.example.kafka.bean.RequestCartTotal;
-import org.example.kafka.bean.RequestPaymentProcess;
+import org.example.kafka.bean.*;
 import org.example.kafka.communication.SenderReceiver;
 import org.example.repo.CheckoutCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,11 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -34,6 +36,9 @@ public class CheckoutService {
 
     @Autowired
     private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply1;
+
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply2;
 
     @Value("${spring.kafka.topic.request-cart-total}")
     private String requestCartTotalTopic;
@@ -66,6 +71,18 @@ public class CheckoutService {
 
 
         //----------------------------- 2. PLACE THE ORDER --------------------------------
+        String userId = createCheckoutForm.getUserId().toString();
+        String status = "CREATED";
+        String addressToShip = createCheckoutForm.getOrder().getAddressToShip();
+        List<HashMap<String, String>> orderProducts = new ArrayList<>();
+        for (Product product : createCheckoutForm.getOrder().getProducts()) {
+            HashMap<String, String> productHashMap = new HashMap<>();
+            productHashMap.put(product.getId(), product.getQuantity().toString());
+            orderProducts.add(productHashMap);
+        }
+
+        ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
+        System.out.println("The payment process returned " + topicResponseOrder.toString());
 
 
 
@@ -114,6 +131,33 @@ public class CheckoutService {
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyPaymentProcess topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyPaymentProcess.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+
+            throw new Exception();
+
+        }
+    }
+
+    public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, List<HashMap<String, String>> orderProducts) throws Exception {
+
+        try {
+            RequestOrder topicRequest = RequestOrder
+                    .builder()
+                    .userId(UUID.fromString(userId))
+                    .status(status)
+                    .addressToShip(addressToShip)
+                    .products(orderProducts)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>(requestPaymentProcessTopic, new Gson().toJson(topicRequest));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentProcessTopic.getBytes()));
+
+            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply2.sendAndReceive(record);
+            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
+
+            ReplyOrder topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyOrder.class);;
             return topicResponse;
 
         } catch (Exception e) {

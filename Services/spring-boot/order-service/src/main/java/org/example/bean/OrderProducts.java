@@ -1,10 +1,17 @@
 package org.example.bean;
 
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.UUID;
 
+@Getter
+@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @IdClass(OrderProductsId.class)
 @Entity(name = "OrderProducts")
 @Table(name = "order_products")
@@ -20,28 +27,4 @@ public class OrderProducts {
 
     private Integer quantity;
 
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(UUID orderId) {
-        this.orderId = orderId;
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }
