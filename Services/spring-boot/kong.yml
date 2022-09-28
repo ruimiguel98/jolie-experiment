@@ -1,0 +1,51 @@
+_format_version: "2.1"
+
+services:
+  - name: product-service
+    url: http://host.docker.internal:9001
+    routes:
+      - name: product-route
+        paths:
+          - /product
+
+  - name: user-service
+    url: http://host.docker.internal:9002
+    routes:
+      - name: user-route
+        paths:
+          - /user
+
+  - name: order-service
+    url: http://host.docker.internal:9003
+    routes:
+      - name: order-route
+        paths:
+          - /order
+
+  - name: checkout-service
+    url: http://host.docker.internal:9004
+    routes:
+      - name: checkout-route
+        paths:
+          - /checkout
+
+  - name: email-service
+    url: http://host.docker.internal:9005
+    routes:
+      - name: email-route
+        paths:
+          - /email
+
+  - name: payment-service
+    url: http://host.docker.internal:9006
+    routes:
+      - name: payment-route
+        paths:
+          - /payment
+
+  - name: cart-service
+    url: http://host.docker.internal:9007
+    routes:
+      - name: cart-route
+        paths:
+          - /cart

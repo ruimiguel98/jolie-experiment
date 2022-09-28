@@ -28,7 +28,7 @@ public class TopicsKafkaConfig {
     @Value("${spring.kafka.binder.replication-factor}")
     private String replicationFactor;
 
-    private int defaultPartitions = 10;
+    private int defaultPartitions = 1;
 
     // Listener Container to be set up in ReplyingKafkaTemplate
     @Bean

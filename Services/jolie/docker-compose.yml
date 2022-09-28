@@ -1,7 +1,7 @@
 version: '3.8'
 services:
-  kong-api-gateway:
-    container_name: kong-api-gateway
+  sb-kong-api-gateway:
+    container_name: sb-kong-api-gateway
     image: kong:latest
     volumes:
       - ./apigateway/kong.yml:/usr/local/kong/declarative/kong.yml
@@ -110,8 +110,8 @@ services:
     links:
       - postgres-db
       
-  postgres-db:
-    container_name: general-db
+  sb-postgres-db:
+    container_name: sb-general-db
     image: postgres:latest
     restart: always
     environment:

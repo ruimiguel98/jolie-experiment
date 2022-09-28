@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping(value = "/cart")
 public class CartController {
 
     @Autowired

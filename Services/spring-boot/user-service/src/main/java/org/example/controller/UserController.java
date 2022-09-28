@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/user")
 public class UserController {
 
     @Autowired

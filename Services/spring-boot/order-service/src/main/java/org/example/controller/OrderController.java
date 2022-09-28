@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/order")
 public class OrderController {
 
     @Autowired
