@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 import java.util.UUID;
 
 @Data
@@ -22,10 +20,12 @@ public class CartProducts {
 
     @Id
     @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
+    @Column(name = "product_id")
     private UUID cartId;
 
     @Id
     @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
+    @Column(name = "product_id")
     private UUID productId;
 
     private Integer quantity;
