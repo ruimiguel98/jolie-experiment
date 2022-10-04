@@ -1,15 +1,14 @@
 package org.example.controller;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.example.bean.Cart;
 import org.example.bean.CartProducts;
+import org.example.bean.CartProductsId;
 import org.example.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 public class CartController {
@@ -50,7 +49,7 @@ public class CartController {
     }
 
     @PostMapping("/removeProduct")
-    public String removeProductFromCart(@RequestBody CartProducts cartProducts) {
-        return cartService.removeProductFromCart(cartProducts);
+    public String removeProductFromCart(@RequestBody CartProductsId cartProductsId) {
+        return cartService.removeProductFromCart(cartProductsId);
     }
 }

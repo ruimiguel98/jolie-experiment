@@ -80,16 +80,10 @@ public class CartService {
         cartCRUD.deleteById(cartId);
     }
 
-    public String removeProductFromCart(CartProducts cartProducts) {
-        CartProductsId cartProductsId = new CartProductsId();
-        cartProductsId.setProductId(cartProducts.getProductId());
-        cartProductsId.setCartId(cartProducts.getCartId());
-
-        System.out.println("test " + cartProductsCRUD.findById(cartProductsId));
-
+    public String removeProductFromCart(CartProductsId cartProductsId) {
         cartProductsCRUD.deleteById(cartProductsId);
 
-        return "Product " + cartProducts.getProductId() + " removed from cart " + cartProducts.getCartId();
+        return "Product " + cartProductsId.getProductId() + " removed from cart " + cartProductsId.getCartId();
     }
 
     public CartProducts addProductToCart(CartProducts cartProducts) throws Exception {

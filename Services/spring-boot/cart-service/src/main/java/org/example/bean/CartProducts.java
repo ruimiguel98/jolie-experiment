@@ -20,7 +20,7 @@ public class CartProducts {
 
     @Id
     @Type(type="org.hibernate.type.PostgresUUIDType") // quick solution for Hibernate regarding Postgres types
-    @Column(name = "product_id")
+    @Column(name = "cart_id")
     private UUID cartId;
 
     @Id
