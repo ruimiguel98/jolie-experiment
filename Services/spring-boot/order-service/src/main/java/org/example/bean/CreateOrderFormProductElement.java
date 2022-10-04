@@ -1,8 +1,14 @@
 package org.example.bean;
 
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.UUID;
 
+@Getter
+@Setter
+@Data
+@Builder
 public class CreateOrderFormProductElement implements Serializable {
 
     private UUID id;
@@ -28,19 +34,4 @@ public class CreateOrderFormProductElement implements Serializable {
         return id.hashCode() + quantity.hashCode();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }
