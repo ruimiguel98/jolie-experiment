@@ -1,23 +1,20 @@
 package org.example.bean;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.Entity;
+
+@Data
+@NoArgsConstructor
+@Getter
+@Setter
+@Entity
 public class Product {
 
     private String id;
     private Integer quantity;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }
