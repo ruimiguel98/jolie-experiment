@@ -1,10 +1,10 @@
 version: '3.8'
 services:
-  sb-kong-api-gateway:
-    container_name: sb-kong-api-gateway
+  kong-api-gateway:
+    container_name: jolie_kong-api-gateway
     image: kong:latest
     volumes:
-      - ./apigateway/kong.yml:/usr/local/kong/declarative/kong.yml
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
     environment:
       - KONG_DATABASE=off
       - KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml
@@ -20,98 +20,112 @@ services:
       - "127.0.0.1:8444:8444"
 
   product-service-app:
-    container_name: product-service-app
+    container_name: jolie_product-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/product/Dockerfile
+      context: product-service
+      dockerfile: Dockerfile
     ports:
       - "9051:9051"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db   
 
   user-service-app:
-    container_name: user-service-app
+    container_name: jolie_user-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/user/Dockerfile
+      context: user-service
+      dockerfile: Dockerfile
     ports:
       - "9052:9052"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db 
 
   order-service-app:
-    container_name: order-service-app
+    container_name: jolie_order-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/order/Dockerfile
+      context: order-service
+      dockerfile: Dockerfile
     ports:
       - "9053:9053"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db 
 
   checkout-service-app:
-    container_name: checkout-service-app
+    container_name: jolie_checkout-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/checkout/Dockerfile
+      context: checkout-service
+      dockerfile: Dockerfile
     ports:
       - "9054:9054"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db 
 
   email-service-app:
-    container_name: email-service-app
+    container_name: jolie_email-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/email/Dockerfile
+      context: email-service
+      dockerfile: Dockerfile
     ports:
       - "9055:9055"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db 
 
   payment-service-app:
-    container_name: payment-service-app
+    container_name: jolie_payment-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/payment/Dockerfile
+      context: payment-service
+      dockerfile: Dockerfile
     ports:
       - "9056:9056"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db  
 
   cart-service-app:
-    container_name: cart-service-app
+    container_name: jolie_cart-service-app
     build:
     # build from Dockerfile
-      context: .
-      dockerfile: ./services/cart/Dockerfile
+      context: cart-service
+      dockerfile: Dockerfile
     ports:
       - "9057:9057"
     # volumes:
     #   - "./:/app"
     links:
       - postgres-db
+    depends_on:
+      - postgres-db  
       
-  sb-postgres-db:
-    container_name: sb-general-db
+  postgres-db:
+    container_name: jolie_general-db
     image: postgres:latest
     restart: always
     environment:
