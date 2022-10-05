@@ -44,7 +44,8 @@ main
             query@Database(
                 "select * from product"
             )(sqlResponse);
-            response.values -> sqlResponse.row
+
+            response.products -> sqlResponse.row
         } 
     ]
 
@@ -81,8 +82,11 @@ main
             // verify if the request was successfull
             if ( #sqlResponse.status == 1 ) {
                 println@Console( "[PRODUCT] - [" + currentDateTime + "] - [/create] - product created with ID " + randomUUID )(  )
-                customResponse.message = "The product was created with success!"
-                customResponse.productId = randomUUID
+                customResponse.id = randomUUID // UUID auto generated
+                customResponse.product = request.product
+                customResponse.description = request.description
+                customResponse.type = request.type
+                customResponse.price = request.price
             }
             else {
                 println@Console( "[PRODUCT] - [" + currentDateTime + "] - [/create] - ERROR creating a new product" )(  )
@@ -96,11 +100,20 @@ main
     [ 
         update(request)(response) {
             update@Database(
-                "UPDATE product SET product=:product WHERE id = :id::uuid" {
+                "UPDATE product SET product = :product, description = :description, type = :type, price = :price::numeric WHERE id = :id::uuid" {
+                    .id = request.id, // UUID auto generated
                     .product = request.product,
-                    .id = request.id
+                    .description = request.description,
+                    .type = request.type,
+                    .price = request.price
                 }
-            )(response.status)
+            )(sqlResponse.status)
+
+            response.id = request.id // UUID auto generated
+            response.product = request.product
+            response.description = request.description
+            response.type = request.type
+            response.price = request.price
         } 
     ]
     
@@ -111,6 +124,10 @@ main
                     .id = request.id
                 }
             )(response.status)
+
+            message = "Product deleted with success"
+
+            response -> message
         } 
     ]
 }

@@ -1,22 +1,34 @@
-type CreateRequest {
-    .product: string
+type Product {
+    .id: string
     .description: string
+    .product: string
     .type: string
     .price: double
 }
 
-type CreateResponse {
-    .message: string
+type Products {
+    .products[1, *]: Product // an array of Products
+}
+
+type CreateRequest {
+    .description: string
+    .product: string
+    .type: string
+    .price: double
+}
+
+type DeleteRequest {
+    .id: string
 }
 
 
 interface ProductInterface {
     RequestResponse:
-        all(void)(undefined),
-        product(undefined)(undefined),
-        create(CreateRequest)(undefined),
-        update(undefined)(undefined),
-        delete(undefined)(undefined)
+        all(void)(Products),
+        product(undefined)(Product),
+        create(CreateRequest)(Product),
+        update(Product)(Product),
+        delete(DeleteRequest)(string)
 }
 
 constants {
