@@ -41,6 +41,8 @@ main
 {
     [ 
         all()(response) {
+            println@Console( "[PRODUCT] - [" + currentDateTime + "] - [/all] -  fetch all products" )(  )
+
             query@Database(
                 "select * from product"
             )(sqlResponse);

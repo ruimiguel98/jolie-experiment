@@ -1,19 +1,32 @@
+type Cart {
+    .id: string
+    .cartPriceTotal: double
+    .userId: string
+    .products[1, *]: Product
+}
+
+type Carts {
+    .carts[1, *]: Cart // an array of Cart
+}
+
+type CartProducts {
+    .productId: string
+    .cartId: string
+    .priceTotal: double
+    .quantity: int
+}
+
 type CreateCartRequest {
     .userId: string // to accept UUID values
 }
 
-type UpdateCartRequest {
-    .id: string // to accept UUID values
-    .userId: string // to accept UUID values
-}
-
-type AddProductRequest {
+type AddProductToCartRequest {
     .cartId: string // to accept UUID values
     .productId: string // to accept UUID values
     .quantity: int
 }
 
-type RemoveProductRequest {
+type RemoveProductFromCartRequest {
     .cartId: string // to accept UUID values
     .productId: string // to accept UUID values
 }
@@ -21,15 +34,15 @@ type RemoveProductRequest {
 interface CartInterface {
     RequestResponse:
         // CRUD operations
-        all(undefined)(undefined),
+        all(void)(undefined),
         cart(undefined)(undefined),
         create(CreateCartRequest)(undefined),
-        update(UpdateCartRequest)(undefined),
-        delete(undefined)(undefined),
+        update(undefined)(undefined),
+        delete(undefined)(string),
 
         // OTHER operations
-        addProduct(AddProductRequest)(undefined),
-        removeProduct(RemoveProductRequest)(undefined)
+        addProduct(AddProductToCartRequest)(undefined),
+        removeProduct(RemoveProductFromCartRequest)(undefined)
 }
 
 

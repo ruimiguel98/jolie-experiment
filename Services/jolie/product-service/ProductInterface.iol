@@ -25,7 +25,7 @@ type DeleteRequest {
 interface ProductInterface {
     RequestResponse:
         all(void)(Products),
-        product(undefined)(Product),
+        product(undefined)(undefined),
         create(CreateRequest)(Product),
         update(Product)(Product),
         delete(DeleteRequest)(string)

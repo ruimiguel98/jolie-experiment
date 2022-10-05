@@ -4,7 +4,7 @@ include "string_utils.iol"
 include "time.iol"
 
 include "./CartInterface.iol"
-include "../product/ProductInterface.iol"
+include "../product-service/ProductInterface.iol"
 
 execution { concurrent }
 
@@ -58,7 +58,12 @@ main
             )(sqlResponse);
 
             if (#sqlResponse.row >= 1) {
-                response -> sqlResponse
+                for( i = 0, i < #sqlResponse.row, i++ ){
+                    customResponse.carts[i].cartPriceTotal = sqlResponse.row[i].cart_price_total
+                    customResponse.carts[i].quantity = sqlResponse.row[i].user_id
+                    customResponse.carts[i].id = sqlResponse.row[i].id
+                }
+                response -> customResponse
             }
         }
     ]
@@ -68,15 +73,15 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/cart] -  fetch cart with id " + request.id )(  )
 
             query@Database(
-                "SELECT c.id, c.user_id, cp.product_id, cp.quantity, cp.price_total  FROM cart c, cart_products cp WHERE cp.cart_id = :id AND c.id = cp.cart_id;" {
+                "SELECT c.id, c.user_id, cp.product_id, cp.quantity, cp.price_total  FROM cart c, cart_products cp WHERE cp.cart_id = :id::uuid AND c.id = cp.cart_id;" {
                     .id = request.id
                 }
             )(sqlResponse);
 
-            if (#sqlResponse.row >= 1) {
+            if (#sqlResponse.row >= 1) { // cart with products
                 customResponse.id = sqlResponse.row[0].id
                 customResponse.userId = sqlResponse.row[0].user_id
-                customResponse.cartPriceTotal = 0
+                customResponse.cartPriceTotal = 0.0
 
                 for( i = 0, i < #sqlResponse.row, i++ ){
                     customResponse.products[i].productId = sqlResponse.row[i].product_id
@@ -84,6 +89,18 @@ main
                     customResponse.products[i].price = sqlResponse.row[i].price_total
                     customResponse.cartPriceTotal += sqlResponse.row[i].price_total
                 }
+            }
+            else { // cart with no products
+                query@Database(
+                    "SELECT id, user_id FROM cart WHERE id = :id::uuid;" {
+                        .id = request.id
+                    }
+                )(sqlResponse);
+
+                customResponse.id = sqlResponse.row[0].id
+                customResponse.userId = sqlResponse.row[0].user_id
+                customResponse.cartPriceTotal = 0.0
+                customResponse.products = null
             }
 
             response -> customResponse
@@ -97,8 +114,7 @@ main
             getRandomUUID@StringUtils(  )( randomUUID )
 
             update@Database(
-                "INSERT INTO public.cart(id, user_id)
-                 VALUES(:id, :userId);" {
+                "INSERT INTO public.cart(id, user_id, cart_price_total) VALUES (:id::uuid, :userId::uuid, 0);" {
                     .id = randomUUID, // UUID auto generated
                     .userId = request.userId
                 }
@@ -107,6 +123,10 @@ main
             // verify if the request was successfull
             if ( #sqlResponse.status == 1 ) {
                 println@Console( "[CART] - [" + currentDateTime + "] - [/create] - cart created with ID " + randomUUID )(  )
+                response.id = randomUUID // UUID auto generated
+                response.userId = request.userId
+                response.cartPriceTotal = 0.0
+                response.products = null
             }
             else {
                 println@Console( "[CART] - [" + currentDateTime + "] - [/create] - ERROR creating a new cart" )(  )
@@ -120,15 +140,25 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/update] -  update cart with id " + request.id )(  )
 
             update@Database(
-                "UPDATE cart SET user_id = :userId WHERE id = :id;" {
-                    .id = request.id
+                "UPDATE cart SET user_id = :userId::uuid WHERE id = :id::uuid;" {
+                    .id = request.id,
                     .userId = request.userId
                 }
-            )(response.status)
+            )(sqlResponse.status)
 
             // verify if the request was successfull
-            if ( response.status == 1 ) {
+            if ( sqlResponse.status == 1 ) {
                 println@Console( "[CART] - [" + currentDateTime + "] - [/update] - cart updated with ID " + request.id )(  )
+
+                query@Database(
+                    "SELECT id, user_id, cart_price_total FROM cart WHERE id = :id::uuid;" {
+                        .id = request.id
+                    }
+                )(sqlResponse);
+
+                response.id = request.id
+                response.userId = request.userId
+                response.cartPriceTotal = sqlResponse.row[0].cart_price_total
             }
             else {
                 println@Console( "[CART] - [" + currentDateTime + "] - [/update] - ERROR - failed to update cart with ID " + request.id )(  )
