@@ -171,10 +171,13 @@ main
             println@Console( "[CART] - [" + currentDateTime + "] - [/delete] -  delete cart with id " + request.id )(  )
 
             update@Database(
-                "DELETE FROM cart WHERE id=:id" {
+                "DELETE FROM cart WHERE id = :id::uuid" {
                     .id = request.id
                 }
             )(response.status)
+
+            message = "Cart deleted with success"
+            response -> message
         } 
     ]
 
@@ -192,25 +195,25 @@ main
             // if ( responseProduct.id == null ) {
 
                 //----------------------------- 1. CHECK IF PRODUCT ALREADY EXISTS IN THE CART -------------------------------- 
-                query@Database(
-                    "SELECT * FROM cart_products WHERE cart_id = :cartId AND product_id = :productId;" {
-                        .cartId = request.cartId
-                        .productId = request.productId
-                    }
-                )(sqlResponseProductCheck);
+                // query@Database(
+                //     "SELECT * FROM cart_products WHERE cart_id = :cartId::uuid AND product_id = :productId::uuid;" {
+                //         .cartId = request.cartId
+                //         .productId = request.productId
+                //     }
+                // )(sqlResponseProductCheck);
 
-                if (#sqlResponseProductCheck.row >= 1) {
-                    println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - ERROR - the product already exists in the cart, can't be added" )(  )
-                }
-                else {
-                    println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - this product does not exist in the provided cart, adding it... " )(  )
-                }
+                // if (#sqlResponseProductCheck.row >= 1) {
+                //     println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - ERROR - the product already exists in the cart, can't be added" )(  )
+                // }
+                // else {
+                //     println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - this product does not exist in the provided cart, adding it... " )(  )
+                // }
 
                 
                 //----------------------------- 2. ADD PRODUCT TO THE CART -------------------------------- 
                 update@Database(
                 "INSERT INTO cart_products(cart_id, product_id, quantity, price_total)
-                 VALUES(:cartId, :productId, :quantity, :priceTotal);" {
+                 VALUES(:cartId::uuid, :productId::uuid, :quantity, :priceTotal::numeric);" {
                         .cartId = request.cartId, // UUID auto generated
                         .productId = request.productId,
                         .quantity = request.quantity,
@@ -222,7 +225,10 @@ main
                     println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - new product " + request.productId +
                      " added to cart with ID " + request.cartId )(  )
 
-                    customResponse.message = "Product added to the cart"
+                    customResponse.cartId = request.cartId // UUID auto generated
+                    customResponse.productId = request.productId
+                    customResponse.quantity = request.quantity
+                    customResponse.priceTotal = double(responseProduct.price) * request.quantity
                 }
                 else {
                     println@Console( "[CART] - [" + currentDateTime + "] - [/addProductToCart] - ERROR - new product " + request.productId +
@@ -248,7 +254,7 @@ main
 
             //----------------------------- 1. REMOVE PRODUCT FROM THE CART -------------------------------- 
             update@Database(
-            "DELETE FROM cart_products WHERE cart_id = :cartId AND product_id = :productId;" {
+            "DELETE FROM cart_products WHERE cart_id = :cartId::uuid AND product_id = :productId::uuid;" {
                 .cartId = request.cartId, // UUID auto generated
                 .productId = request.productId
                 }
