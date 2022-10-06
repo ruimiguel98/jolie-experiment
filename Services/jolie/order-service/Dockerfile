@@ -15,4 +15,4 @@ RUN cp jdbc-postgresql.jar /usr/lib/jolie/lib/jdbc-postgresql.jar
 EXPOSE 9053
 
 # Run OrderService.ol when the container launches
-CMD jolie ./order-service/OrderService.ol
+CMD jolie ./OrderService.ol

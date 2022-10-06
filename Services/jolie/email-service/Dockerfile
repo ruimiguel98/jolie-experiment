@@ -15,4 +15,4 @@ RUN cp jdbc-postgresql.jar /usr/lib/jolie/lib/jdbc-postgresql.jar
 EXPOSE 9055
 
 # Run EmailService.ol when the container launches
-CMD jolie ./email-service/EmailService.ol
+CMD jolie ./EmailService.ol

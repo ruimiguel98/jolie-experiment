@@ -15,4 +15,4 @@ RUN cp jdbc-postgresql.jar /usr/lib/jolie/lib/jdbc-postgresql.jar
 EXPOSE 9056
 
 # Run PaymentService.ol when the container launches
-CMD jolie ./payment-service/PaymentService.ol
+CMD jolie ./PaymentService.ol

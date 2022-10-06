@@ -4,11 +4,11 @@ include "string_utils.iol"
 include "time.iol"
 
 include "./CheckoutInterface.iol"
-include "../order/OrderInterface.iol"
-include "../payment/PaymentInterface.iol"
-include "../email/EmailInterface.iol"
-include "../user/UserInterface.iol"
-include "../cart/CartInterface.iol"
+include "../order-service/OrderInterface.iol"
+include "../payment-service/PaymentInterface.iol"
+include "../email-service/EmailInterface.iol"
+include "../user-service/UserInterface.iol"
+include "../cart-service/CartInterface.iol"
 
 execution { concurrent }
 

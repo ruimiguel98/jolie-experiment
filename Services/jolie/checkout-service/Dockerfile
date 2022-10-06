@@ -15,4 +15,4 @@ RUN cp jdbc-postgresql.jar /usr/lib/jolie/lib/jdbc-postgresql.jar
 EXPOSE 9054
 
 # Run CheckoutService.ol when the container launches
-CMD jolie ./checkout-service/CheckoutService.ol
+CMD jolie ./CheckoutService.ol

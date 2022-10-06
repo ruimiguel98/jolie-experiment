@@ -27,8 +27,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9051:9051"
-    # volumes:
-    #   - "./:/app"
+    volumes:
+      # Importing interfaces
+      - "./cart-service:/cart-service"
     links:
       - postgres-db
     depends_on:
@@ -72,8 +73,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9054:9054"
-    # volumes:
-    #   - "./:/app"
+    volumes:
+      # import dependencies for checkout service
+      - "./product-service:/product-service"
+      - "./cart-service:/cart-service"
+      - "./email-service:/email-service"
+      - "./order-service:/order-service"
+      - "./payment-service:/payment-service"
+      - "./user-service:/user-service"
     links:
       - postgres-db
     depends_on:
@@ -117,12 +124,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9057:9057"
-    # volumes:
-    #   - "./:/app"
+    volumes:
+    - "./product-service:/product-service"
     links:
       - postgres-db
     depends_on:
-      - postgres-db  
+      - postgres-db
+      - product-service-app
       
   postgres-db:
     container_name: jolie_general-db
@@ -138,3 +146,8 @@ services:
 volumes:
   db:
     driver: local
+  microservices:
+
+networks:
+  custom-network:
+  
