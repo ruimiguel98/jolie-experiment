@@ -74,16 +74,19 @@ init
 main
 {
     [ 
-        checkoutPay( request)( response ) {
+        pay( request)( response ) {
             println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Initializing checkout process..." )( );
 
-
             //----------------------------- 0. GET TOTAL CART PRICE --------------------------------
-            cart@CartService( request.cart )( responseCart )
-            request.payment.amount = responseCart.cartPriceTotal
+            cart@CartService( request.cartId )( responseCart )
+            println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Cart total price retrieved" )( );
 
             //----------------------------- 1. WITHDRAWL PROVIDED BANK ACCOUNT --------------------------------
-            withdrawlAccount@PaymentService( request.payment )( responsePayment )
+            requestPayment.amount = double(responseCart.cartPriceTotal)
+            requestPayment.cardNumber = request.cardNumber
+            withdrawlAccount@PaymentService( requestPayment )( responsePayment )
+            println@Console( "[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Bank account credited" )( );
+
             
             if ( responsePayment.status == "SUCCESS" ) {
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Payment processed with success")( )
@@ -93,13 +96,22 @@ main
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Placing the order")( )
                 
                 getRandomUUID@StringUtils( )( responseUUID )
+                requestOrder.userId = request.userId
+                requestOrder.orderPriceTotal = double(responseCart.cartPriceTotal)
+                requestOrder.addressToShip = request.order.addressToShip
+                requestOrder.status = request.order.status
 
-                request.order.orderPriceTotal = responseCart.cartPriceTotal
-                request.order.userId = responseCart.userId
-                create@OrderService( request.order )( responseOrder )
+                // an array can't be associated to a variable directly, needs to be iterated
+                counter = 0;
+                for( product in request.order.products ) {
+                    requestOrder.products[counter].id = product.id
+                    requestOrder.products[counter].quantity = product.quantity
+                    counter = counter + 1
+                }
+
+                create@OrderService( requestOrder )( responseOrder )
 
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Order placed with success")( )
-
 
                 //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Sending email")( )
@@ -109,19 +121,19 @@ main
                 //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - Updating checkout database")( )
 
-                getRandomUUID@StringUtils( )( cartResponseUUID )
+                getRandomUUID@StringUtils( )( checkoutUUID )
 
                 update@Database(
-                    "INSERT INTO checkout(id, order_id, cart_id) VALUES (:id, :orderId, :cartId);" {
-                        .id = cartResponseUUID
+                    "INSERT INTO checkout(id, order_id, cart_id) VALUES (:id::uuid, :orderId::uuid, :cartId::uuid);" {
+                        .id = checkoutUUID,
                         .orderId = responseOrder.orderId,
-                        .cartId = responseOrder.id,
+                        .cartId = request.cartId
                     }
                 )(sqlResponse)
 
-                customResponse.message = "Checkout done with success"
-                customResponse.subMessage = "The order has been placed"
-                customResponse.orderId = responseOrder.id
+                customResponse.id = checkoutUUID
+                customResponse.cartId = request.cartId
+                customResponse.orderId = responseOrder.orderId
             }
             else if (responsePayment.status == "ERROR") {
                 println@Console("[CHECKOUT] - [" + currentDateTime + "] - [/checkoutPay] - ERROR not enough balance")( )

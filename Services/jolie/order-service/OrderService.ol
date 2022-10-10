@@ -59,7 +59,7 @@ main
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/order] -  fetch order with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM orders WHERE id = :id" {
+                "SELECT * FROM orders WHERE id = :id::uuid" {
                     .id = randomUUID
                 }
             )(sqlResponse);
@@ -78,7 +78,7 @@ main
 
             update@Database(
                 "INSERT INTO orders (id, address_to_ship, status, user_id)
-                 VALUES(:id, :addressToShip, :status, :userId);" {
+                 VALUES(:id::uuid, :addressToShip, :status, :userId::uuid);" {
                     .id = randomUUID,
                     .addressToShip = request.addressToShip,
                     .status = request.status,
@@ -90,7 +90,7 @@ main
             for( product in request.products ) {
                 update@Database(
                     "INSERT INTO order_products (order_id, product_id, quantity)
-                     VALUES(:orderId, :productId, :quantity::numeric);" {
+                     VALUES(:orderId::uuid, :productId::uuid, :quantity::numeric);" {
                         .orderId = randomUUID,
                         .productId = product.id,
                         .quantity = product.quantity
@@ -121,8 +121,8 @@ main
                 "UPDATE orders SET
                     address_to_ship = :addressToShip,
                     status = :status,
-                    user_id= :userId
-                WHERE id=:id;" {
+                    user_id = :userId::uuid
+                WHERE id = :id::uuid;" {
                     .id = request.id,
                     .addressToShip = request.addressToShip,
                     .status = request.status,
@@ -150,7 +150,7 @@ main
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/delete] -  delete order with id " + request.id )(  )
 
             update@Database(
-                "DELETE FROM orders WHERE id = :id" {
+                "DELETE FROM orders WHERE id = :id::uuid" {
                     .id = request.id
                 }
             )(sqlResponse.status)
@@ -174,7 +174,7 @@ main
             println@Console( "[ORDER] - [" + currentDateTime + "] - [/userOrders] - getting orders from user with id " + request.id )(  )
 
             query@Database(
-                "SELECT * FROM orders WHERE user_id = :userId" {
+                "SELECT * FROM orders WHERE user_id = :userId::uuid" {
                     .userId = request.userId
                 }
             )(sqlResponse)

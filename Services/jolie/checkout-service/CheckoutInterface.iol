@@ -4,25 +4,20 @@ type Product {
 }
 
 type CheckoutPayRequest {
-    .user {
-        .id: string
-    }
-    .payment {
-        .cardNumber: string
-    }
+    .cartId: string
+    .userId: string
+    .cardNumber: string
+    .cardCVV: string
     .order {
         .status: string
         .addressToShip: string
         .products[0, *]: Product // an array of Products
     }
-    .cart {
-        .id: string
-    }
 }
 
 interface CheckoutInterface {
 	RequestResponse:
-		checkoutPay(CheckoutPayRequest)(undefined)
+		pay(CheckoutPayRequest)(undefined)
 }
 
 constants {
