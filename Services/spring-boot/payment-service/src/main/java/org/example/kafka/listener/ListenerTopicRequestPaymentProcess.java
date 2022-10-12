@@ -1,15 +1,18 @@
 package org.example.kafka.listener;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.example.bean.Payment;
 import org.example.kafka.bean.ReplyPaymentProcess;
 import org.example.kafka.bean.RequestPaymentProcess;
 import org.example.repo.PaymentCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class ListenerTopicRequestPaymentProcess {
 
@@ -17,12 +20,10 @@ public class ListenerTopicRequestPaymentProcess {
     PaymentCRUD paymentCRUD;
 
 
-    //    @SendTo({"${spring.kafka.topic.reply-payment-process}"})
-    @SendTo({"reply-cart-total"})
-    @KafkaListener(topics = "${spring.kafka.topic.request-payment-process}")
+    @KafkaListener(topics = "${kafka.topic.request-payment}", groupId = "${kafka.consumer-group-payment}")
+    @SendTo("${kafka.topic.reply-payment}")
     public String listenAndReply(String message) {
-
-        System.out.println("Received message: " + message);
+        log.info("Received message: " + message);
 
         String messageToSend = null;
         Integer statusToSend = 0;
@@ -63,8 +64,7 @@ public class ListenerTopicRequestPaymentProcess {
                         .status(statusToSend)
                         .build();
 
-        System.out.println("Sending message: " + topicResponse.toString());
-
+        log.info("Sending message: " + topicResponse.toString());
         return new Gson().toJson(topicResponse);
     }
 }

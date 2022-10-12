@@ -1,6 +1,7 @@
 package org.example.kafka.listener;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.example.kafka.bean.ReplyEmail;
 import org.example.kafka.bean.RequestEmail;
 import org.example.repo.EmailCRUD;
@@ -11,16 +12,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class ListenerTopicRequestProductPrice {
 
     @Autowired
     EmailCRUD emailCRUD;
 
-    @SendTo("reply-cart-total")
-    @KafkaListener(topics = "${spring.kafka.topic.request-email}")
+    @KafkaListener(topics = "${kafka.topic.request-email}", groupId = "${kafka.consumer-group-email}")
+    @SendTo("${kafka.topic.reply-email}")
     public String listenAndReply(String message) {
-        System.out.println("Received message: " + message);
+        log.info("Received message: " + message);
 
         RequestEmail topicRequest = new Gson().fromJson(message, RequestEmail.class);
 
@@ -33,8 +35,7 @@ public class ListenerTopicRequestProductPrice {
                         .status("Email sent with success")
                         .build();
 
-        System.out.println("Sending message: " + topicResponse.toString());
-
+        log.info("Sending message: " + topicResponse.toString());
         return new Gson().toJson(topicResponse);
     }
 

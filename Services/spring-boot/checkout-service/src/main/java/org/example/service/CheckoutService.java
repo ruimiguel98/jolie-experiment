@@ -1,29 +1,24 @@
 package org.example.service;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.example.bean.*;
 import org.example.kafka.bean.*;
-import org.example.kafka.communication.SenderReceiver;
 import org.example.repo.CheckoutCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
+@Slf4j
 @Service
 public class CheckoutService {
 
@@ -31,61 +26,48 @@ public class CheckoutService {
     CheckoutCRUD checkoutCRUD;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForCart;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForPayment;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply1;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForOrder;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply2;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForEmail;
 
-    @Autowired
-    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply3;
-
-    @Value("${spring.kafka.topic.request-cart-total}")
+    @Value("${kafka.topic.request-cart}")
     private String requestCartTotalTopic;
-
-    @Value("${spring.kafka.topic.reply-cart-total}")
+    @Value("${kafka.topic.request-cart}")
     private String replyCartTotalTopic;
-
-    @Value("${spring.kafka.topic.reply-payment-process}")
-    private String replyPaymentProcessTopic;
-
-    @Value("${spring.kafka.topic.request-payment-process}")
+    @Value("${kafka.topic.request-payment}")
     private String requestPaymentProcessTopic;
-
-    @Value("${spring.kafka.topic.reply-order}")
-    private String replyOrderTopic;
-
-    @Value("${spring.kafka.topic.request-order}")
+    @Value("${kafka.topic.reply-payment}")
+    private String replyPaymentProcessTopic;
+    @Value("${kafka.topic.request-order}")
     private String requestOrderTopic;
-
-    @Value("${spring.kafka.topic.reply-email}")
-    private String replyEmailTopic;
-
-    @Value("${spring.kafka.topic.request-email}")
+    @Value("${kafka.topic.reply-order}")
+    private String replyOrderTopic;
+    @Value("${kafka.topic.request-email}")
     private String requestEmailTopic;
+    @Value("${kafka.topic.request-email}")
+    private String replyEmailTopic;
 
     public Checkout performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
         //----------------------------- 0. GET TOTAL CART PRICE --------------------------------
         String cartId = createCheckoutForm.getCartId().toString();
         ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
-        System.out.println("The cart total is " + topicResponseCartTotal.toString());
-
-
+        log.info("The cart total is " + topicResponseCartTotal.toString());
 
         //----------------------------- 1. WITHDRAWAL PROVIDED BANK ACCOUNT --------------------------------
         String cardNumber = createCheckoutForm.getCardNumber();
         String cardCVV = createCheckoutForm.getCardCVV();
         Double amountToWithdrawal = topicResponseCartTotal.getCartTotalPrice();
+//        Double amountToWithdrawal = 22.0;
         ReplyPaymentProcess topicResponsePaymentProcess = sendMessageWaitReplyPaymentProcessTopic(cardNumber, cardCVV, amountToWithdrawal);
-        System.out.println("The payment process returned " + topicResponsePaymentProcess.toString());
-
-
+        log.info("The payment process returned " + topicResponsePaymentProcess.toString());
 
         //----------------------------- 2. PLACE THE ORDER --------------------------------
         String userId = createCheckoutForm.getUserId().toString();
@@ -97,19 +79,15 @@ public class CheckoutService {
         }
 
         ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
-        System.out.println("Order placed with ID " + topicResponseOrder.getOrderId());
-
-
+        log.info("Order placed with ID " + topicResponseOrder.getOrderId());
 
         //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
-
         ReplyEmail topicResponseEmail = sendMessageWaitReplyEmailTopic("ORDER PLACED",
                 "Your order has been placed",
                 "shipping@ourcompany.com",
                 "test@gmail.com",
                 "22/12/2022");
-        System.out.println("The email has been sent with the order placed confirmation");
-
+        log.info("The email has been sent with the order placed confirmation with ID " + topicResponseEmail.getId());
 
         //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
         UUID checkoutUUID = UUID.randomUUID();
@@ -127,7 +105,7 @@ public class CheckoutService {
     public ReplyCartTotal sendMessageWaitReplyCartTotalTopic(String cartId) throws Exception {
 
         // THIS IS EXTREMELY IMPORTANT
-        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
+        this.replyingTemplateForCart.setSharedReplyTopic(true);
 
         try {
             RequestCartTotal topicRequest = RequestCartTotal
@@ -136,24 +114,22 @@ public class CheckoutService {
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>(requestCartTotalTopic, new Gson().toJson(topicRequest));
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyCartTotalTopic.getBytes()));
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply.sendAndReceive(record);
+//            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyCartTotalTopic.getBytes()));
+            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForCart.sendAndReceive(record);
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyCartTotal topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyCartTotal.class);;
             return topicResponse;
 
         } catch (Exception e) {
-
             throw new Exception();
-
         }
     }
 
     public ReplyPaymentProcess sendMessageWaitReplyPaymentProcessTopic(String cardNumber, String CVV, Double amountToWithdrawal) throws Exception {
 
         // THIS IS EXTREMELY IMPORTANT
-        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
+        this.replyingTemplateForPayment.setSharedReplyTopic(true);
 
         try {
             RequestPaymentProcess topicRequest = RequestPaymentProcess
@@ -164,25 +140,23 @@ public class CheckoutService {
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>(requestPaymentProcessTopic, new Gson().toJson(topicRequest));
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentProcessTopic.getBytes()));
+//            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentProcessTopic.getBytes()));
 
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply1.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForPayment.sendAndReceive(record);
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyPaymentProcess topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyPaymentProcess.class);;
             return topicResponse;
 
         } catch (Exception e) {
-
             throw new Exception();
-
         }
     }
 
     public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, HashMap<String, String> orderProducts) throws Exception {
 
         // THIS IS EXTREMELY IMPORTANT
-        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
+        this.replyingTemplateForOrder.setSharedReplyTopic(true);
 
         try {
             RequestOrder topicRequest = RequestOrder
@@ -195,24 +169,21 @@ public class CheckoutService {
 
             ProducerRecord<String, String> record = new ProducerRecord<>(requestOrderTopic, new Gson().toJson(topicRequest));
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyOrderTopic.getBytes()));
-
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply2.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForOrder.sendAndReceive(record);
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyOrder topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyOrder.class);;
             return topicResponse;
 
         } catch (Exception e) {
-
             throw new Exception();
-
         }
     }
 
     public ReplyEmail sendMessageWaitReplyEmailTopic(String subject, String message, String fromEmail, String toEmail, String sentDate) throws Exception {
 
         // THIS IS EXTREMELY IMPORTANT
-        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
+        this.replyingTemplateForEmail.setSharedReplyTopic(true);
 
         try {
             RequestEmail topicRequest = RequestEmail
@@ -226,21 +197,15 @@ public class CheckoutService {
 
             ProducerRecord<String, String> record = new ProducerRecord<>(requestEmailTopic, new Gson().toJson(topicRequest));
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyEmailTopic.getBytes()));
-
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply3.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForEmail.sendAndReceive(record);
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyEmail topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyEmail.class);;
             return topicResponse;
 
         } catch (Exception e) {
-
             throw new Exception();
-
         }
     }
-
-
-
 
 }

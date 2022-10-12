@@ -34,15 +34,12 @@ public class CartService {
     CartProductsCRUD cartProductsCRUD;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForProduct;
 
-    @Autowired
-    private ReplyingKafkaTemplate<String, String, String> kafkaTemplateRequestReply;
-
-    @Value("${spring.kafka.topic.request-product-price}")
+    @Value("${kafka.topic.request-product}")
     private String requestProductPriceTopic;
 
-    @Value("${spring.kafka.topic.reply-product-price}")
+    @Value("${kafka.topic.reply-product}")
     private String replyProductPriceTopic;
 
 
@@ -107,9 +104,8 @@ public class CartService {
     }
 
     public ReplyProductPrice sendMessageWaitReplyProductPriceTopic(String productId, Integer productQuantity) throws Exception {
-
         // THIS IS EXTREMELY IMPORTANT
-        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
+        this.replyingTemplateForProduct.setSharedReplyTopic(true);
 
         try {
             RequestProductPrice topicRequest = RequestProductPrice
@@ -119,50 +115,15 @@ public class CartService {
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>(requestProductPriceTopic, new Gson().toJson(topicRequest));
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyProductPriceTopic.getBytes()));
-            RequestReplyFuture<String, String, String> sendAndReceive = this.kafkaTemplateRequestReply.sendAndReceive(record);
+//            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyProductPriceTopic.getBytes()));
+            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForProduct.sendAndReceive(record);
             ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
 
             ReplyProductPrice topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyProductPrice.class);;
             return topicResponse;
 
         } catch (Exception e) {
-
-            System.out.println(e.getMessage());
             throw new Exception();
-
         }
     }
-
-//    public CartProducts addProductToCart(CartProducts cartProducts) throws ExecutionException, InterruptedException {
-////
-////        String toSendToRequestTopic = cartProducts.getProductId().toString() + "/" + cartProducts.getQuantity().toString();
-////
-////        // create producer record
-////        ProducerRecord<String, String> record = new ProducerRecord<>(requestTopicProductPrice, toSendToRequestTopic);
-////        // set reply topic in header
-////        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopicProductPrice.getBytes()));
-////        // post in kafka topic
-////        RequestReplyFuture<String, String, String> sendAndReceive = kafkaTemplate.sendAndReceive(record);
-////
-////        // confirm if producer produced successfully
-////        SendResult<String, String> sendResult = sendAndReceive.getSendFuture().get();
-////
-////        //print all headers
-////        sendResult.getProducerRecord().headers().forEach(header -> System.out.println(header.key() + ":" + header.value().toString()));
-////
-////        // get consumer record
-////        ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-////
-////        // print consumer value
-////        System.out.println("The result is the following " + consumerRecord.value());
-////
-////        Double productTotalPrice = Double.parseDouble(consumerRecord.value());
-////        cartProducts.setPriceTotal(productTotalPrice);
-////        cartProductsCRUD.save(cartProducts);
-////
-////        return cartProducts;
-//
-//        return null;
-//    }
 }

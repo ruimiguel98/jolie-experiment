@@ -1,6 +1,7 @@
 package org.example.kafka.listener;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.example.bean.Order;
 import org.example.bean.OrderProducts;
 import org.example.kafka.bean.ReplyOrder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class ListenerTopicOrderRequest {
 
@@ -24,11 +26,10 @@ public class ListenerTopicOrderRequest {
     @Autowired
     OrderProductsCRUD orderProductsCRUD;
 
-    @SendTo({"reply-cart-total"})
-    @KafkaListener(topics = "${spring.kafka.topic.request-order}")
+    @KafkaListener(topics = "${kafka.topic.request-order}", groupId = "${kafka.consumer-group-order}")
+    @SendTo("${kafka.topic.reply-order}")
     public String listenAndReply(String message) {
-
-        System.out.println("Received message: " + message);
+        log.info("Received message: " + message);
 
         RequestOrder topicRequest = new Gson().fromJson(message, RequestOrder.class);
 
@@ -43,7 +44,7 @@ public class ListenerTopicOrderRequest {
 
 
         for (Map.Entry<String, String> productEntry : topicRequest.getProducts().entrySet()) {
-            System.out.println(productEntry.getKey() + ":" + productEntry.getValue());
+            log.info(productEntry.getKey() + ":" + productEntry.getValue());
 
             String key = productEntry.getKey();
             String value = productEntry.getValue();
@@ -67,8 +68,7 @@ public class ListenerTopicOrderRequest {
                         .orderId(orderUUID.toString())
                         .build();
 
-        System.out.println("Sending message: " + topicResponse.toString());
-
+        log.info("Sending message: " + topicResponse.toString());
         return new Gson().toJson(topicResponse);
     }
 }

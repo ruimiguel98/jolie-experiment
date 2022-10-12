@@ -24,8 +24,8 @@ public class ListenerTopicRequestCartTotal {
     @Autowired
     CartProductsCRUD cartProductsCRUD;
 
-    @SendTo("${spring.kafka.topic.reply-cart-total}")
-    @KafkaListener(topics = "${spring.kafka.topic.request-cart-total}")
+    @KafkaListener(topics = "${kafka.topic.request-cart}", groupId = "${kafka.consumer-group-cart}")
+    @SendTo("${kafka.topic.reply-cart}")
     public String listenAndReply(String cartId) {
 
         System.out.println("Received message: " + cartId);

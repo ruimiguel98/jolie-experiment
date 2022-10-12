@@ -11,6 +11,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 
@@ -23,6 +24,18 @@ import java.util.Map;
  */
 @Configuration
 public class BaseKafkaConfig {
+
+    @Value("${kafka.topic.reply-cart}")
+    private String replyCartTotalTopic;
+
+    @Value("${kafka.topic.request-cart}")
+    private String requestCartTotalTopic;
+
+    @Value("${kafka.topic.reply-product}")
+    private String replyProductPriceTopic;
+
+    @Value("${kafka.topic.request-product}")
+    private String requestProductPriceTopic;
 
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String producerBootstrapServers;
@@ -87,5 +100,13 @@ public class BaseKafkaConfig {
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
+    }
+
+
+    // Listener Container to be set up in ReplyingKafkaTemplate
+    @Bean
+    public KafkaMessageListenerContainer<String, String> replyContainer(ConsumerFactory<String, String> cf) {
+        ContainerProperties containerProperties = new ContainerProperties(replyProductPriceTopic);
+        return new KafkaMessageListenerContainer<>(cf, containerProperties);
     }
 }
