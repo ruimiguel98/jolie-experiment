@@ -108,8 +108,10 @@ public class CartService {
 
     public ReplyProductPrice sendMessageWaitReplyProductPriceTopic(String productId, Integer productQuantity) throws Exception {
 
-        try {
+        // THIS IS EXTREMELY IMPORTANT
+        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
 
+        try {
             RequestProductPrice topicRequest = RequestProductPrice
                     .builder()
                     .id(productId)
@@ -126,6 +128,7 @@ public class CartService {
 
         } catch (Exception e) {
 
+            System.out.println(e.getMessage());
             throw new Exception();
 
         }

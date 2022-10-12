@@ -126,8 +126,10 @@ public class CheckoutService {
 
     public ReplyCartTotal sendMessageWaitReplyCartTotalTopic(String cartId) throws Exception {
 
-        try {
+        // THIS IS EXTREMELY IMPORTANT
+        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
 
+        try {
             RequestCartTotal topicRequest = RequestCartTotal
                     .builder()
                     .id(cartId)
@@ -149,6 +151,9 @@ public class CheckoutService {
     }
 
     public ReplyPaymentProcess sendMessageWaitReplyPaymentProcessTopic(String cardNumber, String CVV, Double amountToWithdrawal) throws Exception {
+
+        // THIS IS EXTREMELY IMPORTANT
+        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
 
         try {
             RequestPaymentProcess topicRequest = RequestPaymentProcess
@@ -176,6 +181,9 @@ public class CheckoutService {
 
     public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, HashMap<String, String> orderProducts) throws Exception {
 
+        // THIS IS EXTREMELY IMPORTANT
+        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
+
         try {
             RequestOrder topicRequest = RequestOrder
                     .builder()
@@ -202,6 +210,9 @@ public class CheckoutService {
     }
 
     public ReplyEmail sendMessageWaitReplyEmailTopic(String subject, String message, String fromEmail, String toEmail, String sentDate) throws Exception {
+
+        // THIS IS EXTREMELY IMPORTANT
+        this.kafkaTemplateRequestReply.setSharedReplyTopic(true);
 
         try {
             RequestEmail topicRequest = RequestEmail
