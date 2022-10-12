@@ -1,0 +1,628 @@
+{
+	"info": {
+		"_postman_id": "dddc6a71-790f-40dd-bcf8-4cbc9f27b5c7",
+		"name": "Checkout",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7740632"
+	},
+	"item": [
+		{
+			"name": "Create new empty cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"let createdCartUserId = pm.collectionVariables.get(\"created_cart_user_id\");\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  pm.expect(responseJson.id).to.have.lengthOf(36); // check if an UUID is returned\r",
+							"  pm.expect(responseJson.userId).to.eql(createdCartUserId);\r",
+							"  pm.expect(responseJson.cartPriceTotal).to.eql(0.0);\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"created_cart_id\", responseJson.id); // save the created cart ID to use on next tests"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"70ffc182-eca1-434d-a35e-b1cbb6d0d0cd\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/cart/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"cart",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get created empty cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const create_cart_id = pm.collectionVariables.get(\"created_cart_id\");\r",
+							"const created_cart_user_id = pm.collectionVariables.get(\"created_cart_user_id\");\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  const responseJson = pm.response.json();\r",
+							"  pm.expect(responseJson.id).to.eql(create_cart_id); // check if an UUID is the passed on params\r",
+							"  pm.expect(responseJson.userId).to.eql(created_cart_user_id);\r",
+							"  pm.expect(responseJson.cartPriceTotal).to.eql(0.0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/cart/cart?id={{created_cart_id}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"cart",
+						"cart"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{created_cart_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new product 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  pm.expect(responseJson.product).to.eql(\"LG OLED TV\");\r",
+							"  pm.expect(responseJson.description).to.eql(\"This is a fancy LG TV with maximum picture quality\");\r",
+							"  pm.expect(responseJson.type).to.eql(\"TV\");\r",
+							"  pm.expect(responseJson.price).to.eql(1400.0)\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"created_product_1_id\", responseJson.id);\r",
+							"pm.collectionVariables.set(\"created_product_1_price\", responseJson.price);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product\": \"LG OLED TV\",\r\n    \"description\": \"This is a fancy LG TV with maximum picture quality\",\r\n    \"type\": \"TV\",\r\n    \"price\": 1400.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/product/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"product",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new product 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  pm.expect(responseJson.product).to.eql(\"SAMSUNG OLED TV\");\r",
+							"  pm.expect(responseJson.description).to.eql(\"This is a fancy SAMSUNG TV with maximum picture quality\");\r",
+							"  pm.expect(responseJson.type).to.eql(\"TV\");\r",
+							"  pm.expect(responseJson.price).to.eql(2000.99)\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"created_product_2_id\", responseJson.id);\r",
+							"pm.collectionVariables.set(\"created_product_2_price\", responseJson.price);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product\": \"SAMSUNG OLED TV\",\r\n    \"description\": \"This is a fancy SAMSUNG TV with maximum picture quality\",\r\n    \"type\": \"TV\",\r\n    \"price\": 2000.99\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/product/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"product",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add product 1 to the new cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"const requestJson = pm.request;\r",
+							"\r",
+							"console.log(\"requestJson\", pm.request.body)\r",
+							"\r",
+							"let updatedCartUserId = pm.collectionVariables.get(\"updated_cart_user_id\");\r",
+							"let createdCartId = pm.collectionVariables.get(\"created_cart_id\");\r",
+							"let createdProduct1Id = pm.collectionVariables.get(\"created_product_1_id\");\r",
+							"let createdProduct1Price = pm.collectionVariables.get(\"created_product_1_price\");\r",
+							"\r",
+							"let priceTotal = createdProduct1Price * 2;\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  pm.expect(responseJson.cartId).to.eql(createdCartId);\r",
+							"  pm.expect(responseJson.productId).to.eql(createdProduct1Id);\r",
+							"  pm.expect(responseJson.priceTotal).to.eql(priceTotal);\r",
+							"  pm.expect(responseJson.quantity).to.eql(2)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cartId\": \"{{created_cart_id}}\",\r\n    \"productId\": \"{{created_product_1_id}}\",\r\n    \"quantity\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/cart/addProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"cart",
+						"addProduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add product 2 to the new cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"const requestJson = pm.request;\r",
+							"\r",
+							"console.log(\"requestJson\", pm.request.body)\r",
+							"\r",
+							"let updatedCartUserId = pm.collectionVariables.get(\"updated_cart_user_id\");\r",
+							"let createdCartId = pm.collectionVariables.get(\"created_cart_id\");\r",
+							"let createdProduct1Id = pm.collectionVariables.get(\"created_product_2_id\");\r",
+							"let createdProduct1Price = pm.collectionVariables.get(\"created_product_2_price\");\r",
+							"\r",
+							"let priceTotal = createdProduct1Price * 3;\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  pm.expect(responseJson.cartId).to.eql(createdCartId);\r",
+							"  pm.expect(responseJson.productId).to.eql(createdProduct1Id);\r",
+							"  pm.expect(responseJson.priceTotal).to.eql(priceTotal);\r",
+							"  pm.expect(responseJson.quantity).to.eql(3)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cartId\": \"{{created_cart_id}}\",\r\n    \"productId\": \"{{created_product_2_id}}\",\r\n    \"quantity\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/cart/addProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"cart",
+						"addProduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get updated cart new added products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"const createdCartId = pm.collectionVariables.get(\"created_cart_id\");\r",
+							"const updatedCartUserId = pm.collectionVariables.get(\"updated_cart_user_id\");\r",
+							"\r",
+							"pm.test(\"Response body\", () => {\r",
+							"  pm.expect(responseJson.id).to.eql(createdCartId); // check if an UUID is the passed on params\r",
+							"  pm.expect(responseJson.userId).to.eql(\"1ca923b0-2fc0-433c-842c-5c9723df03d9\");\r",
+							"  pm.expect(responseJson.cartPriceTotal).to.eql(8800);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/cart/cart?id={{created_cart_id}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"cart",
+						"cart"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{created_cart_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Perform checkout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const responseJson = pm.response.json();\r",
+							"const requestJson = pm.request;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cartId\": \"{{created_cart_id}}\",\r\n    \"userId\": \"ce3eb1ed-2365-41e9-8c3a-ba5df3bd7b50\",\r\n    \"cardNumber\": \"3540091258027820\",\r\n    \"cardCVV\": \"513\",\r\n    \"order\": {\r\n        \"status\": \"CREATED\",\r\n        \"addressToShip\": \"Rua Teste nº90\",\r\n        \"products\": [\r\n            {\r\n                \"id\": \"{{created_product_1_id}}\",\r\n                \"quantity\": 2\r\n            },\r\n            {\r\n                \"id\": \"{{created_product_2_id}}\",\r\n                \"quantity\": 3\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/checkout/pay",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"checkout",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/cart/delete?id={{created_cart_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"cart",
+						"delete"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{created_cart_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete product 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/product/delete?id={{created_product_1_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"product",
+						"delete"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{created_product_1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete product 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/product/delete?id={{created_product_2_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"product",
+						"delete"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{created_product_2_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "created_cart_id",
+			"value": "56bdedde-6c24-46d5-b77b-8a9090026efd",
+			"type": "string"
+		},
+		{
+			"key": "created_checkout_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_cart_user_id",
+			"value": "1ca923b0-2fc0-433c-842c-5c9723df03d9",
+			"type": "string"
+		},
+		{
+			"key": "updated_cart_user_id",
+			"value": "70ffc182-eca1-434d-a35e-b1cbb6d0d0cd",
+			"type": "string"
+		},
+		{
+			"key": "created_product_1_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_product_1_price",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_product_2_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_product_2_price",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
