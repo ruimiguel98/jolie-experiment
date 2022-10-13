@@ -23,6 +23,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class CartService {
@@ -34,13 +35,13 @@ public class CartService {
     CartProductsCRUD cartProductsCRUD;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForProduct;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplate;
 
-    @Value("${kafka.topic.request-product}")
-    private String requestProductPriceTopic;
-
-    @Value("${kafka.topic.reply-product}")
-    private String replyProductPriceTopic;
+//    @Value("${kafka.topic.request-product}")
+//    private String requestProductPriceTopic;
+//
+//    @Value("${kafka.topic.reply-product}")
+//    private String replyProductPriceTopic;
 
 
     public Cart createCart(Cart cart) {
@@ -104,9 +105,6 @@ public class CartService {
     }
 
     public ReplyProductPrice sendMessageWaitReplyProductPriceTopic(String productId, Integer productQuantity) throws Exception {
-        // THIS IS EXTREMELY IMPORTANT
-        this.replyingTemplateForProduct.setSharedReplyTopic(true);
-
         try {
             RequestProductPrice topicRequest = RequestProductPrice
                     .builder()
@@ -114,10 +112,11 @@ public class CartService {
                     .quantity(productQuantity)
                     .build();
 
-            ProducerRecord<String, String> record = new ProducerRecord<>(requestProductPriceTopic, new Gson().toJson(topicRequest));
-//            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyProductPriceTopic.getBytes()));
-            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForProduct.sendAndReceive(record);
-            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
+            ProducerRecord<String, String> record = new ProducerRecord<>("kRequests",  new Gson().toJson(topicRequest));
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
+            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
+            ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
 
             ReplyProductPrice topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyProductPrice.class);;
             return topicResponse;

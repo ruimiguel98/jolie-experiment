@@ -11,19 +11,17 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j
 @Component
-public class ListenerTopicRequestProductPrice {
+public class KafkaListenerTopic {
 
     @Autowired
     ProductCRUD productCRUD;
 
-    @KafkaListener(topics = "${kafka.topic.request-product}", groupId = "${kafka.consumer-group-product}")
-    @SendTo("${kafka.topic.reply-product}")
+    @KafkaListener(id="server", topics = "kRequests")
+    @SendTo
     public String listenAndReply(String message) {
         log.info("Received message: " + message);
 
