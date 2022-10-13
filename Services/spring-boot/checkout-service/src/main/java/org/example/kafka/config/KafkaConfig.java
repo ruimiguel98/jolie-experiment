@@ -36,7 +36,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic kRequests() {
+    public NewTopic kRequests2() {
         return TopicBuilder.name("kRequests2")
                 .partitions(10)
                 .replicas(2)
@@ -44,8 +44,55 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic kReplies() {
+    public NewTopic kReplies2() {
         return TopicBuilder.name("kReplies2")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
+
+    @Bean
+    public NewTopic kRequests3() {
+        return TopicBuilder.name("kRequests3")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
+
+    @Bean
+    public NewTopic kReplies3() {
+        return TopicBuilder.name("kReplies3")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
+
+    @Bean
+    public NewTopic kRequests4() {
+        return TopicBuilder.name("kRequests4")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
+
+    @Bean
+    public NewTopic kReplies4() {
+        return TopicBuilder.name("kReplies4")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
+    @Bean
+    public NewTopic kRequests5() {
+        return TopicBuilder.name("kRequests54")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
+
+    @Bean
+    public NewTopic kReplies5() {
+        return TopicBuilder.name("kReplies5")
                 .partitions(10)
                 .replicas(2)
                 .build();

@@ -20,7 +20,7 @@ public class KafkaListenerTopic {
     @Autowired
     ProductCRUD productCRUD;
 
-    @KafkaListener(id="server", topics = "kRequests")
+    @KafkaListener(id="server", topics = {"kRequests", "kRequests2"})
     @SendTo
     public String listenAndReply(String message) {
         log.info("Received message: " + message);

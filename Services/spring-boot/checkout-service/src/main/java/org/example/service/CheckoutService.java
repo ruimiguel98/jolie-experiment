@@ -41,47 +41,66 @@ public class CheckoutService {
 
     public Checkout performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
+
+//        // check the total price of the provided product
+//        ReplyProductPrice replyProductPrice = sendMessageWaitReplyProductPriceTopic(
+//                cartProducts.getProductId().toString(),
+//                cartProducts.getQuantity()
+//        );
+//
+//        Double productTotalPrice = replyProductPrice.getCartTotalPrice();
+//        cartProducts.setPriceTotal(productTotalPrice);
+//        cartProductsCRUD.save(cartProducts);
+//
+//        // update the main cart table
+//        Cart cartDB = cartCRUD.findById(cartProducts.getCartId()).get();
+//        cartDB.setCartPriceTotal(cartDB.getCartPriceTotal() + productTotalPrice);
+//        cartCRUD.save(cartDB);
+//
+//        return cartProducts;
+
+
         //----------------------------- 0. GET TOTAL CART PRICE --------------------------------
-        String cartId = createCheckoutForm.getCartId().toString();
-        ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
-        log.info("The cart total is " + topicResponseCartTotal.toString());
+//        String cartId = createCheckoutForm.getCartId().toString();
+//        ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
+//        log.info("The cart total is " + topicResponseCartTotal.toString());
 
 //        //----------------------------- 1. WITHDRAWAL PROVIDED BANK ACCOUNT --------------------------------
-//        String cardNumber = createCheckoutForm.getCardNumber();
-//        String cardCVV = createCheckoutForm.getCardCVV();
+        String cardNumber = createCheckoutForm.getCardNumber();
+        String cardCVV = createCheckoutForm.getCardCVV();
 //        Double amountToWithdrawal = topicResponseCartTotal.getCartTotalPrice();
-////        Double amountToWithdrawal = 22.0;
-//        ReplyPaymentProcess topicResponsePaymentProcess = sendMessageWaitReplyPaymentProcessTopic(cardNumber, cardCVV, amountToWithdrawal);
-//        log.info("The payment process returned " + topicResponsePaymentProcess.toString());
-//
-//        //----------------------------- 2. PLACE THE ORDER --------------------------------
-//        String userId = createCheckoutForm.getUserId().toString();
-//        String status = "CREATED";
-//        String addressToShip = createCheckoutForm.getOrder().getAddressToShip();
-//        HashMap<String, String> orderProducts = new HashMap<>();
-//        for (Product product : createCheckoutForm.getOrder().getProducts()) {
-//            orderProducts.put(product.getId(), product.getQuantity().toString());
-//        }
-//
-//        ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
-//        log.info("Order placed with ID " + topicResponseOrder.getOrderId());
-//
-//        //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
-//        ReplyEmail topicResponseEmail = sendMessageWaitReplyEmailTopic("ORDER PLACED",
-//                "Your order has been placed",
-//                "shipping@ourcompany.com",
-//                "test@gmail.com",
-//                "22/12/2022");
-//        log.info("The email has been sent with the order placed confirmation with ID " + topicResponseEmail.getId());
-//
-//        //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
-//        UUID checkoutUUID = UUID.randomUUID();
-//        Checkout checkout = new Checkout(
-//                checkoutUUID,
-//                UUID.fromString(topicResponseOrder.getOrderId()),
-//                createCheckoutForm.getCartId()
-//        );
-////        checkoutCRUD.save(checkout);
+        Double amountToWithdrawal = 22.0;
+        ReplyPaymentProcess topicResponsePaymentProcess = sendMessageWaitReplyPaymentProcessTopic(cardNumber, cardCVV, amountToWithdrawal);
+        log.info("The payment process returned " + topicResponsePaymentProcess.toString());
+
+        //----------------------------- 2. PLACE THE ORDER --------------------------------
+        String userId = createCheckoutForm.getUserId().toString();
+        String status = "CREATED";
+        String addressToShip = createCheckoutForm.getOrder().getAddressToShip();
+        HashMap<String, String> orderProducts = new HashMap<>();
+        for (Product product : createCheckoutForm.getOrder().getProducts()) {
+            orderProducts.put(product.getId(), product.getQuantity().toString());
+        }
+
+        ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
+        log.info("Order placed with ID " + topicResponseOrder.getOrderId());
+
+        //----------------------------- 3. SEND ORDER PLACED EMAIL --------------------------------
+        ReplyEmail topicResponseEmail = sendMessageWaitReplyEmailTopic("ORDER PLACED",
+                "Your order has been placed",
+                "shipping@ourcompany.com",
+                "test@gmail.com",
+                "22/12/2022");
+        log.info("The email has been sent with the order placed confirmation with ID " + topicResponseEmail.getId());
+
+        //----------------------------- 4. UPDATE CHECKOUT RECORDS DATABASE --------------------------------
+        UUID checkoutUUID = UUID.randomUUID();
+        Checkout checkout = new Checkout(
+                checkoutUUID,
+                UUID.fromString(topicResponseOrder.getOrderId()),
+                createCheckoutForm.getCartId()
+        );
+//        checkoutCRUD.save(checkout);
 
         return null;
 
@@ -108,74 +127,76 @@ public class CheckoutService {
         }
     }
 
-//    public ReplyPaymentProcess sendMessageWaitReplyPaymentProcessTopic(String cardNumber, String CVV, Double amountToWithdrawal) throws Exception {
-//        try {
-//            RequestPaymentProcess topicRequest = RequestPaymentProcess
-//                    .builder()
-//                    .cardNumber(cardNumber)
-//                    .CVV(CVV)
-//                    .amountToWithdrawal(amountToWithdrawal)
-//                    .build();
-//
-//            ProducerRecord<String, String> record = new ProducerRecord<>(requestPaymentProcessTopic, new Gson().toJson(topicRequest));
-////            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyPaymentProcessTopic.getBytes()));
-//
-//            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForPayment.sendAndReceive(record);
-//            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-//
-//            ReplyPaymentProcess topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyPaymentProcess.class);;
-//            return topicResponse;
-//
-//        } catch (Exception e) {
-//            throw new Exception();
-//        }
-//    }
-//
-//    public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, HashMap<String, String> orderProducts) throws Exception {
-//        try {
-//            RequestOrder topicRequest = RequestOrder
-//                    .builder()
-//                    .userId(UUID.fromString(userId))
-//                    .status(status)
-//                    .addressToShip(addressToShip)
-//                    .products(orderProducts)
-//                    .build();
-//
-//            ProducerRecord<String, String> record = new ProducerRecord<>(requestOrderTopic, new Gson().toJson(topicRequest));
-//            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyOrderTopic.getBytes()));
-//            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForOrder.sendAndReceive(record);
-//            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-//
-//            ReplyOrder topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyOrder.class);;
-//            return topicResponse;
-//
-//        } catch (Exception e) {
-//            throw new Exception();
-//        }
-//    }
-//
-//    public ReplyEmail sendMessageWaitReplyEmailTopic(String subject, String message, String fromEmail, String toEmail, String sentDate) throws Exception {
-//        try {
-//            RequestEmail topicRequest = RequestEmail
-//                    .builder()
-//                    .subject(subject)
-//                    .message(message)
-//                    .fromEmail(fromEmail)
-//                    .toEmail(toEmail)
-//                    .sentDate(sentDate)
-//                    .build();
-//
-//            ProducerRecord<String, String> record = new ProducerRecord<>(requestEmailTopic, new Gson().toJson(topicRequest));
-//            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyEmailTopic.getBytes()));
-//            RequestReplyFuture<String, String, String> sendAndReceive = this.replyingTemplateForEmail.sendAndReceive(record);
-//            ConsumerRecord<String, String> consumerRecord = sendAndReceive.get();
-//
-//            ReplyEmail topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyEmail.class);;
-//            return topicResponse;
-//
-//        } catch (Exception e) {
-//            throw new Exception();
-//        }
-//    }
+    public ReplyPaymentProcess sendMessageWaitReplyPaymentProcessTopic(String cardNumber, String CVV, Double amountToWithdrawal) throws Exception {
+        try {
+            RequestPaymentProcess topicRequest = RequestPaymentProcess
+                    .builder()
+                    .cardNumber(cardNumber)
+                    .CVV(CVV)
+                    .amountToWithdrawal(amountToWithdrawal)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>("kRequests3",  new Gson().toJson(topicRequest));
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
+            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
+            ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
+
+            ReplyPaymentProcess topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyPaymentProcess.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+            throw new Exception();
+        }
+    }
+
+    public ReplyOrder sendMessageWaitReplyOrderTopic(String userId, String status, String addressToShip, HashMap<String, String> orderProducts) throws Exception {
+        try {
+            RequestOrder topicRequest = RequestOrder
+                    .builder()
+                    .userId(UUID.fromString(userId))
+                    .status(status)
+                    .addressToShip(addressToShip)
+                    .products(orderProducts)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>("kRequests4",  new Gson().toJson(topicRequest));
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
+            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
+            ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
+
+            ReplyOrder topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyOrder.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+            throw new Exception();
+        }
+    }
+
+    public ReplyEmail sendMessageWaitReplyEmailTopic(String subject, String message, String fromEmail, String toEmail, String sentDate) throws Exception {
+        try {
+            RequestEmail topicRequest = RequestEmail
+                    .builder()
+                    .subject(subject)
+                    .message(message)
+                    .fromEmail(fromEmail)
+                    .toEmail(toEmail)
+                    .sentDate(sentDate)
+                    .build();
+
+            ProducerRecord<String, String> record = new ProducerRecord<>("kRequests5",  new Gson().toJson(topicRequest));
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
+            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
+            ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
+
+            ReplyEmail topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyEmail.class);;
+            return topicResponse;
+
+        } catch (Exception e) {
+            throw new Exception();
+        }
+    }
 
 }

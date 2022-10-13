@@ -14,13 +14,13 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class ListenerTopicRequestProductPrice {
+public class KafkaListenerTopic {
 
     @Autowired
     EmailCRUD emailCRUD;
 
-    @KafkaListener(topics = "${kafka.topic.request-email}", groupId = "${kafka.consumer-group-email}")
-    @SendTo("${kafka.topic.reply-email}")
+    @KafkaListener(id="server", topics = "kRequests5")
+    @SendTo
     public String listenAndReply(String message) {
         log.info("Received message: " + message);
 

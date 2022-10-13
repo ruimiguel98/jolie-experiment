@@ -8,20 +8,21 @@ import org.example.kafka.bean.RequestPaymentProcess;
 import org.example.repo.PaymentCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Slf4j
 @Component
-public class ListenerTopicRequestPaymentProcess {
+public class KafkaListenerTopic {
 
     @Autowired
     PaymentCRUD paymentCRUD;
 
 
-    @KafkaListener(topics = "${kafka.topic.request-payment}", groupId = "${kafka.consumer-group-payment}")
-    @SendTo("${kafka.topic.reply-payment}")
+    @KafkaListener(id="server", topics = "kRequests3")
+    @SendTo
     public String listenAndReply(String message) {
         log.info("Received message: " + message);
 
@@ -67,4 +68,5 @@ public class ListenerTopicRequestPaymentProcess {
         log.info("Sending message: " + topicResponse.toString());
         return new Gson().toJson(topicResponse);
     }
+
 }

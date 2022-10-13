@@ -9,7 +9,6 @@ import org.example.kafka.bean.RequestOrder;
 import org.example.repo.OrderCRUD;
 import org.example.repo.OrderProductsCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class ListenerTopicOrderRequest {
+public class KafkaListenerTopic {
 
     @Autowired
     OrderCRUD orderCRUD;
@@ -26,8 +25,8 @@ public class ListenerTopicOrderRequest {
     @Autowired
     OrderProductsCRUD orderProductsCRUD;
 
-    @KafkaListener(topics = "${kafka.topic.request-order}", groupId = "${kafka.consumer-group-order}")
-    @SendTo("${kafka.topic.reply-order}")
+    @KafkaListener(id="server", topics = "kRequests4")
+    @SendTo
     public String listenAndReply(String message) {
         log.info("Received message: " + message);
 
