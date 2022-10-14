@@ -28,7 +28,13 @@ public class CheckoutService {
     CheckoutCRUD checkoutCRUD;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, String, String> replyingTemplate;
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplate2;
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplate3;
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplate4;
+    @Autowired
+    private ReplyingKafkaTemplate<String, String, String> replyingTemplate5;
 
 //    @Autowired
 //    private ReplyingKafkaTemplate<String, String, String> replyingTemplateForPayment;
@@ -41,6 +47,11 @@ public class CheckoutService {
 
     public Checkout performCheckout(CreateCheckoutForm createCheckoutForm) throws Exception {
 
+
+        HashMap<String, String> orderProducts = new HashMap<>();
+        for (Product product : createCheckoutForm.getOrder().getProducts()) {
+            orderProducts.put(product.getId(), product.getQuantity().toString());
+        }
 
 //        // check the total price of the provided product
 //        ReplyProductPrice replyProductPrice = sendMessageWaitReplyProductPriceTopic(
@@ -65,11 +76,14 @@ public class CheckoutService {
 //        ReplyCartTotal topicResponseCartTotal = sendMessageWaitReplyCartTotalTopic(cartId);
 //        log.info("The cart total is " + topicResponseCartTotal.toString());
 
+        ReplyProductsTotalPrice replyProductsTotalPrice = sendMessageWaitReplyProductsTotalPrice(orderProducts);
+        log.info("This checkout contains products with a price total as " + replyProductsTotalPrice.getCartTotalPrice().toString());
+
 //        //----------------------------- 1. WITHDRAWAL PROVIDED BANK ACCOUNT --------------------------------
         String cardNumber = createCheckoutForm.getCardNumber();
         String cardCVV = createCheckoutForm.getCardCVV();
 //        Double amountToWithdrawal = topicResponseCartTotal.getCartTotalPrice();
-        Double amountToWithdrawal = 22.0;
+        Double amountToWithdrawal = replyProductsTotalPrice.getCartTotalPrice();
         ReplyPaymentProcess topicResponsePaymentProcess = sendMessageWaitReplyPaymentProcessTopic(cardNumber, cardCVV, amountToWithdrawal);
         log.info("The payment process returned " + topicResponsePaymentProcess.toString());
 
@@ -77,10 +91,10 @@ public class CheckoutService {
         String userId = createCheckoutForm.getUserId().toString();
         String status = "CREATED";
         String addressToShip = createCheckoutForm.getOrder().getAddressToShip();
-        HashMap<String, String> orderProducts = new HashMap<>();
-        for (Product product : createCheckoutForm.getOrder().getProducts()) {
-            orderProducts.put(product.getId(), product.getQuantity().toString());
-        }
+//        HashMap<String, String> orderProducts = new HashMap<>();
+//        for (Product product : createCheckoutForm.getOrder().getProducts()) {
+//            orderProducts.put(product.getId(), product.getQuantity().toString());
+//        }
 
         ReplyOrder topicResponseOrder = sendMessageWaitReplyOrderTopic(userId, status, addressToShip, orderProducts);
         log.info("Order placed with ID " + topicResponseOrder.getOrderId());
@@ -106,26 +120,50 @@ public class CheckoutService {
 
     }
 
-    public ReplyCartTotal sendMessageWaitReplyCartTotalTopic(String cartId) throws Exception {
+//    public ReplyCartTotal sendMessageWaitReplyCartTotalTopic(String cartId) throws Exception {
+//        try {
+//            RequestCartTotal topicRequest = RequestCartTotal
+//                    .builder()
+//                    .id(cartId)
+//                    .build();
+//
+//            ProducerRecord<String, String> record = new ProducerRecord<>("kRequests2",  new Gson().toJson(topicRequest));
+//            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate2.sendAndReceive(record);
+//            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
+//            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
+//            ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
+//
+//            ReplyCartTotal topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyCartTotal.class);;
+//            return topicResponse;
+//
+//        } catch (Exception e) {
+//            throw new Exception();
+//        }
+//    }
+
+
+    public ReplyProductsTotalPrice sendMessageWaitReplyProductsTotalPrice(HashMap<String, String> orderProducts) throws Exception {
         try {
-            RequestCartTotal topicRequest = RequestCartTotal
+            RequestProductsTotalPrice topicRequest = RequestProductsTotalPrice
                     .builder()
-                    .id(cartId)
+                    .products(orderProducts)
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>("kRequests2",  new Gson().toJson(topicRequest));
-            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate2.sendAndReceive(record);
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
             System.out.println("Sent ok: " + sendResult.getRecordMetadata());
             ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
 
-            ReplyCartTotal topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyCartTotal.class);;
+            ReplyProductsTotalPrice topicResponse = new Gson().fromJson(consumerRecord.value(), ReplyProductsTotalPrice.class);;
             return topicResponse;
 
         } catch (Exception e) {
             throw new Exception();
         }
     }
+
+
 
     public ReplyPaymentProcess sendMessageWaitReplyPaymentProcessTopic(String cardNumber, String CVV, Double amountToWithdrawal) throws Exception {
         try {
@@ -137,7 +175,7 @@ public class CheckoutService {
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>("kRequests3",  new Gson().toJson(topicRequest));
-            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate3.sendAndReceive(record);
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
             System.out.println("Sent ok: " + sendResult.getRecordMetadata());
             ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
@@ -161,7 +199,7 @@ public class CheckoutService {
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>("kRequests4",  new Gson().toJson(topicRequest));
-            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate4.sendAndReceive(record);
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
             System.out.println("Sent ok: " + sendResult.getRecordMetadata());
             ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
@@ -186,7 +224,7 @@ public class CheckoutService {
                     .build();
 
             ProducerRecord<String, String> record = new ProducerRecord<>("kRequests5",  new Gson().toJson(topicRequest));
-            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate.sendAndReceive(record);
+            RequestReplyFuture<String, String, String> replyFuture = replyingTemplate5.sendAndReceive(record);
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
             System.out.println("Sent ok: " + sendResult.getRecordMetadata());
             ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);

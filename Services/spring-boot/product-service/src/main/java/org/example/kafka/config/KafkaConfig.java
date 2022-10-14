@@ -19,6 +19,13 @@ public class KafkaConfig {
                 .replicas(2)
                 .build();
     }
+    @Bean
+    public NewTopic kRequests2() {
+        return TopicBuilder.name("kRequests2")
+                .partitions(10)
+                .replicas(2)
+                .build();
+    }
 
     @Bean // not required if Jackson is on the classpath
     public MessagingMessageConverter simpleMapperConverter() {
